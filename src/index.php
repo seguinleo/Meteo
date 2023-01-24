@@ -18,7 +18,7 @@
 	<div class="wrapper">
 		<header>
 			<span id="heure"></span>
-			<span id="retour">🔎</span>Météo
+			<a href="./" id="retour" aria-label="Retour">🔎</a>Météo
 		</header>
 		<div class="input-part">
 			<p class="info-txt">Chargement...</p>
@@ -120,7 +120,7 @@
 			</div>
 		</div>
 		<span class="copyright">&copy;2020-<?php echo date('Y'); ?>
-			Léo SEGUIN
+			<a href="https://leoseguin.fr/" target="_blank" rel="noreferrer">Léo SEGUIN</a>
 		</span>
 	</div>
 	<script src="js/script.min.js"></script>

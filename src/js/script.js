@@ -1,5 +1,5 @@
 "serviceWorker" in navigator && navigator.serviceWorker.register("sw.js");
-const key = "YOUR API KEY"
+const key = "4f2aefee83b0c51e519d5251885f124f"
   , wrapper = document.querySelector(".wrapper")
   , inputPart = document.querySelector(".input-part")
   , infoTxt = document.querySelector(".info-txt")
@@ -52,8 +52,8 @@ function weatherDetailsCurrent(e) {
     metaTheme.content = "#2c3c47") : i >= 600 && i <= 622 ? (img.src = "icons/snow.svg",
     document.body.style.background = "#83939e",
     metaTheme.content = "#83939e") : i >= 701 && i <= 781 ? (heure.startsWith("1") || heure.startsWith("06") || heure.startsWith("07") || heure.startsWith("08") || heure.startsWith("09") ? img.src = "icons/haze.svg" : img.src = "icons/hazenight.svg",
-    document.body.style.background = "#88ccfc",
-    metaTheme.content = "#88ccfc") : 801 == i ? (heure.startsWith("1") || heure.startsWith("06") || heure.startsWith("07") || heure.startsWith("08") || heure.startsWith("09") ? img.src = "icons/fewclouds.svg" : img.src = "icons/fewcloudsnight.svg",
+    document.body.style.background = "#63baf7",
+    metaTheme.content = "#63baf7") : 801 == i ? (heure.startsWith("1") || heure.startsWith("06") || heure.startsWith("07") || heure.startsWith("08") || heure.startsWith("09") ? img.src = "icons/fewclouds.svg" : img.src = "icons/fewcloudsnight.svg",
     document.body.style.background = "#41adfa",
     metaTheme.content = "#41adfa") : i >= 802 && i <= 804 ? (img.src = "icons/clouds.svg",
     document.body.style.background = "#3e85b8",
@@ -182,9 +182,4 @@ inputField.addEventListener("keydown", e=>{
 locationBtn.addEventListener("click", ()=>{
     navigator.geolocation && navigator.geolocation.getCurrentPosition(onSuccess, onError),
     infoTxt.style.display = "block"
-}
-),
-back.addEventListener("click", ()=>{
-    location.reload()
-}
-);
+});

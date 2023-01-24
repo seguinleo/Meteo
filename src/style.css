@@ -51,15 +51,21 @@ html {
     box-sizing: border-box
 }
 
+a {
+    text-decoration: none;
+}
+
 body {
     background: #1c95ec;
+    margin: 0 1rem;
+    min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center
 }
 
 .wrapper {
-    margin: 30px auto 10px;
+    margin: 1rem 0;
     padding: 15px 0;
     width: 450px;
     background: linear-gradient(to top left, rgba(0,0,0,.3), rgba(0,0,0,.1));
@@ -141,8 +147,8 @@ button {
     color: #fff;
 }
 
-.input-part input:focus {
-    outline: 3px solid rgba(0, 0, 0, .3);
+input:focus, button:focus, a:focus {
+    outline: 3px solid rgba(0, 0, 0, .2);
 }
 
 .input-part button {
