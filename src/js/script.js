@@ -1,5 +1,5 @@
 "serviceWorker" in navigator && navigator.serviceWorker.register("sw.js");
-const key = "4f2aefee83b0c51e519d5251885f124f"
+const key = ""
   , wrapper = document.querySelector(".wrapper")
   , inputPart = document.querySelector(".input-part")
   , infoTxt = document.querySelector(".info-txt")
