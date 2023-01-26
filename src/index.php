@@ -124,6 +124,6 @@
 		</span>
 	</div>
 	<script src="js/script.min.js"></script>
-	<script src="js/chartjs.js"></script>
+	<script src="js/chart.min.js"></script>
 </body>
 </html>

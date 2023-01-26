@@ -127,11 +127,16 @@ function weatherDetailsForecast(e) {
                 label: "Température",
                 data: T,
                 borderColor: "#7ac8ff",
-                pointRadius: 6
+                pointRadius: 8
             }]
         },
         options: {
             plugins: {
+                tooltip: {
+                    backgroundColor: 'rgba(255,255,255,.1)',
+                    titleColor: '#ffffff',
+                    bodyColor: '#ffffff'
+                },
                 legend: {
                     display: false
                 }

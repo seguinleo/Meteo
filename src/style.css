@@ -191,9 +191,10 @@ input:focus, button:focus, a:focus {
     font-size: 1.4rem;
     font-weight: 700;
     display: flex;
+    text-align: center;
     align-items: center;
     justify-content: center;
-    margin: -10px 0 20px;
+    margin: -10px 10px 20px
 }
 
 .bottom-details {
