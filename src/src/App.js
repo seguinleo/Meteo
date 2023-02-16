@@ -35,7 +35,7 @@ function App() {
 
   const handleKeyUp = async (event) => {
     if (event.key === 'Enter') {
-      if (!ville || !/^[a-zA-Z\s-]+$/.test(ville)) {
+      if (!ville || !/^[a-zÀ-ú\s-]+$/.test(ville)) {
         alert('Veuillez entrer une ville valide...');
         return;
       }
