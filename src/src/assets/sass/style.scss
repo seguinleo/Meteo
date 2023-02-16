@@ -1,0 +1,274 @@
+@font-face {
+  font-family: 'OpenSans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../../assets/fonts/OpenSans.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'OpenSans';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('../../assets/fonts/OpenSans-700.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'OpenSans';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../../assets/fonts/OpenSans-italic.woff2') format('woff2');
+}
+
+html {
+  color: #fff;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none
+}
+
+* {
+  font-family: "OpenSans";
+  box-sizing: border-box
+}
+
+a {
+  text-decoration: none
+}
+
+body {
+  background: #1c95ec;
+  margin: 0 1rem;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center
+}
+
+.wrapper {
+  margin: 1rem 0;
+  padding: 15px 0;
+  width: 450px;
+  max-width: 95vw;
+  background: linear-gradient(to top left, rgba(0, 0, 0, .3), rgba(0, 0, 0, .1));
+  box-shadow: 8px 8px 20px rgba(0, 0, 0, .2)
+}
+
+.info-txt,
+.wrapper.active .input-part {
+  display: none
+}
+
+.info-txt,
+.wrapper {
+  border-radius: 10px
+}
+
+.input-part button,
+.input-part input {
+  color: #fff
+}
+
+::placeholder {
+  color: #ddd
+}
+
+.separator {
+  height: 1px;
+  background: #ddd;
+  width: 80%;
+  margin: 35px auto
+}
+
+.wrapper header {
+  font-size: 1.5rem;
+  color: #fff;
+  padding: 15px;
+  text-align: right
+}
+
+.column,
+.info-txt,
+.input-part input {
+  text-align: center
+}
+
+.wrapper header #heure {
+  color: #ddd;
+  float: left;
+  font-size: 1rem
+}
+
+.wrapper header #retour {
+  cursor: pointer
+}
+
+.wrapper.active header {
+  font-size: 0
+}
+
+.input-part {
+  margin: 5px 30px 30px
+}
+
+.info-txt {
+  font-size: 1rem;
+  padding: 10px;
+  margin-bottom: 15px;
+  color: #fff;
+  height: 55px;
+  line-height: 38px;
+  display: none;
+  background: rgba(31, 169, 255, .5)
+}
+
+.column,
+.copyright,
+.location,
+.temp,
+.wrapper.active .weather-part {
+  display: flex
+}
+
+.input-part input,
+button {
+  width: 100%;
+  height: 55px;
+  border: none;
+  font-size: 1.1rem;
+  border-radius: 10px
+}
+
+.input-part input {
+  padding: 0 15px;
+  border: 2px solid #ddd;
+  background: none;
+  color: #fff
+}
+
+input:focus,
+button:focus,
+a:focus {
+  outline: 3px solid rgba(0, 0, 0, .2)
+}
+
+.input-part button {
+  color: #fff;
+  cursor: pointer;
+  background: rgba(0, 0, 0, .3);
+  transition: .2s
+}
+
+.input-part button:hover {
+  background: rgba(0, 0, 0, .2)
+}
+
+.wrapper .weather-part {
+  display: none;
+  margin: 5px 0 0;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column
+}
+
+.titreGraph {
+  color: #ddd;
+  font-size: .8rem
+}
+
+.main-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column
+}
+
+.mainImg {
+  margin-top: -50px;
+  margin-left: -25px;
+  width: 140px;
+  vertical-align: middle
+}
+
+.main-info .temp {
+  font-size: 2.5rem;
+  font-weight: 700
+}
+
+.location {
+  font-size: 1.4rem;
+  font-weight: 700;
+  display: flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  margin: -10px 10px 20px
+}
+
+.bottom-details {
+  display: flex;
+  width: 100%
+}
+
+.graphique {
+  margin: 25px auto 0;
+  text-align: center;
+
+  * {
+    margin: auto
+  }
+}
+
+.column {
+  width: 100%;
+  align-items: center;
+  justify-content: center
+}
+
+.column img {
+  margin: 0 0 -10px
+}
+
+.details .temp,
+.feels span,
+.humidity span,
+.pressure span,
+.wind span {
+  font-size: 1.1rem;
+  margin-top: 5px;
+  align-items: center;
+  justify-content: center;
+  color: #ddd
+}
+
+.details p {
+  color: #fff;
+  font-size: 1rem;
+  margin: 0 auto
+}
+
+#jour2,
+#jour3,
+#jour4,
+#jour5,
+#jour6 {
+  margin-top: -10px
+}
+
+.copyright {
+  margin-top: 20px;
+  color: #ddd;
+  align-items: center;
+  justify-content: center;
+  font-size: .8rem
+}
+
+.copyright a {
+  margin-left: 4px;
+  color: #fff;
+  text-decoration: none;
+  font-size: .8rem;
+  font-weight: 700
+}
