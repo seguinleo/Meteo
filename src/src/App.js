@@ -35,7 +35,7 @@ function App() {
 
   const handleKeyUp = async (event) => {
     if (event.key === 'Enter') {
-      if (!ville || !/^[a-zA-ZÀ-ÿ-]+$/.test(ville)) {
+      if (!ville || !/^[a-zA-ZÀ-ÿ -]+$/.test(ville)) {
         alert('Veuillez entrer une ville valide...');
         return;
       }
@@ -61,7 +61,7 @@ function App() {
 
   const geolocation = async () => {
     if (!navigator.geolocation) {
-      alert("La géolocalisation n'est pas supportée par ce navigateur...");
+      alert("La géolocalisation n'est pas supportée par ce navigateur. Firefox, Chrome ou Safari recommandés...");
       return;
     }
     navigator.geolocation.getCurrentPosition(async position => {
@@ -151,22 +151,22 @@ function App() {
   };
 
   const fetchDataForecasts = async (data) => {
-    let t = [];
-    let s = [];
+    const t = [];
+    const s = [];
     for (let i = 0; i < data.list.length; i++) {
-      let n = data.list[i].dt_txt.substring(11);
-      let r = data.list[i].main.temp;
-      let o = data.list[i].weather[0].id;
+      const n = data.list[i].dt_txt.substring(11);
+      const r = data.list[i].main.temp;
+      const o = data.list[i].weather[0].id;
       if (n.indexOf("12:00:00") !== -1) {
         t.push(o);
         s.push(r);
       }
     }
-    let j2 = data.list[7].dt_txt;
-    let j3 = data.list[15].dt_txt;
-    let j4 = data.list[23].dt_txt;
-    let j5 = data.list[31].dt_txt;
-    let j6 = data.list[39].dt_txt;
+    const j2 = data.list[7].dt_txt;
+    const j3 = data.list[15].dt_txt;
+    const j4 = data.list[23].dt_txt;
+    const j5 = data.list[31].dt_txt;
+    const j6 = data.list[39].dt_txt;
     if (t[0] === 800) {
       setImg2(<img src="./assets/icons/sun.svg" alt="Temps dégagé" />);
     } else if (200 <= t[0] && t[0] <= 232) {
@@ -257,12 +257,12 @@ function App() {
     setTemp4(Math.floor(s[2]));
     setTemp5(Math.floor(s[3]));
     setTemp6(Math.floor(s[4]));
-    let E = ["DIM", "LUN", "MAR", "MER", "JEU", "VEN", "SAM"];
-    let day2 = new Date(j2.slice(0, -9));
-    let day3 = new Date(j3.slice(0, -9));
-    let day4 = new Date(j4.slice(0, -9));
-    let day5 = new Date(j5.slice(0, -9));
-    let day6 = new Date(j6.slice(0, -9));
+    const E = ["DIM", "LUN", "MAR", "MER", "JEU", "VEN", "SAM"];
+    const day2 = new Date(j2.slice(0, -9));
+    const day3 = new Date(j3.slice(0, -9));
+    const day4 = new Date(j4.slice(0, -9));
+    const day5 = new Date(j5.slice(0, -9));
+    const day6 = new Date(j6.slice(0, -9));
     setJour2(E[day2.getDay()]);
     setJour3(E[day3.getDay()]);
     setJour4(E[day4.getDay()]);
