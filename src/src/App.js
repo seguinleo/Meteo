@@ -32,7 +32,6 @@ function App() {
   const [img5, setImg5] = useState();
   const [img6, setImg6] = useState();
   const metaTheme = document.getElementById("themecolor");
-  const infoTxt = document.querySelector('.info-txt');
 
   const handleKeyUp = async (event) => {
     if (event.key === 'Enter') {
@@ -40,7 +39,7 @@ function App() {
         alert('Veuillez entrer une ville valide...');
         return;
       }
-      infoTxt.style.display = 'block';
+      document.querySelector('.info-txt').style.display = 'block';
       const key = process.env.REACT_APP_API_KEY;
       const [currentResponse, forecastResponse] = await Promise.all([
         fetch(`https://api.openweathermap.org/data/2.5/weather?q=${ville}&units=metric&appid=${key}`),
@@ -48,7 +47,7 @@ function App() {
       ]);
       if (!currentResponse.ok || !forecastResponse.ok) {
         alert("Ville non reconnue, vérifiez l'orthographe et le nom complet de la ville...");
-        infoTxt.style.display = 'none';
+        document.querySelector('.info-txt').style.display = 'none';
         return;
       }
       const [currentData, forecastData] = await Promise.all([
@@ -66,7 +65,7 @@ function App() {
       return;
     }
     navigator.geolocation.getCurrentPosition(async position => {
-      infoTxt.style.display = 'block';
+      document.querySelector('.info-txt').style.display = 'block';
       const lat = position.coords.latitude;
       const lon = position.coords.longitude;
       const key = process.env.REACT_APP_API_KEY;
@@ -76,7 +75,7 @@ function App() {
       ]);
       if (!currentResponse.ok || !forecastResponse.ok) {
         alert("Erreur lors de la récupération des données météo. Veuillez réessayer plus tard...");
-        infoTxt.style.display = 'none';
+        document.querySelector('.info-txt').style.display = 'none';
         return;
       }
       const [currentData, forecastData] = await Promise.all([
@@ -95,7 +94,7 @@ function App() {
     const offset = parseInt(data.timezone) / 60;
     const { name, sys, main, wind, weather } = data;
     const heureLocale = new Date(date.getTime() + (offset + date.getTimezoneOffset()) * 6e4).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
-    infoTxt.style.display = 'none';
+    document.querySelector('.info-txt').style.display = 'none';
     setHeure(heureLocale);
     setNomVille(name);
     setPays(sys.country);
