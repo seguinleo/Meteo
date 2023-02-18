@@ -32,6 +32,7 @@ function App() {
   const [img5, setImg5] = useState();
   const [img6, setImg6] = useState();
   const metaTheme = document.getElementById("themecolor");
+  const infoTxt = document.querySelector('.info-txt');
 
   const handleKeyUp = async (event) => {
     if (event.key === 'Enter') {
@@ -39,7 +40,7 @@ function App() {
         alert('Veuillez entrer une ville valide...');
         return;
       }
-      document.querySelector('.info-txt').style.display = 'block';
+      infoTxt.style.display = 'block';
       const key = process.env.REACT_APP_API_KEY;
       const [currentResponse, forecastResponse] = await Promise.all([
         fetch(`https://api.openweathermap.org/data/2.5/weather?q=${ville}&units=metric&appid=${key}`),
@@ -47,7 +48,7 @@ function App() {
       ]);
       if (!currentResponse.ok || !forecastResponse.ok) {
         alert("Ville non reconnue, vérifiez l'orthographe et le nom complet de la ville...");
-        document.querySelector('.info-txt').style.display = 'none';
+        infoTxt.style.display = 'none';
         return;
       }
       const [currentData, forecastData] = await Promise.all([
@@ -65,7 +66,7 @@ function App() {
       return;
     }
     navigator.geolocation.getCurrentPosition(async position => {
-      document.querySelector('.info-txt').style.display = 'block';
+      infoTxt.style.display = 'block';
       const lat = position.coords.latitude;
       const lon = position.coords.longitude;
       const key = process.env.REACT_APP_API_KEY;
@@ -75,7 +76,7 @@ function App() {
       ]);
       if (!currentResponse.ok || !forecastResponse.ok) {
         alert("Erreur lors de la récupération des données météo. Veuillez réessayer plus tard...");
-        document.querySelector('.info-txt').style.display = 'none';
+        infoTxt.style.display = 'none';
         return;
       }
       const [currentData, forecastData] = await Promise.all([
@@ -92,61 +93,54 @@ function App() {
   const fetchDataCurrent = async (data, data2) => {
     const date = new Date();
     const offset = parseInt(data.timezone) / 60;
-    document.querySelector('.info-txt').style.display = 'none';
-    setNomVille(data.name);
-    setPays(data.sys.country);
-    setTemperature(data.main.temp.toFixed(1) + "°C");
-    setRessenti(data.main.feels_like.toFixed(1) + "°C");
-    setHumidite(data.main.humidity + "%");
-    setVent(Math.round(3.6 * data.wind.speed) + "km/h");
-    setPression(data.main.pressure + "hPa");
-    const heureLocale = new Date(date.getTime() + (offset + date.getTimezoneOffset()) * 6e4).toLocaleTimeString("fr-FR").slice(0, -3);
+    const { name, sys, main, wind, weather } = data;
+    const heureLocale = new Date(date.getTime() + (offset + date.getTimezoneOffset()) * 6e4).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+    infoTxt.style.display = 'none';
     setHeure(heureLocale);
-    if (data.weather[0].id === 800) {
-      if (heureLocale.startsWith("1") || heureLocale.startsWith("06") || heureLocale.startsWith("07") || heureLocale.startsWith("08") || heureLocale.startsWith("09")) {
-        setMainImg(<img src="./assets/icons/sun.svg" className="mainImg" alt="Temps dégagé" />);
-      } else {
-        setMainImg(<img src="./assets/icons/sunnight.svg" className="mainImg" alt="Temps dégagé" />);
-      }
-      document.body.style.background = "#1c95ec";
-      metaTheme.content = "#1c95ec";
-    } else if (200 <= data.weather[0].id && data.weather[0].id <= 232) {
-      setMainImg(<img src="./assets/icons/thunder.svg" className="mainImg" alt="Temps orageux" />);
-      document.body.style.background = "#2c3c47";
-      metaTheme.content = "#2c3c47";
-    } else if (600 <= data.weather[0].id && data.weather[0].id <= 622) {
-      setMainImg(<img src="./assets/icons/snow.svg" className="mainImg" alt="Temps neigeux" />);
-      document.body.style.background = "#83939e";
-      metaTheme.content = "#83939e";
-    } else if (701 <= data.weather[0].id && data.weather[0].id <= 781) {
-      if (heureLocale.startsWith("1") || heureLocale.startsWith("06") || heureLocale.startsWith("07") || heureLocale.startsWith("08") || heureLocale.startsWith("09")) {
-        setMainImg(<img src="./assets/icons/haze.svg" className="mainImg" alt="Temps brumeux" />);
-      } else {
-        setMainImg(<img src="./assets/icons/hazenight.svg" className="mainImg" alt="Temps brumeux" />);
-      }
-      document.body.style.background = "#63baf7";
-      metaTheme.content = "#63baf7";
-    } else if (data.weather[0].id === 801) {
-      if (heureLocale.startsWith("1") || heureLocale.startsWith("06") || heureLocale.startsWith("07") || heureLocale.startsWith("08") || heureLocale.startsWith("09")) {
-        setMainImg(<img src="./assets/icons/fewclouds.svg" className="mainImg" alt="Temps partiellement nuageux" />);
-      } else {
-        setMainImg(<img src="./assets/icons/fewcloudsnight.svg" className="mainImg" alt="Temps partiellement nuageux" />);
-      }
-      document.body.style.background = "#41adfa";
-      metaTheme.content = "#41adfa";
-    } else if (802 <= data.weather[0].id && data.weather[0].id <= 804) {
-      setMainImg(<img src="./assets/icons/clouds.svg" className="mainImg" alt="Temps nuageux" />);
-      document.body.style.background = "#3e85b8";
-      metaTheme.content = "#3e85b8";
-    } else if (501 <= data.weather[0].id && data.weather[0].id <= 531) {
-      setMainImg(<img src="./assets/icons/shower.svg" className="mainImg" alt="Temps très pluvieux" />);
-      document.body.style.background = "#2f5069";
-      metaTheme.content = "#2f5069";
+    setNomVille(name);
+    setPays(sys.country);
+    setTemperature(main.temp.toFixed(1) + "°C");
+    setRessenti(main.feels_like.toFixed(1) + "°C");
+    setHumidite(main.humidity + "%");
+    setVent(Math.round(3.6 * wind.speed) + "km/h");
+    setPression(main.pressure + "hPa");
+    const weatherId = weather[0].id;
+    let mainImgSrc, backgroundColor;
+    if (weatherId === 800) {
+      mainImgSrc = heureLocale.startsWith("1") || heureLocale.startsWith("06") || heureLocale.startsWith("07") || heureLocale.startsWith("08") || heureLocale.startsWith("09") ? "./assets/icons/sun.svg" : "./assets/icons/sunnight.svg";
+      backgroundColor = "#1c95ec";
+      metaTheme.setAttribute("content", "#1c95ec");
+    } else if (200 <= weatherId && weatherId <= 232) {
+      mainImgSrc = "./assets/icons/thunder.svg";
+      backgroundColor = "#2c3c47";
+      metaTheme.setAttribute("content", "#2c3c47");
+    } else if (600 <= weatherId && weatherId <= 622) {
+      mainImgSrc = "./assets/icons/snow.svg";
+      backgroundColor = "#83939e";
+      metaTheme.setAttribute("content", "#83939e");
+    } else if (701 <= weatherId && weatherId <= 781) {
+      mainImgSrc = heureLocale.startsWith("1") || heureLocale.startsWith("06") || heureLocale.startsWith("07") || heureLocale.startsWith("08") || heureLocale.startsWith("09") ? "./assets/icons/haze.svg" : "./assets/icons/hazenight.svg";
+      backgroundColor = "#63baf7";
+      metaTheme.setAttribute("content", "#63baf7");
+    } else if (weatherId === 801) {
+      mainImgSrc = heureLocale.startsWith("1") || heureLocale.startsWith("06") || heureLocale.startsWith("07") || heureLocale.startsWith("08") || heureLocale.startsWith("09") ? "./assets/icons/fewclouds.svg" : "./assets/icons/fewcloudsnight.svg";
+      backgroundColor = "#41adfa";
+      metaTheme.setAttribute("content", "#41adfa");
+    } else if (802 <= weatherId && weatherId <= 804) {
+      mainImgSrc = "./assets/icons/clouds.svg";
+      backgroundColor = "#3e85b8";
+      metaTheme.setAttribute("content", "#3e85b8");
+    } else if (501 <= weatherId && weatherId <= 531) {
+      mainImgSrc = "./assets/icons/shower.svg";
+      backgroundColor = "#2f5069";
+      metaTheme.setAttribute("content", "#2f5069");
     } else {
-      setMainImg(<img src="./assets/icons/rain.svg" className="mainImg" alt="Temps pluvieux" />);
-      document.body.style.background = "#386e94";
-      metaTheme.content = "#386e94";
+      mainImgSrc = "./assets/icons/rain.svg";
+      backgroundColor = "#386e94";
+      metaTheme.setAttribute("content", "#386e94");
     }
+    setMainImg(<img src={mainImgSrc} className="mainImg" alt={weather[0].description} />);
+    document.body.style.background = backgroundColor;
     fetchDataForecasts(data2);
   };
 
@@ -167,91 +161,11 @@ function App() {
     const j4 = data.list[23].dt_txt;
     const j5 = data.list[31].dt_txt;
     const j6 = data.list[39].dt_txt;
-    if (t[0] === 800) {
-      setImg2(<img src="./assets/icons/sun.svg" alt="Temps dégagé" />);
-    } else if (200 <= t[0] && t[0] <= 232) {
-      setImg2(<img src="./assets/icons/thunder.svg" alt="Temps orageux" />);
-    } else if (600 <= t[0] && t[0] <= 622) {
-      setImg2(<img src="./assets/icons/snow.svg" alt="Tmps neigeux" />);
-    } else if (701 <= t[0] && t[0] <= 781) {
-      setImg2(<img src="./assets/icons/sun.svg" alt="Temps brumeux" />);
-    } else if (t[0] === 801) {
-      setImg2(<img src="./assets/icons/fewclouds.svg" alt="Temps partiellement nuageux" />);
-    } else if (802 <= t[0] && t[0] <= 804) {
-      setImg2(<img src="./assets/icons/clouds.svg" alt="Temps nuageux" />);
-    } else if (501 <= t[0] && t[0] <= 531) {
-      setImg2(<img src="./assets/icons/shower.svg" alt="Temps très pluvieux" />);
-    } else {
-      setImg2(<img src="./assets/icons/rain.svg" alt="Temps pluvieux" />);
-    }
-    if (t[1] === 800) {
-      setImg3(<img src="./assets/icons/sun.svg" alt="Temps dégagé" />);
-    } else if (200 <= t[1] && t[1] <= 232) {
-      setImg3(<img src="./assets/icons/thunder.svg" alt="Temps orageux" />);
-    } else if (600 <= t[1] && t[1] <= 622) {
-      setImg3(<img src="./assets/icons/snow.svg" alt="Tmps neigeux" />);
-    } else if (701 <= t[1] && t[1] <= 781) {
-      setImg3(<img src="./assets/icons/sun.svg" alt="Temps brumeux" />);
-    } else if (t[1] === 801) {
-      setImg3(<img src="./assets/icons/fewclouds.svg" alt="Temps partiellement nuageux" />);
-    } else if (802 <= t[1] && t[1] <= 804) {
-      setImg3(<img src="./assets/icons/clouds.svg" alt="Temps nuageux" />);
-    } else if (501 <= t[1] && t[1] <= 531) {
-      setImg3(<img src="./assets/icons/shower.svg" alt="Temps très pluvieux" />);
-    } else {
-      setImg3(<img src="./assets/icons/rain.svg" alt="Temps pluvieux" />);
-    }
-    if (t[2] === 800) {
-      setImg4(<img src="./assets/icons/sun.svg" alt="Temps dégagé" />);
-    } else if (200 <= t[2] && t[2] <= 232) {
-      setImg4(<img src="./assets/icons/thunder.svg" alt="Temps orageux" />);
-    } else if (600 <= t[2] && t[2] <= 622) {
-      setImg4(<img src="./assets/icons/snow.svg" alt="Tmps neigeux" />);
-    } else if (701 <= t[2] && t[2] <= 781) {
-      setImg4(<img src="./assets/icons/sun.svg" alt="Temps brumeux" />);
-    } else if (t[2] === 801) {
-      setImg4(<img src="./assets/icons/fewclouds.svg" alt="Temps partiellement nuageux" />);
-    } else if (802 <= t[2] && t[2] <= 804) {
-      setImg4(<img src="./assets/icons/clouds.svg" alt="Temps nuageux" />);
-    } else if (501 <= t[2] && t[2] <= 531) {
-      setImg4(<img src="./assets/icons/shower.svg" alt="Temps très pluvieux" />);
-    } else {
-      setImg4(<img src="./assets/icons/rain.svg" alt="Temps pluvieux" />);
-    }
-    if (t[3] === 800) {
-      setImg5(<img src="./assets/icons/sun.svg" alt="Temps dégagé" />);
-    } else if (200 <= t[3] && t[3] <= 232) {
-      setImg5(<img src="./assets/icons/thunder.svg" alt="Temps orageux" />);
-    } else if (600 <= t[3] && t[3] <= 622) {
-      setImg5(<img src="./assets/icons/snow.svg" alt="Tmps neigeux" />);
-    } else if (701 <= t[3] && t[3] <= 781) {
-      setImg5(<img src="./assets/icons/sun.svg" alt="Temps brumeux" />);
-    } else if (t[3] === 801) {
-      setImg5(<img src="./assets/icons/fewclouds.svg" alt="Temps partiellement nuageux" />);
-    } else if (802 <= t[3] && t[3] <= 804) {
-      setImg5(<img src="./assets/icons/clouds.svg" alt="Temps nuageux" />);
-    } else if (501 <= t[3] && t[3] <= 531) {
-      setImg5(<img src="./assets/icons/shower.svg" alt="Temps très pluvieux" />);
-    } else {
-      setImg5(<img src="./assets/icons/rain.svg" alt="Temps pluvieux" />);
-    }
-    if (t[4] === 800) {
-      setImg6(<img src="./assets/icons/sun.svg" alt="Temps dégagé" />);
-    } else if (200 <= t[4] && t[4] <= 232) {
-      setImg6(<img src="./assets/icons/thunder.svg" alt="Temps orageux" />);
-    } else if (600 <= t[4] && t[4] <= 622) {
-      setImg6(<img src="./assets/icons/snow.svg" alt="Tmps neigeux" />);
-    } else if (701 <= t[4] && t[4] <= 781) {
-      setImg6(<img src="./assets/icons/sun.svg" alt="Temps brumeux" />);
-    } else if (t[4] === 801) {
-      setImg6(<img src="./assets/icons/fewclouds.svg" alt="Temps partiellement nuageux" />);
-    } else if (802 <= t[4] && t[4] <= 804) {
-      setImg6(<img src="./assets/icons/clouds.svg" alt="Temps nuageux" />);
-    } else if (501 <= t[4] && t[4] <= 531) {
-      setImg6(<img src="./assets/icons/shower.svg" alt="Temps très pluvieux" />);
-    } else {
-      setImg6(<img src="./assets/icons/rain.svg" alt="Temps pluvieux" />);
-    }
+    setImg2(getImage(t[0]));
+    setImg3(getImage(t[1]));
+    setImg4(getImage(t[2]));
+    setImg5(getImage(t[3]));
+    setImg6(getImage(t[4]));
     setTemp2(Math.floor(s[0]));
     setTemp3(Math.floor(s[1]));
     setTemp4(Math.floor(s[2]));
@@ -301,6 +215,26 @@ function App() {
     document.body.style.background = "#1c95ec";
     metaTheme.content = "#1c95ec";
   };
+
+  function getImage(number) {
+    if (number === 800) {
+      return <img src="./assets/icons/sun.svg" alt="Temps dégagé" />;
+    } else if (200 <= number && number <= 232) {
+      return <img src="./assets/icons/thunder.svg" alt="Temps orageux" />;
+    } else if (600 <= number && number <= 622) {
+      return <img src="./assets/icons/snow.svg" alt="Tmps neigeux" />;
+    } else if (701 <= number && number <= 781) {
+      return <img src="./assets/icons/sun.svg" alt="Temps brumeux" />;
+    } else if (number === 801) {
+      return <img src="./assets/icons/fewclouds.svg" alt="Temps partiellement nuageux" />;
+    } else if (802 <= number && number <= 804) {
+      return <img src="./assets/icons/clouds.svg" alt="Temps nuageux" />;
+    } else if (501 <= number && number <= 531) {
+      return <img src="./assets/icons/shower.svg" alt="Temps très pluvieux" />;
+    } else {
+      return <img src="./assets/icons/rain.svg" alt="Temps pluvieux" />;
+    }
+  }
 
   return (
     <div className="wrapper">
