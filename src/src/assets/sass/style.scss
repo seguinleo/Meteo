@@ -98,11 +98,28 @@ body {
 .wrapper header #heure {
   color: #ddd;
   float: left;
-  font-size: 1rem
+  font-size: 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
 }
 
 .wrapper header #retour {
-  cursor: pointer
+  color: #c6c6c6;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  transition: .2s;
+
+  &:hover {
+    background: rgba(255, 255, 255, .1)
+  }
 }
 
 .wrapper.active header {
@@ -151,7 +168,7 @@ button {
 input:focus,
 button:focus,
 a:focus {
-  outline: 3px solid rgba(0, 0, 0, .2)
+  outline: 3px solid rgba(0, 0, 0, .5)
 }
 
 .input-part button {
@@ -182,19 +199,19 @@ a:focus {
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-direction: column
+  flex-direction: column;
+
+  .temp {
+    font-size: 2.5rem;
+    font-weight: 700
+  }
 }
 
 .mainImg {
   margin-top: -50px;
   margin-left: -25px;
-  width: 140px;
+  width: 125px;
   vertical-align: middle
-}
-
-.main-info .temp {
-  font-size: 2.5rem;
-  font-weight: 700
 }
 
 .location {
@@ -204,7 +221,7 @@ a:focus {
   text-align: center;
   align-items: center;
   justify-content: center;
-  margin: -10px 10px 20px
+  margin: 1rem 10px
 }
 
 .bottom-details {
@@ -224,11 +241,11 @@ a:focus {
 .column {
   width: 100%;
   align-items: center;
-  justify-content: center
-}
+  justify-content: center;
 
-.column img {
-  margin: 0 0 -10px
+  img {
+    margin: 0 0 -10px
+  }
 }
 
 .details .temp,
@@ -257,18 +274,23 @@ a:focus {
   margin-top: -10px
 }
 
+.custom-tooltip {
+  background: rgba(255, 255, 255, .1);
+  padding: 10px;
+}
+
 .copyright {
   margin-top: 20px;
   color: #ddd;
   align-items: center;
   justify-content: center;
-  font-size: .8rem
-}
-
-.copyright a {
-  margin-left: 4px;
-  color: #fff;
-  text-decoration: none;
   font-size: .8rem;
-  font-weight: 700
+
+  a {
+    margin-left: 4px;
+    color: #fff;
+    text-decoration: none;
+    font-size: .8rem;
+    font-weight: 700
+  }
 }

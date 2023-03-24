@@ -4,6 +4,8 @@ import { RxMagnifyingGlass } from 'react-icons/rx';
 import "./assets/css/style.css";
 
 function App() {
+  'serviceWorker' in navigator && navigator.serviceWorker.register('sw.js');
+
   const [showComponents, setShowComponents] = useState(false);
   const [mainImg, setMainImg] = useState();
   const [ville, setVille] = useState('');
@@ -181,31 +183,13 @@ function App() {
     setJour4(E[day4.getDay()]);
     setJour5(E[day5.getDay()]);
     setJour6(E[day6.getDay()]);
-    const listeDonnees = [{
-      name: data.list[0].dt_txt.substring(11).slice(0, -3),
-      temp: data.list[0].main.temp
-    }, {
-      name: data.list[1].dt_txt.substring(11).slice(0, -3),
-      temp: data.list[1].main.temp
-    }, {
-      name: data.list[2].dt_txt.substring(11).slice(0, -3),
-      temp: data.list[2].main.temp
-    }, {
-      name: data.list[3].dt_txt.substring(11).slice(0, -3),
-      temp: data.list[3].main.temp
-    }, {
-      name: data.list[4].dt_txt.substring(11).slice(0, -3),
-      temp: data.list[4].main.temp
-    }, {
-      name: data.list[5].dt_txt.substring(11).slice(0, -3),
-      temp: data.list[5].main.temp
-    }, {
-      name: data.list[6].dt_txt.substring(11).slice(0, -3),
-      temp: data.list[6].main.temp
-    }, {
-      name: data.list[7].dt_txt.substring(11).slice(0, -3),
-      temp: data.list[7].main.temp
-    }];
+    const listeDonnees = data.list.slice(0, 8).map((item) => {
+      return {
+        name: item.dt_txt.substring(11).slice(0, -3),
+        temp: item.main.temp,
+        weather: item.weather[0]
+      };
+    });
     setDataChart(listeDonnees);
   };
 
@@ -214,6 +198,19 @@ function App() {
     document.body.style.background = "#1c95ec";
     metaTheme.content = "#1c95ec";
   };
+
+  function CustomTooltip({ active, payload, label }) {
+    if (active && payload && payload.length) {
+      const weather = payload[0].payload.weather;
+      return (
+        <div className="custom-tooltip">
+          <p className="label">{`${label} - ${payload[0].value.toFixed(1)}°C`}</p>
+          {getImage(weather.id)}
+        </div>
+      );
+    }
+    return null;
+  }
 
   function getImage(number) {
     if (number === 800) {
@@ -304,20 +301,15 @@ function App() {
           </div>
           <div className="chart-part">
             <div className="graphique">
-              <p className="titreGraph">Températures prochaines 24 heures</p>
+              <p className="titreGraph">Prochaines 24 heures</p>
               <LineChart width={320} height={150} data={dataChart}>
                 <XAxis axisLine={false} tick={false} dataKey="name" />
-                <Tooltip
-                  contentStyle={{ backgroundColor: "rgba(255,255,255,.1)", borderColor: "rgba(255,255,255,.1)" }}
-                  wrapperStyle={{ outline: "none" }}
-                  formatter={(value) => value + "°C"}
-                />
+                <Tooltip content={<CustomTooltip />} wrapperStyle={{ outline: "none" }} />
                 <Line
-                  type="monotone"
                   dataKey="temp"
                   stroke="rgba(255,255,255,.7)"
                   strokeWidth="2"
-                  activeDot={{ r: 4 }}
+                  dot={{ r: 4 }}
                 />
               </LineChart>
             </div>
@@ -378,7 +370,7 @@ function App() {
           </div>
         </>
       )}
-      <span className="copyright">&copy;2020-{new Date().getFullYear()}
+      <span className="copyright">&copy;{new Date().getFullYear()}
         <a href="https://leoseguin.fr/" target="_blank" rel="noreferrer">Léo SEGUIN</a>
       </span>
     </div>
