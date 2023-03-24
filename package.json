@@ -1,0 +1,21 @@
+{
+  "name": "meteo-nextjs",
+  "version": "2.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "eslint": "latest",
+    "eslint-config-next": "latest",
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "dotenv": "latest",
+    "react-icons": "latest",
+    "recharts": "latest"
+  }
+}
