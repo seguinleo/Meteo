@@ -9,7 +9,10 @@ Installation :
 npm i
 ```
 ```
-npm start
+npm run dev
+```
+```
+npm run build
 ```
 
 ![0](https://github.com/PouletEnSlip/Meteo/blob/main/image.png)
