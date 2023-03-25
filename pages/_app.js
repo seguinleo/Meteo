@@ -10,8 +10,6 @@ export default function App({ Component, pageProps }) {
   const [metaTheme, setMetaTheme] = useState('#1c95ec');
   const [mainImg, setMainImg] = useState(null);
   const [ville, setVille] = useState('');
-  const [latitude, setLatitude] = useState(null);
-  const [longitude, setLongitude] = useState(null);
   const [pays, setPays] = useState(null);
   const [temperature, setTemperature] = useState(null);
   const [ressenti, setRessenti] = useState(null);
@@ -35,17 +33,6 @@ export default function App({ Component, pageProps }) {
   const [img4, setImg4] = useState(null);
   const [img5, setImg5] = useState(null);
   const [img6, setImg6] = useState(null);
-
-  useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setLatitude(position.coords.latitude);
-          setLongitude(position.coords.longitude);
-        }
-      );
-    }
-  }, []);
 
   useEffect(() => {
     const metaThemeColor = document.querySelector('#themecolor');
@@ -72,38 +59,41 @@ export default function App({ Component, pageProps }) {
       fetchDataCurrent(currentData, forecastData);
       setShowComponents(true);
     } else {
-      const { error } = data;
-      alert(error);
+      alert("Un problème est survenu lors de la recherche de la ville...");
     }
     document.querySelector('.info-txt').style.display = 'none';
   };
 
-  const geolocation = async (event) => {
-    event.preventDefault();
-    navigator.geolocation.getCurrentPosition(async position => {
-      document.querySelector('.info-txt').style.display = 'block';
-      const response = await fetch('/api/geolocation', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          latitude, longitude
-        })
+  const geolocation = async () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(async position => {
+        document.querySelector('.info-txt').style.display = 'block';
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+        const response = await fetch('/api/geolocation', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            latitude, longitude
+          })
+        });
+        const data = await response.json();
+        if (response.ok) {
+          const { currentData, forecastData } = data;
+          fetchDataCurrent(currentData, forecastData);
+          setShowComponents(true);
+        } else {
+          alert("Un problème est survenu lors de la géolocalisation...");
+        }
+        document.querySelector('.info-txt').style.display = 'none';
+      }, () => {
+        alert("Veuillez activer la géolocalisation de votre appareil pour ce site...");
       });
-      const data = await response.json();
-      if (response.ok) {
-        const { currentData, forecastData } = data;
-        fetchDataCurrent(currentData, forecastData);
-        setShowComponents(true);
-      } else {
-        const { error } = data;
-        alert(error);
-      }
-      document.querySelector('.info-txt').style.display = 'none';
-    }, error => {
-      alert("Veuillez activer la géolocalisation de votre appareil pour ce site...");
-    });
+    } else {
+      alert("Votre navigateur ne supporte pas la géolocalisation...");
+    }
   };
 
   const fetchDataCurrent = async (data, data2) => {
@@ -160,52 +150,35 @@ export default function App({ Component, pageProps }) {
   };
 
   const fetchDataForecasts = async (data) => {
-    const t = [];
-    const s = [];
-    for (let i = 0; i < data.list.length; i++) {
-      const n = data.list[i].dt_txt.substring(11);
-      const r = data.list[i].main.temp;
-      const o = data.list[i].weather[0].id;
-      if (n.indexOf("12:00:00") !== -1) {
-        t.push(o);
-        s.push(r);
-      }
-    }
-    const j2 = data.list[7].dt_txt;
-    const j3 = data.list[15].dt_txt;
-    const j4 = data.list[23].dt_txt;
-    const j5 = data.list[31].dt_txt;
-    const j6 = data.list[39].dt_txt;
-    setImg2(getImage(t[0]));
-    setImg3(getImage(t[1]));
-    setImg4(getImage(t[2]));
-    setImg5(getImage(t[3]));
-    setImg6(getImage(t[4]));
-    setTemp2(Math.floor(s[0]));
-    setTemp3(Math.floor(s[1]));
-    setTemp4(Math.floor(s[2]));
-    setTemp5(Math.floor(s[3]));
-    setTemp6(Math.floor(s[4]));
-    const E = ["DIM", "LUN", "MAR", "MER", "JEU", "VEN", "SAM"];
-    const day2 = new Date(j2.slice(0, -9));
-    const day3 = new Date(j3.slice(0, -9));
-    const day4 = new Date(j4.slice(0, -9));
-    const day5 = new Date(j5.slice(0, -9));
-    const day6 = new Date(j6.slice(0, -9));
-    setJour2(E[day2.getDay()]);
-    setJour3(E[day3.getDay()]);
-    setJour4(E[day4.getDay()]);
-    setJour5(E[day5.getDay()]);
-    setJour6(E[day6.getDay()]);
-    const listeDonnees = data.list.slice(0, 8).map((item) => {
-      return {
-        name: item.dt_txt.substring(11).slice(0, -3),
-        temp: item.main.temp,
-        weather: item.weather[0]
-      };
-    });
-    setDataChart(listeDonnees);
-  };
+    const { list } = data;
+    const forecasts = list.filter(forecast => forecast.dt_txt.includes('12:00:00'));
+    const temperatures = forecasts.map(forecast => Math.floor(forecast.main.temp));
+    const weatherIds = forecasts.map(forecast => forecast.weather[0].id);
+    const days = ['DIM', 'LUN', 'MAR', 'MER', 'JEU', 'VEN', 'SAM'];
+    const dates = forecasts.map(forecast => new Date(forecast.dt_txt.slice(0, -9)));
+    const daysOfWeek = dates.map(date => days[date.getDay()]);
+    const chartData = list.slice(0, 8).map(item => ({
+      name: item.dt_txt.substring(11).slice(0, -3),
+      temp: item.main.temp,
+      weather: item.weather[0]
+    }));
+    setImg2(getImage(weatherIds[0]));
+    setImg3(getImage(weatherIds[1]));
+    setImg4(getImage(weatherIds[2]));
+    setImg5(getImage(weatherIds[3]));
+    setImg6(getImage(weatherIds[4]));
+    setTemp2(temperatures[0]);
+    setTemp3(temperatures[1]);
+    setTemp4(temperatures[2]);
+    setTemp5(temperatures[3]);
+    setTemp6(temperatures[4]);
+    setJour2(daysOfWeek[0]);
+    setJour3(daysOfWeek[1]);
+    setJour4(daysOfWeek[2]);
+    setJour5(daysOfWeek[3]);
+    setJour6(daysOfWeek[4]);
+    setDataChart(chartData);
+  };  
 
   const handleReturn = () => {
     setShowComponents(false);
