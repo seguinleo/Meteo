@@ -192,7 +192,7 @@ export default function App({ Component, pageProps }) {
       const weather = payload[0].payload.weather;
       return (
         <div className="custom-tooltip">
-          <p className="label">{`${label} - ${payload[0].value.toFixed(1)}°C`}</p>
+          <p className="label">{`${label} / ${payload[0].value.toFixed(1)}°C`}</p>
           {getImage(weather.id)}
         </div>
       );
