@@ -7,7 +7,7 @@
 	"theme_color": "#1c95ec",
 	"orientation": "portrait-primary",
 	"lang": "fr",
-	"description": "Météo en temps réel, précise et fiable pour n'importe quelle ville du monde avec prévisions des 5 prochains jours.",
+	"description": "Météo en temps réel, précise et fiable pour n'importe quelle ville du monde avec prévisions.",
 	"icons": [{
 		"src": "assets/icons/icon48.png",
 		"sizes": "48x48",
