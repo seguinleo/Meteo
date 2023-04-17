@@ -112,7 +112,6 @@ export default function App({ Component, pageProps }) {
     const heureLocale = new Date(date.getTime() + (offset + date.getTimezoneOffset()) * 6e4).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
     const weatherId = weather[0].id;
     const ventDeg = wind.deg ? wind.deg : 0;
-    const ventDir = Math.floor((ventDeg / 45) + 0.5) % 8;
     const lever = new Date(data.sys.sunrise * 1000).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
     const coucher = new Date(data.sys.sunset * 1000).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
     setLever(lever);
@@ -125,9 +124,9 @@ export default function App({ Component, pageProps }) {
     !rain ? setRain("0mm") : setRain(rain['1h'] + "mm");
     setRessenti(main.feels_like.toFixed(0) + "°C");
     setHumidite(main.humidity + "%");
-    setVent(Math.round(3.6 * wind.speed) + "km/h");
+    setVent((3.6 * wind.speed).toFixed(0) + "km/h");
     setPression(main.pressure + "hPa");
-    setVentDirection(ventDir * 45);
+    setVentDirection(ventDeg);
     let mainImgSrc, backgroundColor;
     if (weatherId === 800) {
       mainImgSrc = heureLocale.startsWith("1") || heureLocale.startsWith("06") || heureLocale.startsWith("07") || heureLocale.startsWith("08") || heureLocale.startsWith("09") ? "./assets/icons/sun.svg" : "./assets/icons/sunnight.svg";
