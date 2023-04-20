@@ -59,7 +59,7 @@ export default function App({ Component, pageProps }) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        ville
+        ville.trim()
       })
     });
     const data = await response.json();
@@ -282,7 +282,7 @@ export default function App({ Component, pageProps }) {
                     maxLength="40"
                     aria-label="Rechercher"
                     value={ville}
-                    onChange={(event) => setVille(event.target.value.trim())}
+                    onChange={(event) => setVille(event.target.value)}
                     required
                   />
                   <button type="submit">
