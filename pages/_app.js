@@ -282,7 +282,7 @@ export default function App({ Component, pageProps }) {
                     maxLength="40"
                     aria-label="Rechercher"
                     value={ville}
-                    onChange={(event) => setVille(event.target.value)}
+                    onChange={(event) => setVille(event.target.value.trim())}
                     required
                   />
                   <button type="submit">
