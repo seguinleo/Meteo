@@ -59,7 +59,7 @@ export default function App({ Component, pageProps }) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        ville.trim()
+        ville
       })
     });
     const data = await response.json();
