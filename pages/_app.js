@@ -53,13 +53,14 @@ export default function App({ Component, pageProps }) {
   const handleSubmit = async (event) => {
     event.preventDefault();
     document.querySelector('.info-txt').style.display = 'block';
+    const villeTrim = ville.trim();
     const response = await fetch('/api/search', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        ville
+        villeTrim
       })
     });
     const data = await response.json();
@@ -120,46 +121,55 @@ export default function App({ Component, pageProps }) {
     setVille(name);
     localStorage.setItem('ville', name);
     setPays(sys.country);
-    setTemperature(main.temp.toFixed(1) + "°C");
-    !rain ? setRain("0mm") : setRain(rain['1h'] + "mm");
-    setRessenti(main.feels_like.toFixed(0) + "°C");
-    setHumidite(main.humidity + "%");
-    setVent((3.6 * wind.speed).toFixed(0) + "km/h");
-    setPression(main.pressure + "hPa");
+    setTemperature(`${main.temp.toFixed(1)}°C`);
+    !rain ? setRain("0mm") : setRain(`${rain['1h']}mm`);
+    setRessenti(`${main.feels_like.toFixed(0)}°C`);
+    setHumidite(`${main.humidity}%`);
+    setVent(`${(3.6 * wind.speed).toFixed(0)}km/h`);
+    setPression(`${main.pressure}hPa`);
     setVentDirection(ventDeg + 180);
     let mainImgSrc, backgroundColor;
-    if (weatherId === 800) {
-      mainImgSrc = heureLocale.startsWith("1") || heureLocale.startsWith("06") || heureLocale.startsWith("07") || heureLocale.startsWith("08") || heureLocale.startsWith("09") ? "./assets/icons/sun.svg" : "./assets/icons/sunnight.svg";
-      backgroundColor = "#1c95ec";
-      setMetaTheme("#1c95ec");
-    } else if (200 <= weatherId && weatherId <= 232) {
-      mainImgSrc = "./assets/icons/thunder.svg";
-      backgroundColor = "#2c3c47";
-      setMetaTheme("#2c3c47");
-    } else if (600 <= weatherId && weatherId <= 622) {
-      mainImgSrc = "./assets/icons/snow.svg";
-      backgroundColor = "#83939e";
-      setMetaTheme("#83939e");
-    } else if (701 <= weatherId && weatherId <= 781) {
-      mainImgSrc = heureLocale.startsWith("1") || heureLocale.startsWith("06") || heureLocale.startsWith("07") || heureLocale.startsWith("08") || heureLocale.startsWith("09") ? "./assets/icons/haze.svg" : "./assets/icons/hazenight.svg";
-      backgroundColor = "#63baf7";
-      setMetaTheme("#63baf7");
-    } else if (weatherId === 801) {
-      mainImgSrc = heureLocale.startsWith("1") || heureLocale.startsWith("06") || heureLocale.startsWith("07") || heureLocale.startsWith("08") || heureLocale.startsWith("09") ? "./assets/icons/fewclouds.svg" : "./assets/icons/fewcloudsnight.svg";
-      backgroundColor = "#41adfa";
-      setMetaTheme("#41adfa");
-    } else if (802 <= weatherId && weatherId <= 804) {
-      mainImgSrc = "./assets/icons/clouds.svg";
-      backgroundColor = "#3e85b8";
-      setMetaTheme("#3e85b8");
-    } else if (501 <= weatherId && weatherId <= 531) {
-      mainImgSrc = "./assets/icons/shower.svg";
-      backgroundColor = "#2f5069";
-      setMetaTheme("#2f5069");
-    } else {
-      mainImgSrc = "./assets/icons/rain.svg";
-      backgroundColor = "#386e94";
-      setMetaTheme("#386e94");
+    switch (weatherId) {
+      case 800:
+        mainImgSrc = heureLocale.startsWith("1") || heureLocale.startsWith("06") || heureLocale.startsWith("07") || heureLocale.startsWith("08") || heureLocale.startsWith("09") ? "./assets/icons/sun.svg" : "./assets/icons/sunnight.svg";
+        backgroundColor = "#1c95ec";
+        setMetaTheme("#1c95ec");
+        break;
+      case (200 <= weatherId && weatherId <= 232):
+        mainImgSrc = "./assets/icons/thunder.svg";
+        backgroundColor = "#2c3c47";
+        setMetaTheme("#2c3c47");
+        break;
+      case (600 <= weatherId && weatherId <= 622):
+        mainImgSrc = "./assets/icons/snow.svg";
+        backgroundColor = "#83939e";
+        setMetaTheme("#83939e");
+        break;
+      case (701 <= weatherId && weatherId <= 781):
+        mainImgSrc = heureLocale.startsWith("1") || heureLocale.startsWith("06") || heureLocale.startsWith("07") || heureLocale.startsWith("08") || heureLocale.startsWith("09") ? "./assets/icons/haze.svg" : "./assets/icons/hazenight.svg";
+        backgroundColor = "#63baf7";
+        setMetaTheme("#63baf7");
+        break;
+      case 801:
+        mainImgSrc = heureLocale.startsWith("1") || heureLocale.startsWith("06") || heureLocale.startsWith("07") || heureLocale.startsWith("08") || heureLocale.startsWith("09") ? "./assets/icons/fewclouds.svg" : "./assets/icons/fewcloudsnight.svg";
+        backgroundColor = "#41adfa";
+        setMetaTheme("#41adfa");
+        break;
+      case (802 <= weatherId && weatherId <= 804):
+        mainImgSrc = "./assets/icons/clouds.svg";
+        backgroundColor = "#3e85b8";
+        setMetaTheme("#3e85b8");
+        break;
+      case (501 <= weatherId && weatherId <= 531):
+        mainImgSrc = "./assets/icons/shower.svg";
+        backgroundColor = "#2f5069";
+        setMetaTheme("#2f5069");
+        break;
+      default:
+        mainImgSrc = "./assets/icons/rain.svg";
+        backgroundColor = "#386e94";
+        setMetaTheme("#386e94");
+        break;
     }
     setMainImg(<Image src={mainImgSrc} className="mainImg" alt={weather[0].description} width={125} height={125} />);
     document.body.style.background = backgroundColor;
@@ -235,23 +245,24 @@ export default function App({ Component, pageProps }) {
   }
 
   function getImage(number) {
-    if (number === 800) {
-      return <Image src="./assets/icons/sun.svg" alt="Temps dégagé" width={60} height={60} />;
-    } else if (200 <= number && number <= 232) {
-      return <Image src="./assets/icons/thunder.svg" alt="Temps orageux" width={60} height={60} />;
-    } else if (600 <= number && number <= 622) {
-      return <Image src="./assets/icons/snow.svg" alt="Tmps neigeux" width={60} height={60} />;
-    } else if (701 <= number && number <= 781) {
-      return <Image src="./assets/icons/sun.svg" alt="Temps brumeux" width={60} height={60} />;
-    } else if (number === 801) {
-      return <Image src="./assets/icons/fewclouds.svg" alt="Temps partiellement nuageux" width={60} height={60} />;
-    } else if (802 <= number && number <= 804) {
-      return <Image src="./assets/icons/clouds.svg" alt="Temps nuageux" width={60} height={60} />;
-    } else if (501 <= number && number <= 531) {
-      return <Image src="./assets/icons/shower.svg" alt="Temps très pluvieux" width={60} height={60} />;
-    } else {
-      return <Image src="./assets/icons/rain.svg" alt="Temps pluvieux" width={60} height={60} />;
-    }
+    switch (number) {
+      case 800:
+        return <Image src="./assets/icons/sun.svg" alt="Temps dégagé" width={60} height={60} />;
+      case (200 <= number && number <= 232):
+        return <Image src="./assets/icons/thunder.svg" alt="Temps orageux" width={60} height={60} />;
+      case (600 <= number && number <= 622):
+        return <Image src="./assets/icons/snow.svg" alt="Tmps neigeux" width={60} height={60} />;
+      case (701 <= number && number <= 781):
+        return <Image src="./assets/icons/sun.svg" alt="Temps brumeux" width={60} height={60} />;
+      case 801:
+        return <Image src="./assets/icons/fewclouds.svg" alt="Temps partiellement nuageux" width={60} height={60} />;
+      case (802 <= number && number <= 804):
+        return <Image src="./assets/icons/clouds.svg" alt="Temps nuageux" width={60} height={60} />;
+      case (501 <= number && number <= 531):
+        return <Image src="./assets/icons/shower.svg" alt="Temps très pluvieux" width={60} height={60} />;
+      default:
+        return <Image src="./assets/icons/rain.svg" alt="Temps pluvieux" width={60} height={60} />;
+    }    
   }
 
   return (

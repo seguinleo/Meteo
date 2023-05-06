@@ -5,8 +5,7 @@ const fetchWeatherData = async (latitude, longitude) => {
     fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&units=metric&appid=${key}`)
   ]);
   if (!currentResponse.ok || !forecastResponse.ok) {
-    const error = "Erreur lors de la récupération des données météo. Veuillez réessayer plus tard...";
-    throw new Error(error);
+    throw new Error("Erreur lors de la récupération des données météo. Veuillez réessayer plus tard...");
   }
   const [currentData, forecastData] = await Promise.all([
     currentResponse.json(),

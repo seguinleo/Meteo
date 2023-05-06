@@ -9,15 +9,15 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "next": "^13.3.0",
+    "next": "^13.4.1",
     "next-pwa": "^5.6.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.8.0",
     "recharts": "^2.5.0",
     "dotenv": "^16.0.3",
-    "eslint": "^8.38.0",
-    "eslint-config-next": "^13.3.0"
+    "eslint": "^8.40.0",
+    "eslint-config-next": "^13.4.1"
   },
   "description": "![Vercel](https://vercelbadge.vercel.app/api/pouletenslip/meteo)",
   "main": "next.config.js",
