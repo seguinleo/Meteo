@@ -131,42 +131,42 @@ export default function App({ Component, pageProps }) {
     let mainImgSrc, backgroundColor;
     switch (weatherId) {
       case 800:
-        mainImgSrc = heureLocale.startsWith("1") || heureLocale.startsWith("06") || heureLocale.startsWith("07") || heureLocale.startsWith("08") || heureLocale.startsWith("09") ? "./assets/icons/sun.svg" : "./assets/icons/sunnight.svg";
+        mainImgSrc = heureLocale.startsWith("1") || heureLocale.startsWith("06") || heureLocale.startsWith("07") || heureLocale.startsWith("08") || heureLocale.startsWith("09") ? "/assets/icons/sun.svg" : "/assets/icons/sunnight.svg";
         backgroundColor = "#1c95ec";
         setMetaTheme("#1c95ec");
         break;
       case (200 <= weatherId && weatherId <= 232):
-        mainImgSrc = "./assets/icons/thunder.svg";
+        mainImgSrc = "/assets/icons/thunder.svg";
         backgroundColor = "#2c3c47";
         setMetaTheme("#2c3c47");
         break;
       case (600 <= weatherId && weatherId <= 622):
-        mainImgSrc = "./assets/icons/snow.svg";
+        mainImgSrc = "/assets/icons/snow.svg";
         backgroundColor = "#83939e";
         setMetaTheme("#83939e");
         break;
       case (701 <= weatherId && weatherId <= 781):
-        mainImgSrc = heureLocale.startsWith("1") || heureLocale.startsWith("06") || heureLocale.startsWith("07") || heureLocale.startsWith("08") || heureLocale.startsWith("09") ? "./assets/icons/haze.svg" : "./assets/icons/hazenight.svg";
+        mainImgSrc = heureLocale.startsWith("1") || heureLocale.startsWith("06") || heureLocale.startsWith("07") || heureLocale.startsWith("08") || heureLocale.startsWith("09") ? "/assets/icons/haze.svg" : "/assets/icons/hazenight.svg";
         backgroundColor = "#63baf7";
         setMetaTheme("#63baf7");
         break;
       case 801:
-        mainImgSrc = heureLocale.startsWith("1") || heureLocale.startsWith("06") || heureLocale.startsWith("07") || heureLocale.startsWith("08") || heureLocale.startsWith("09") ? "./assets/icons/fewclouds.svg" : "./assets/icons/fewcloudsnight.svg";
+        mainImgSrc = heureLocale.startsWith("1") || heureLocale.startsWith("06") || heureLocale.startsWith("07") || heureLocale.startsWith("08") || heureLocale.startsWith("09") ? "/assets/icons/fewclouds.svg" : "/assets/icons/fewcloudsnight.svg";
         backgroundColor = "#41adfa";
         setMetaTheme("#41adfa");
         break;
       case (802 <= weatherId && weatherId <= 804):
-        mainImgSrc = "./assets/icons/clouds.svg";
+        mainImgSrc = "/assets/icons/clouds.svg";
         backgroundColor = "#3e85b8";
         setMetaTheme("#3e85b8");
         break;
       case (501 <= weatherId && weatherId <= 531):
-        mainImgSrc = "./assets/icons/shower.svg";
+        mainImgSrc = "/assets/icons/shower.svg";
         backgroundColor = "#2f5069";
         setMetaTheme("#2f5069");
         break;
       default:
-        mainImgSrc = "./assets/icons/rain.svg";
+        mainImgSrc = "/assets/icons/rain.svg";
         backgroundColor = "#386e94";
         setMetaTheme("#386e94");
         break;
@@ -247,21 +247,21 @@ export default function App({ Component, pageProps }) {
   function getImage(number) {
     switch (number) {
       case 800:
-        return <Image src="./assets/icons/sun.svg" alt="Temps dégagé" width={60} height={60} />;
+        return <Image src="/assets/icons/sun.svg" alt="Temps dégagé" width={60} height={60} />;
       case (200 <= number && number <= 232):
-        return <Image src="./assets/icons/thunder.svg" alt="Temps orageux" width={60} height={60} />;
+        return <Image src="/assets/icons/thunder.svg" alt="Temps orageux" width={60} height={60} />;
       case (600 <= number && number <= 622):
-        return <Image src="./assets/icons/snow.svg" alt="Tmps neigeux" width={60} height={60} />;
+        return <Image src="/assets/icons/snow.svg" alt="Tmps neigeux" width={60} height={60} />;
       case (701 <= number && number <= 781):
-        return <Image src="./assets/icons/sun.svg" alt="Temps brumeux" width={60} height={60} />;
+        return <Image src="/assets/icons/sun.svg" alt="Temps brumeux" width={60} height={60} />;
       case 801:
-        return <Image src="./assets/icons/fewclouds.svg" alt="Temps partiellement nuageux" width={60} height={60} />;
+        return <Image src="/assets/icons/fewclouds.svg" alt="Temps partiellement nuageux" width={60} height={60} />;
       case (802 <= number && number <= 804):
-        return <Image src="./assets/icons/clouds.svg" alt="Temps nuageux" width={60} height={60} />;
+        return <Image src="/assets/icons/clouds.svg" alt="Temps nuageux" width={60} height={60} />;
       case (501 <= number && number <= 531):
-        return <Image src="./assets/icons/shower.svg" alt="Temps très pluvieux" width={60} height={60} />;
+        return <Image src="/assets/icons/shower.svg" alt="Temps très pluvieux" width={60} height={60} />;
       default:
-        return <Image src="./assets/icons/rain.svg" alt="Temps pluvieux" width={60} height={60} />;
+        return <Image src="/assets/icons/rain.svg" alt="Temps pluvieux" width={60} height={60} />;
     }    
   }
 
