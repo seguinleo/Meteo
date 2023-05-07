@@ -1,5 +1,5 @@
 {
-	"name": "Météo – Léo SEGUIN",
+	"name": "Météo \u2013 Léo SEGUIN",
 	"short_name": "Météo",
 	"start_url": "/",
 	"display": "standalone",
@@ -9,35 +9,35 @@
 	"lang": "fr",
 	"description": "Météo en temps réel, précise et fiable pour n'importe quelle ville du monde avec prévisions.",
 	"icons": [{
-		"src": "assets/icons/icon48.png",
+		"src": "/assets/icons/icon48.png",
 		"sizes": "48x48",
 		"type": "image/png"
 	},{
-		"src": "assets/icons/icon72.png",
+		"src": "/assets/icons/icon72.png",
 		"sizes": "72x72",
 		"type": "image/png"
 	},{
-		"src": "assets/icons/icon96.png",
+		"src": "/assets/icons/icon96.png",
 		"sizes": "96x96",
 		"type": "image/png"
 	},{
-		"src": "assets/icons/icon128.png",
+		"src": "/assets/icons/icon128.png",
 		"sizes": "128x128",
 		"type": "image/png"
 	},{
-		"src": "assets/icons/icon144.png",
+		"src": "/assets/icons/icon144.png",
 		"sizes": "144x144",
 		"type": "image/png"
 	},{
-		"src": "assets/icons/icon152.png",
+		"src": "/assets/icons/icon152.png",
 		"sizes": "152x152",
 		"type": "image/png"
 	},{
-		"src": "assets/icons/icon192.png",
+		"src": "/assets/icons/icon192.png",
 		"sizes": "192x192",
 		"type": "image/png"
 	},{
-		"src": "assets/icons/icon512.png",
+		"src": "/assets/icons/icon512.png",
 		"sizes": "512x512",
 		"type": "image/png",
 		"purpose": "maskable"

@@ -71,7 +71,7 @@ header {
     justify-content: center;
     height: 40px
   }
-  
+
   #retour {
     cursor: pointer;
     display: inline-flex;
@@ -79,9 +79,11 @@ header {
     justify-content: center;
     width: 40px;
     height: 40px;
+    border: none;
+    background: none;
     border-radius: 50%;
     transition: .2s;
-  
+
     &:hover {
       background: rgba(255, 255, 255, .1)
     }
@@ -119,7 +121,7 @@ header {
     text-align: center;
     background: none;
   }
-  
+
   button {
     cursor: pointer;
     background: rgba(0, 0, 0, .3);
@@ -204,7 +206,7 @@ header {
     backdrop-filter: blur(5px);
     border-radius: 5px;
     padding: 5px 1rem;
-  
+
     * {
       vertical-align: middle
     }
@@ -241,7 +243,7 @@ header {
   align-items: center;
   justify-content: center;
   margin: 2rem;
-  
+
   p {
     margin: 0 1rem;
 
@@ -251,6 +253,22 @@ header {
       vertical-align: middle
     }
   }
+}
+
+#errorNotification {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  right: 1rem;
+  margin: 1rem auto;
+  text-align: center;
+  max-width: 300px;
+  background-color: #a93b3b;
+  color: #fff;
+  padding: 10px;
+  border-radius: 5px;
+  display: none;
+  z-index: 999
 }
 
 .bold {
