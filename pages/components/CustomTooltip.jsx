@@ -29,16 +29,16 @@ function CustomTooltip({
           %
         </p>
         <p>
+          Vent
+          {' '}
           <svg width="18" height="18" viewBox="0 0 50 50">
             <path d="M25 5 L40 45 L25 35 L10 45 Z" fill="currentColor" transform={`rotate(${windDeg + 180}, 25, 25)`} />
           </svg>
-          Vent
-          {' '}
           {(3.6 * wind).toFixed(0)}
           km/h
         </p>
         <p>
-          Pluie
+          Pluie (proba.)
           {' '}
           {(rain * 100).toFixed(0)}
           %

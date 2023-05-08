@@ -120,6 +120,10 @@ header {
     border: 2px solid #ffffff;
     text-align: center;
     background: none;
+
+    &::placeholder {
+      opacity: .7
+    }
   }
 
   button {
@@ -140,8 +144,7 @@ header {
   margin-bottom: 1rem;
 
   img {
-    margin: auto;
-    margin-right: 2rem
+    margin: .5rem 2rem
   }
 
   .temp {
@@ -189,7 +192,6 @@ header {
 }
 
 .graphique {
-  margin: 25px auto 0;
   text-align: center;
 
   .titreGraph {
@@ -212,7 +214,7 @@ header {
     }
 
     img {
-      margin: -1rem auto
+      margin: 0 .5rem
     }
   }
 }
@@ -224,7 +226,7 @@ header {
   justify-content: center;
 
   img {
-    margin: 0 0 -10px
+    margin: 10px
   }
 }
 
@@ -242,7 +244,7 @@ header {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 2rem;
+  margin: 1.5rem;
 
   p {
     margin: 0 1rem;
@@ -264,7 +266,7 @@ header {
   text-align: center;
   max-width: 300px;
   background-color: #a93b3b;
-  color: #fff;
+  color: #ffffff;
   padding: 10px;
   border-radius: 5px;
   display: none;
