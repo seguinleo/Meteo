@@ -6,7 +6,7 @@ Weather site and PWA developed with React and Next.js and [OpenWeatherMapAPI](ht
 
 User can search a city by name or use its actual location.
 A chart for forecasts temperatures is displayed with [Recharts](https://recharts.org/en-US/).
-
+Weather icons from [Apple](https://support.apple.com/fr-fr/guide/iphone/iph4305794fb/15.0/ios/15.0).
 The website uses SSR requests with Node server.
 
 Installation:
@@ -19,4 +19,4 @@ npm run dev
 
 ![0](https://github.com/PouletEnSlip/Meteo/blob/main/image.png)
 
-Made by **PouletEnSlip** © 2023 - All Rights Reserved
+_©PouletEnSlip_
