@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import {
   LineChart, Line, XAxis, YAxis, Tooltip,
 } from 'recharts';
-import { Analytics } from '@vercel/analytics/dist/react';
+import { Analytics } from '@vercel/analytics/';
 import { RxMagnifyingGlass } from 'react-icons/rx';
 import { BsFillSunriseFill, BsFillSunsetFill } from 'react-icons/bs';
 import { RiFahrenheitFill, RiCelsiusFill } from 'react-icons/ri';
