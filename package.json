@@ -9,7 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@vercel/analytics": "^1.0.1",
     "dotenv": "^16.0.3",
     "eslint-config-next": "^13.4.1",
     "next": "^13.4.1",
