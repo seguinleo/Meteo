@@ -72,7 +72,7 @@ header {
     height: 40px
   }
 
-  #retour {
+  button {
     cursor: pointer;
     display: inline-flex;
     align-items: center;
@@ -195,6 +195,7 @@ header {
   text-align: center;
 
   .titreGraph {
+    font-size: .8rem;
     opacity: .8
   }
 
@@ -203,7 +204,7 @@ header {
   }
 
   .custom-tooltip {
-    background: rgba(255, 255, 255, .1);
+    background: rgba(50, 50, 50, .4);
     -webkit-backdrop-filter: blur(5px);
     backdrop-filter: blur(5px);
     border-radius: 5px;

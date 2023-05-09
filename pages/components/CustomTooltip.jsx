@@ -2,7 +2,7 @@
 import React from 'react';
 
 function CustomTooltip({
-  active, payload, label, getImage,
+  active, payload, label, getImage, temperature,
 }) {
   if (active && payload && payload.length) {
     const { weather } = payload[0].payload;
@@ -20,7 +20,7 @@ function CustomTooltip({
           Température
           {' '}
           {payload[0].value.toFixed(0)}
-          °C
+          {temperature.endsWith('C') ? '°C' : '°F'}
         </p>
         <p>
           Humidité
@@ -35,7 +35,7 @@ function CustomTooltip({
             <path d="M25 5 L40 45 L25 35 L10 45 Z" fill="currentColor" transform={`rotate(${windDeg + 180}, 25, 25)`} />
           </svg>
           {(3.6 * wind).toFixed(0)}
-          km/h
+          {temperature.endsWith('C') ? 'km/h' : 'mph'}
         </p>
         <p>
           Pluie (proba.)

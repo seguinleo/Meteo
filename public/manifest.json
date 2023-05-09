@@ -3,8 +3,7 @@
 	"short_name": "Météo",
 	"start_url": "/",
 	"display": "standalone",
-	"background_color": "#1c95ec",
-	"theme_color": "#1c95ec",
+	
 	"orientation": "portrait-primary",
 	"lang": "fr",
 	"description": "Météo en temps réel, précise et fiable pour n'importe quelle ville du monde avec prévisions.",
