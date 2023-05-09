@@ -357,7 +357,7 @@ export default function App({ Component, pageProps }) {
     if (temperature.endsWith('C')) {
       setTemperature(`${(temperature.slice(0, -2) * 1.8 + 32).toFixed(1)}°F`);
       setRessenti(`${(ressenti.slice(0, -2) * 1.8 + 32).toFixed(0)}°F`);
-      setVent(`${(vent.slice(0, -5) / 1.609).toFixed(0)}mph`);
+      setVent(`${(vent.slice(0, -4) / 1.609).toFixed(0)}mph`);
       setTemp2(`${(temp2.slice(0, -2) * 1.8 + 32).toFixed(0)}°F`);
       setTemp3(`${(temp3.slice(0, -2) * 1.8 + 32).toFixed(0)}°F`);
       setTemp4(`${(temp4.slice(0, -2) * 1.8 + 32).toFixed(0)}°F`);
@@ -371,7 +371,7 @@ export default function App({ Component, pageProps }) {
     } else {
       setTemperature(`${((temperature.slice(0, -2) - 32) / 1.8).toFixed(1)}°C`);
       setRessenti(`${((ressenti.slice(0, -2) - 32) / 1.8).toFixed(0)}°C`);
-      setVent(`${(vent.slice(0, -4) * 1.609).toFixed(0)}km/h`);
+      setVent(`${(vent.slice(0, -3) * 1.609).toFixed(0)}km/h`);
       setTemp2(`${((temp2.slice(0, -2) - 32) / 1.8).toFixed(0)}°C`);
       setTemp3(`${((temp3.slice(0, -2) - 32) / 1.8).toFixed(0)}°C`);
       setTemp4(`${((temp4.slice(0, -2) - 32) / 1.8).toFixed(0)}°C`);
