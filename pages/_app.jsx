@@ -199,7 +199,7 @@ export default function App({ Component, pageProps }) {
       mainImgSrc = '/assets/icons/shower.png';
       backgroundColor = '#2c3c47';
       setMetaTheme('#2c3c47');
-    } else if ( weatherId === 600) {
+    } else if (weatherId === 600) {
       mainImgSrc = '/assets/icons/snow.png';
       backgroundColor = '#879eb0';
       setMetaTheme('#879eb0');
