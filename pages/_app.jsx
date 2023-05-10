@@ -255,7 +255,7 @@ export default function App({ Component, pageProps }) {
       }
       backgroundColor = '#5080a3';
       setMetaTheme('#5080a3');
-    } else if (weatherId === 803 ||weatherId === 804) {
+    } else if (weatherId === 803 || weatherId === 804) {
       mainImgSrc = '/assets/icons/clouds.png';
       backgroundColor = '#496c85';
       setMetaTheme('#496c85');
