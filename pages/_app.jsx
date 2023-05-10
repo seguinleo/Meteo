@@ -76,10 +76,10 @@ export default function App({ Component, pageProps }) {
     if (number >= 300 && number <= 321) {
       return <Image src="/assets/icons/drizzle.png" alt="Bruine" width={48} height={45} />;
     }
-    if (number === 501) {
+    if (number === 500) {
       return <Image src="/assets/icons/rain.png" alt="Pluie" width={48} height={45} />;
     }
-    if (number >= 502 && number <= 504) {
+    if (number >= 501 && number <= 504) {
       return <Image src="/assets/icons/shower.png" alt="Pluie forte" width={48} height={45} />;
     }
     if (number === 511) {
@@ -91,7 +91,7 @@ export default function App({ Component, pageProps }) {
     if (number === 600) {
       return <Image src="/assets/icons/snow.png" alt="Neige" width={48} height={45} />;
     }
-    if (number >= 601 && number <= 602) {
+    if (number === 601 || number === 602) {
       return <Image src="/assets/icons/blizzard.png" alt="Neige forte" width={48} height={45} />;
     }
     if (number >= 611 && number <= 616) {
@@ -115,10 +115,10 @@ export default function App({ Component, pageProps }) {
     if (number === 800) {
       return <Image src="/assets/icons/sun.png" alt="Soleil" width={48} height={45} />;
     }
-    if (number >= 801 && number <= 802) {
+    if (number === 801 || number === 802) {
       return <Image src="/assets/icons/fewclouds.png" alt="Quelques nuages" width={48} height={45} />;
     }
-    if (number >= 803 && number <= 804) {
+    if (number === 803 || number === 804) {
       return <Image src="/assets/icons/clouds.png" alt="Nuages" width={48} height={45} />;
     }
     return <Image src="/assets/icons/clouds.png" alt="Nuages" width={48} height={45} />;
@@ -183,11 +183,11 @@ export default function App({ Component, pageProps }) {
       }
       backgroundColor = '#425b6b';
       setMetaTheme('#425b6b');
-    } else if (weatherId === 501) {
+    } else if (weatherId === 500) {
       mainImgSrc = '/assets/icons/rain.png';
       backgroundColor = '#3d5669';
       setMetaTheme('#3d5669');
-    } else if (weatherId >= 502 && weatherId <= 504) {
+    } else if (weatherId >= 501 && weatherId <= 504) {
       mainImgSrc = '/assets/icons/shower.png';
       backgroundColor = '#2c3c47';
       setMetaTheme('#2c3c47');
@@ -203,7 +203,7 @@ export default function App({ Component, pageProps }) {
       mainImgSrc = '/assets/icons/snow.png';
       backgroundColor = '#879eb0';
       setMetaTheme('#879eb0');
-    } else if (weatherId >= 601 && weatherId <= 602) {
+    } else if (weatherId === 601 || weatherId === 602) {
       mainImgSrc = '/assets/icons/blizzard.png';
       backgroundColor = '#657682';
       setMetaTheme('#657682');
@@ -247,7 +247,7 @@ export default function App({ Component, pageProps }) {
       }
       backgroundColor = '#1c95ec';
       setMetaTheme('#1c95ec');
-    } else if (weatherId >= 801 && weatherId <= 802) {
+    } else if (weatherId === 801 || weatherId === 802) {
       if (heureLocale > sunUp && heureLocale < sunDown) {
         mainImgSrc = '/assets/icons/fewclouds.png';
       } else {
@@ -255,7 +255,7 @@ export default function App({ Component, pageProps }) {
       }
       backgroundColor = '#5080a3';
       setMetaTheme('#5080a3');
-    } else if (weatherId >= 803 && weatherId <= 804) {
+    } else if (weatherId === 803 ||weatherId === 804) {
       mainImgSrc = '/assets/icons/clouds.png';
       backgroundColor = '#496c85';
       setMetaTheme('#496c85');
