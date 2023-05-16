@@ -438,32 +438,30 @@ export default function App({ Component, pageProps }) {
         <div id="errorNotification">{error}</div>
         <main>
           {!showComponents && (
-            <section>
-              <form onSubmit={handleSubmit}>
-                <div className="input-part">
-                  <p className="info-txt">Chargement...</p>
-                  <input
-                    type="text"
-                    placeholder="Paris, FR"
-                    maxLength="40"
-                    aria-label="Rechercher"
-                    value={ville}
-                    onChange={(event) => setVille(event.target.value)}
-                    required
-                  />
-                  <button type="submit">
-                    Rechercher
-                  </button>
-                  <div className="separator" />
-                  <button type="button" onClick={geolocation}>
-                    Localisation actuelle
-                  </button>
-                </div>
-              </form>
-            </section>
+            <form onSubmit={handleSubmit}>
+              <div className="input-part">
+                <p className="info-txt">Chargement...</p>
+                <input
+                  type="text"
+                  placeholder="Paris, FR"
+                  maxLength="40"
+                  aria-label="Rechercher"
+                  value={ville}
+                  onChange={(event) => setVille(event.target.value)}
+                  required
+                />
+                <button type="submit">
+                  Rechercher
+                </button>
+                <div className="separator" />
+                <button type="button" onClick={geolocation}>
+                  Localisation actuelle
+                </button>
+              </div>
+            </form>
           )}
           {showComponents && (
-            <section>
+            <>
               <div className="current-part">
                 <div className="main-info">
                   <div className="temp">
@@ -579,7 +577,7 @@ export default function App({ Component, pageProps }) {
                   </p>
                 </div>
               </div>
-            </section>
+            </>
           )}
         </main>
         <Component {...pageProps} />
