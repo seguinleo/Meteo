@@ -432,7 +432,7 @@ export default function App({ Component, pageProps }) {
               </button>
             </>
           ) : (
-            <span>Météo</span>
+            <h1>Météo</h1>
           )}
         </header>
         <div id="errorNotification">{error}</div>
