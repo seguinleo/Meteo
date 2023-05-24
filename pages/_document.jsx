@@ -5,7 +5,7 @@ import {
 
 export default function Document() {
   return (
-    <Html lang="fr">
+    <Html lang="fr-FR">
       <Head>
         <meta name="theme-color" className="themecolor" content="#1c95ec" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
