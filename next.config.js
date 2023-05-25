@@ -8,6 +8,10 @@ const nextConfig = {
       source: '/(.*)',
       headers: [
         {
+          key: 'access-control-allow-origin',
+          value: 'https://meteo-leoseguin.vercel.app/',
+        },
+        {
           key: 'content-security-policy',
           value: 'upgrade-insecure-requests; default-src \'none\'; base-uri \'none\'; child-src \'none\'; connect-src \'self\'; frame-src \'none\'; frame-ancestors \'none\'; font-src \'self\'; form-action \'self\'; img-src \'self\'; manifest-src \'self\'; media-src \'none\'; object-src \'none\'; script-src \'self\'; style-src \'self\'; worker-src \'self\';',
         },
@@ -35,6 +39,10 @@ const nextConfig = {
           key: 'x-content-type-options',
           value: 'nosniff',
         },
+        {
+          key: 'x-frame-options',
+          value: 'deny',
+        }
       ],
     },
   ],
