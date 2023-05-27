@@ -19,7 +19,7 @@ export default function Document() {
         <meta property="og:title" content="Météo &#8211; Léo SEGUIN" />
         <meta property="og:description" content="Météo en temps réel, précise et fiable pour n'importe quelle ville du monde avec prévisions." />
         <meta property="og:site_name" content="Météo &#8211; Léo SEGUIN" />
-        <meta property="og:url" content="https://leoseguin.fr/" />
+        <meta property="og:url" content="https://meteo-leoseguin.vercel.app/" />
         <meta property="og:locale" content="fr-FR" />
         <link rel="canonical" href="https://meteo-leoseguin.vercel.app/" />
         <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
