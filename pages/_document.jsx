@@ -7,7 +7,6 @@ export default function Document() {
   return (
     <Html lang="fr-FR">
       <Head>
-        <meta charset="utf-8" />
         <meta name="theme-color" className="themecolor" content="#1c95ec" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" className="themecolor" content="#1c95ec" />
