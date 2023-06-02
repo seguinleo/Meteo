@@ -1,19 +1,22 @@
 /* eslint-disable react/jsx-no-bind */
-/* eslint-disable react/jsx-props-no-spreading */
-/* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import {
   LineChart, Line, XAxis, YAxis, Tooltip,
 } from 'recharts';
 import { RxMagnifyingGlass } from 'react-icons/rx';
 import { BsFillSunriseFill, BsFillSunsetFill } from 'react-icons/bs';
 import { RiFahrenheitFill, RiCelsiusFill } from 'react-icons/ri';
+// eslint-disable-next-line import/no-unresolved
+import { Analytics } from '@vercel/analytics/react';
 import Head from 'next/head';
 import Image from 'next/image';
 import CustomTooltip from './components/CustomTooltip';
 import './assets/css/style.css';
 
-export default function App({ Component, pageProps }) {
+export default function App(props) {
+  let timeoutError;
+  const { Component } = props;
   const [showComponents, setShowComponents] = useState(false);
   const [metaTheme, setMetaTheme] = useState('#1c95ec');
   const [mainImg, setMainImg] = useState(null);
@@ -58,10 +61,11 @@ export default function App({ Component, pageProps }) {
   }, [metaTheme]);
 
   function showError(message) {
-    const notification = document.getElementById('errorNotification');
+    if (timeoutError) clearTimeout(timeoutError);
+    const notification = document.querySelector('#errorNotification');
     setError(message);
     notification.style.display = 'block';
-    setTimeout(() => {
+    timeoutError = setTimeout(() => {
       notification.style.display = 'none';
     }, 5000);
   }
@@ -123,6 +127,61 @@ export default function App({ Component, pageProps }) {
     }
     return <Image src="/assets/icons/clouds.png" alt="Nuages" width={48} height={45} />;
   }
+
+  const fetchDataForecasts = async (data) => {
+    const { list, city } = data;
+    const forecasts = list.filter((forecast) => {
+      const forecastDateTime = new Date(forecast.dt_txt);
+      const timezoneOffset = city.timezone / 3600;
+      const localTime = new Date(forecastDateTime.getTime() + (timezoneOffset * 60 * 60 * 1000));
+      const forecastTime = localTime.toLocaleTimeString('fr-FR', {
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZone: 'UTC',
+      });
+      return forecastTime.includes('12:00') || forecastTime.includes('13:00') || forecastTime.includes('14:00');
+    });
+    const temperatures = forecasts.map((forecast) => Math.floor(forecast.main.temp));
+    const weatherIds = forecasts.map((forecast) => forecast.weather[0].id);
+    const days = ['DIM', 'LUN', 'MAR', 'MER', 'JEU', 'VEN', 'SAM'];
+    const dates = forecasts.map((forecast) => new Date(forecast.dt_txt.slice(0, -9)));
+    const daysOfWeek = dates.map((date) => days[date.getDay()]);
+    const chartData = list.slice(0, 8).map((item) => {
+      const forecastDateTime = new Date(item.dt_txt);
+      const timezoneOffset = city.timezone / 60;
+      const localTime = new Date(forecastDateTime.getTime() + (timezoneOffset * 60 * 1000));
+      const forecastTime = localTime.toLocaleTimeString('fr-FR', {
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZone: 'UTC',
+      });
+      return {
+        name: forecastTime,
+        temp: item.main.temp,
+        humidity: item.main.humidity,
+        wind: item.wind.speed,
+        windDeg: item.wind.deg,
+        weather: item.weather[0],
+        rain: item.pop || 0,
+      };
+    });
+    setImg2(getImage(weatherIds[0]));
+    setImg3(getImage(weatherIds[1]));
+    setImg4(getImage(weatherIds[2]));
+    setImg5(getImage(weatherIds[3]));
+    setImg6(getImage(weatherIds[4]));
+    setTemp2(`${temperatures[0]}°C`);
+    setTemp3(`${temperatures[1]}°C`);
+    setTemp4(`${temperatures[2]}°C`);
+    setTemp5(`${temperatures[3]}°C`);
+    setTemp6(`${temperatures[4]}°C`);
+    setJour2(daysOfWeek[0]);
+    setJour3(daysOfWeek[1]);
+    setJour4(daysOfWeek[2]);
+    setJour5(daysOfWeek[3]);
+    setJour6(daysOfWeek[4]);
+    setDataChart(chartData);
+  };
 
   const fetchDataCurrent = async (data, data2) => {
     const {
@@ -266,43 +325,7 @@ export default function App({ Component, pageProps }) {
     }
     setMainImg(<Image src={mainImgSrc} className="mainImg" alt={weather[0].description} width={96} height={90} />);
     document.body.style.background = backgroundColor;
-    // eslint-disable-next-line no-use-before-define
     fetchDataForecasts(data2);
-  };
-
-  const fetchDataForecasts = async (data) => {
-    const { list } = data;
-    const forecasts = list.filter((forecast) => forecast.dt_txt.includes('12:00:00'));
-    const temperatures = forecasts.map((forecast) => Math.floor(forecast.main.temp));
-    const weatherIds = forecasts.map((forecast) => forecast.weather[0].id);
-    const days = ['DIM', 'LUN', 'MAR', 'MER', 'JEU', 'VEN', 'SAM'];
-    const dates = forecasts.map((forecast) => new Date(forecast.dt_txt.slice(0, -9)));
-    const daysOfWeek = dates.map((date) => days[date.getDay()]);
-    const chartData = list.slice(0, 8).map((item) => ({
-      name: item.dt_txt.substring(11).slice(0, -3),
-      temp: item.main.temp,
-      humidity: item.main.humidity,
-      wind: item.wind.speed,
-      windDeg: item.wind.deg,
-      weather: item.weather[0],
-      rain: item.pop || 0,
-    }));
-    setImg2(getImage(weatherIds[0]));
-    setImg3(getImage(weatherIds[1]));
-    setImg4(getImage(weatherIds[2]));
-    setImg5(getImage(weatherIds[3]));
-    setImg6(getImage(weatherIds[4]));
-    setTemp2(`${temperatures[0]}°C`);
-    setTemp3(`${temperatures[1]}°C`);
-    setTemp4(`${temperatures[2]}°C`);
-    setTemp5(`${temperatures[3]}°C`);
-    setTemp6(`${temperatures[4]}°C`);
-    setJour2(daysOfWeek[0]);
-    setJour3(daysOfWeek[1]);
-    setJour4(daysOfWeek[2]);
-    setJour5(daysOfWeek[3]);
-    setJour6(daysOfWeek[4]);
-    setDataChart(chartData);
   };
 
   const handleSubmit = async (event) => {
@@ -448,6 +471,7 @@ export default function App({ Component, pageProps }) {
                   aria-label="Rechercher"
                   value={ville}
                   onChange={(event) => setVille(event.target.value)}
+                  aria-required="true"
                   required
                 />
                 <button type="submit">
@@ -580,8 +604,13 @@ export default function App({ Component, pageProps }) {
             </>
           )}
         </main>
-        <Component {...pageProps} />
+        <Component />
+        <Analytics />
       </div>
     </>
   );
 }
+
+App.propTypes = {
+  Component: PropTypes.elementType.isRequired,
+};

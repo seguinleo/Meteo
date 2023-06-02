@@ -4,7 +4,7 @@ export default function Home() {
   return (
     <footer className="copyright">
       &copy;
-      <a href="https://leoseguin.fr/" target="_blank" rel="noreferrer">leoseguin.fr</a>
+      <a href="https://leoseguin.fr/" target="_blank" rel="noreferrer" aria-label="Vers leoseguin.fr">leoseguin.fr</a>
     </footer>
   );
 }

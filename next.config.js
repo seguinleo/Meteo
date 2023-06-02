@@ -42,7 +42,7 @@ const nextConfig = {
         {
           key: 'x-frame-options',
           value: 'deny',
-        }
+        },
       ],
     },
   ],

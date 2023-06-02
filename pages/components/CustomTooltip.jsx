@@ -1,10 +1,10 @@
-/* eslint-disable react/prop-types */
 import React from 'react';
+import PropTypes from 'prop-types';
 
 function CustomTooltip({
-  active, payload, label, getImage, temperature,
+  payload, label, getImage, temperature,
 }) {
-  if (active && payload && payload.length) {
+  if (payload && payload.length) {
     const { weather } = payload[0].payload;
     const { rain } = payload[0].payload;
     const { humidity } = payload[0].payload;
@@ -48,5 +48,18 @@ function CustomTooltip({
   }
   return null;
 }
+
+CustomTooltip.propTypes = {
+  // eslint-disable-next-line react/forbid-prop-types
+  payload: PropTypes.arrayOf(PropTypes.object),
+  label: PropTypes.string,
+  getImage: PropTypes.func.isRequired,
+  temperature: PropTypes.string.isRequired,
+};
+
+CustomTooltip.defaultProps = {
+  label: '',
+  payload: [],
+};
 
 export default CustomTooltip;
