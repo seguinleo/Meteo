@@ -1,6 +1,9 @@
 const fetchWeatherData = async (ville) => {
   const key = process.env.API_KEY;
   const geocodingResponse = await fetch(`https://api.openweathermap.org/geo/1.0/direct?q=${ville}&limit=1&appid=${key}`);
+  if (geocodingResponse.status === 404) {
+    throw new Error('Geocoding API returned 404');
+  }
   const [geocodingData] = await geocodingResponse.json();
   const latitude = geocodingData.lat;
   const longitude = geocodingData.lon;
@@ -9,6 +12,9 @@ const fetchWeatherData = async (ville) => {
     fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&units=metric&appid=${key}`),
     fetch(`http://api.openweathermap.org/data/2.5/air_pollution?lat=${latitude}&lon=${longitude}&appid=${key}`),
   ]);
+  if (currentResponse.status === 404 || forecastResponse.status === 404) {
+    throw new Error('Weather API returned 404');
+  }
   const [currentData, forecastData, airPollutionData] = await Promise.all([
     currentResponse.json(),
     forecastResponse.json(),
