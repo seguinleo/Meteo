@@ -399,7 +399,7 @@ export default function App(props) {
   const handleSubmit = async (event) => {
     event.preventDefault();
     document.querySelector('.info-txt').style.display = 'block';
-    const villeTrim = ville.trim();
+    const villeTrim = ville.trim().replace('Arrondissement de ', '');
     if (villeTrim === '' || /\d/.test(villeTrim)) {
       showError('Veuillez saisir une ville valide...');
       document.querySelector('.info-txt').style.display = 'none';
