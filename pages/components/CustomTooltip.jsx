@@ -40,7 +40,7 @@ function CustomTooltip({
         <p>
           Pluie (proba.)
           {' '}
-          {(rain * 100).toFixed(0)}
+          {rain.toFixed(0)}
           %
         </p>
       </div>

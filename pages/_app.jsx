@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
-  LineChart, Line, XAxis, YAxis, Tooltip,
+  LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer,
 } from 'recharts';
 import { RxMagnifyingGlass } from 'react-icons/rx';
 import { BsFillSunriseFill, BsFillSunsetFill } from 'react-icons/bs';
@@ -21,7 +21,6 @@ export default function App(props) {
   const [metaTheme, setMetaTheme] = useState('#1c95ec');
   const [mainImg, setMainImg] = useState(null);
   const [ville, setVille] = useState('');
-  const [pays, setPays] = useState(null);
   const [temperature, setTemperature] = useState(null);
   const [ressenti, setRessenti] = useState(null);
   const [humidite, setHumidite] = useState(null);
@@ -30,6 +29,7 @@ export default function App(props) {
   const [pression, setPression] = useState(null);
   const [lever, setLever] = useState(null);
   const [coucher, setCoucher] = useState(null);
+  const [airPollution, setAirPollution] = useState(null);
   const [dataChart, setDataChart] = useState(null);
   const [heure, setHeure] = useState(null);
   const [jour2, setJour2] = useState(null);
@@ -83,26 +83,20 @@ export default function App(props) {
     if (number === 500) {
       return <Image src="/assets/icons/rain.png" alt="Pluie" width={48} height={45} />;
     }
-    if (number >= 501 && number <= 504) {
+    if ((number >= 501 && number <= 504) || (number >= 520 && number <= 531)) {
       return <Image src="/assets/icons/shower.png" alt="Pluie forte" width={48} height={45} />;
     }
     if (number === 511) {
-      return <Image src="/assets/icons/hail.png" alt="Neige" width={48} height={45} />;
-    }
-    if (number >= 520 && number <= 531) {
-      return <Image src="/assets/icons/shower.png" alt="Averse" width={48} height={45} />;
+      return <Image src="/assets/icons/hail.png" alt="Grêle" width={48} height={45} />;
     }
     if (number === 600) {
       return <Image src="/assets/icons/snow.png" alt="Neige" width={48} height={45} />;
     }
-    if (number === 601 || number === 602) {
+    if ((number === 601 || number === 602) || (number >= 620 && number <= 622)) {
       return <Image src="/assets/icons/blizzard.png" alt="Neige forte" width={48} height={45} />;
     }
     if (number >= 611 && number <= 616) {
       return <Image src="/assets/icons/sleet.png" alt="Pluie verglaçante" width={48} height={45} />;
-    }
-    if (number >= 620 && number <= 622) {
-      return <Image src="/assets/icons/blizzard.png" alt="Blizzard" width={48} height={45} />;
     }
     if (number >= 701 && number <= 721) {
       return <Image src="/assets/icons/haze.png" alt="Brume" width={48} height={45} />;
@@ -122,24 +116,40 @@ export default function App(props) {
     if (number === 801 || number === 802) {
       return <Image src="/assets/icons/fewclouds.png" alt="Quelques nuages" width={48} height={45} />;
     }
-    if (number === 803 || number === 804) {
-      return <Image src="/assets/icons/clouds.png" alt="Nuages" width={48} height={45} />;
-    }
     return <Image src="/assets/icons/clouds.png" alt="Nuages" width={48} height={45} />;
   }
+
+  const fetchDataAirPollution = (data) => {
+    let { aqi } = data.list[0].main;
+
+    if (aqi === 1) {
+      aqi = `${aqi} - Excellent`;
+    } else if (aqi === 2) {
+      aqi = `${aqi} - Bon`;
+    } else if (aqi === 3) {
+      aqi = `${aqi} - Moyen`;
+    } else if (aqi === 4) {
+      aqi = `${aqi} - Mauvais`;
+    } else {
+      aqi = `${aqi} - Très mauvais`;
+    }
+    setAirPollution(aqi);
+  };
 
   const fetchDataForecasts = async (data) => {
     const { list, city } = data;
     const forecasts = list.filter((forecast) => {
       const forecastDateTime = new Date(forecast.dt_txt);
       const timezoneOffset = city.timezone / 3600;
-      const localTime = new Date(forecastDateTime.getTime() + (timezoneOffset * 60 * 60 * 1000));
+      const localTime = new Date(forecastDateTime.getTime() + timezoneOffset * 60 * 60 * 1000);
       const forecastTime = localTime.toLocaleTimeString('fr-FR', {
         hour: '2-digit',
         minute: '2-digit',
         timeZone: 'UTC',
       });
-      return forecastTime.includes('12:00') || forecastTime.includes('13:00') || forecastTime.includes('14:00');
+      return (
+        forecastTime.includes('12:') || forecastTime.includes('13:') || forecastTime.includes('14:')
+      );
     });
     const temperatures = forecasts.map((forecast) => Math.floor(forecast.main.temp));
     const weatherIds = forecasts.map((forecast) => forecast.weather[0].id);
@@ -149,7 +159,7 @@ export default function App(props) {
     const chartData = list.slice(0, 8).map((item) => {
       const forecastDateTime = new Date(item.dt_txt);
       const timezoneOffset = city.timezone / 60;
-      const localTime = new Date(forecastDateTime.getTime() + (timezoneOffset * 60 * 1000));
+      const localTime = new Date(forecastDateTime.getTime() + timezoneOffset * 60 * 1000);
       const forecastTime = localTime.toLocaleTimeString('fr-FR', {
         hour: '2-digit',
         minute: '2-digit',
@@ -162,7 +172,7 @@ export default function App(props) {
         wind: item.wind.speed,
         windDeg: item.wind.deg,
         weather: item.weather[0],
-        rain: item.pop || 0,
+        rain: (item.pop * 100) || 0,
       };
     });
     setImg2(getImage(weatherIds[0]));
@@ -183,7 +193,7 @@ export default function App(props) {
     setDataChart(chartData);
   };
 
-  const fetchDataCurrent = async (data, data2) => {
+  const fetchDataCurrent = async (data, data2, data3) => {
     const {
       name, sys, main, wind, weather,
     } = data;
@@ -212,126 +222,189 @@ export default function App(props) {
       + (date.getTimezoneOffset() * 60 * 1000)
       + (timezoneOffsetMinutes * 60 * 1000));
     const sunDown = sunsetLocal.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+
     setLever(sunUp);
     setCoucher(sunDown);
     setHeure(heureLocale);
     setVille(name);
-    localStorage.setItem('ville', name);
-    setPays(sys.country);
     setTemperature(`${main.temp.toFixed(1)}°C`);
     setRessenti(`${main.feels_like.toFixed(0)}°C`);
     setHumidite(`${main.humidity}%`);
     setVent(`${(3.6 * wind.speed).toFixed(0)}km/h`);
     setPression(`${main.pressure}hPa`);
     setVentDirection(ventDeg + 180);
+
+    localStorage.setItem('ville', `${name}, ${sys.country}`);
+
     let mainImgSrc;
     let backgroundColor;
+
     if ((weatherId >= 200 && weatherId <= 202) || (weatherId >= 230 && weatherId <= 232)) {
       mainImgSrc = '/assets/icons/storm.png';
-      backgroundColor = '#19242b';
-      setMetaTheme('#19242b');
+      if (heureLocale > sunUp && heureLocale < sunDown) {
+        backgroundColor = '#19242b';
+        setMetaTheme('#19242b');
+      } else {
+        backgroundColor = '#281e33';
+        setMetaTheme('#281e33');
+      }
     } else if (weatherId >= 210 && weatherId <= 221) {
       mainImgSrc = '/assets/icons/thunder.png';
-      backgroundColor = '#202d36';
-      setMetaTheme('#202d36');
+      if (heureLocale > sunUp && heureLocale < sunDown) {
+        backgroundColor = '#202d36';
+        setMetaTheme('#202d36');
+      } else {
+        backgroundColor = '#2f1f3f';
+        setMetaTheme('#2f1f3f');
+      }
     } else if (weatherId >= 300 && weatherId <= 321) {
       if (heureLocale > sunUp && heureLocale < sunDown) {
         mainImgSrc = '/assets/icons/drizzle.png';
+        backgroundColor = '#425b6b';
+        setMetaTheme('#425b6b');
       } else {
         mainImgSrc = '/assets/icons/drizzleNight.png';
+        backgroundColor = '#543973';
+        setMetaTheme('#543973');
       }
-      backgroundColor = '#425b6b';
-      setMetaTheme('#425b6b');
     } else if (weatherId === 500) {
       mainImgSrc = '/assets/icons/rain.png';
-      backgroundColor = '#3d5669';
-      setMetaTheme('#3d5669');
-    } else if (weatherId >= 501 && weatherId <= 504) {
+      if (heureLocale > sunUp && heureLocale < sunDown) {
+        backgroundColor = '#3d5669';
+        setMetaTheme('#3d5669');
+      } else {
+        backgroundColor = '#412e57';
+        setMetaTheme('#412e57');
+      }
+    } else if ((weatherId >= 501 && weatherId <= 504) || (weatherId >= 520 && weatherId <= 531)) {
       mainImgSrc = '/assets/icons/shower.png';
-      backgroundColor = '#2c3c47';
-      setMetaTheme('#2c3c47');
+      if (heureLocale > sunUp && heureLocale < sunDown) {
+        backgroundColor = '#2c3c47';
+        setMetaTheme('#2c3c47');
+      } else {
+        backgroundColor = '#312440';
+        setMetaTheme('#312440');
+      }
     } else if (weatherId === 511) {
       mainImgSrc = '/assets/icons/hail.png';
-      backgroundColor = '#879eb0';
-      setMetaTheme('#879eb0');
-    } else if (weatherId >= 520 && weatherId <= 531) {
-      mainImgSrc = '/assets/icons/shower.png';
-      backgroundColor = '#2c3c47';
-      setMetaTheme('#2c3c47');
+      if (heureLocale > sunUp && heureLocale < sunDown) {
+        backgroundColor = '#879eb0';
+        setMetaTheme('#879eb0');
+      } else {
+        backgroundColor = '#5a4c6b';
+        setMetaTheme('#5a4c6b');
+      }
     } else if (weatherId === 600) {
       mainImgSrc = '/assets/icons/snow.png';
-      backgroundColor = '#879eb0';
-      setMetaTheme('#879eb0');
-    } else if (weatherId === 601 || weatherId === 602) {
+      if (heureLocale > sunUp && heureLocale < sunDown) {
+        backgroundColor = '#879eb0';
+        setMetaTheme('#879eb0');
+      } else {
+        backgroundColor = '#77668a';
+        setMetaTheme('#77668a');
+      }
+    } else if ((weatherId === 601 || weatherId === 602) || (weatherId >= 620 && weatherId <= 622)) {
       mainImgSrc = '/assets/icons/blizzard.png';
-      backgroundColor = '#657682';
-      setMetaTheme('#657682');
+      if (heureLocale > sunUp && heureLocale < sunDown) {
+        backgroundColor = '#657682';
+        setMetaTheme('#657682');
+      } else {
+        backgroundColor = '#857a91';
+        setMetaTheme('#857a91');
+      }
     } else if (weatherId >= 611 && weatherId <= 616) {
       if (heureLocale > sunUp && heureLocale < sunDown) {
         mainImgSrc = '/assets/icons/sleet.png';
+        backgroundColor = '#2c3c47';
+        setMetaTheme('#2c3c47');
       } else {
         mainImgSrc = '/assets/icons/sleetNight.png';
+        backgroundColor = '#462c63';
+        setMetaTheme('#462c63');
       }
-      backgroundColor = '#2c3c47';
-      setMetaTheme('#2c3c47');
-    } else if (weatherId >= 620 && weatherId <= 622) {
-      mainImgSrc = '/assets/icons/blizzard.png';
-      backgroundColor = '#657682';
-      setMetaTheme('#657682');
     } else if (weatherId >= 701 && weatherId <= 721) {
       if (heureLocale > sunUp && heureLocale < sunDown) {
         mainImgSrc = '/assets/icons/haze.png';
+        backgroundColor = '#6cb0e0';
+        setMetaTheme('#6cb0e0');
       } else {
         mainImgSrc = '/assets/icons/hazeNight.png';
+        backgroundColor = '#895abf';
+        setMetaTheme('#895abf');
       }
-      backgroundColor = '#6cb0e0';
-      setMetaTheme('#6cb0e0');
     } else if (weatherId === 731 || (weatherId >= 751 && weatherId <= 771)) {
       mainImgSrc = '/assets/icons/dust.png';
-      backgroundColor = '#6cb0e0';
-      setMetaTheme('#6cb0e0');
+      if (heureLocale > sunUp && heureLocale < sunDown) {
+        backgroundColor = '#6cb0e0';
+        setMetaTheme('#6cb0e0');
+      } else {
+        backgroundColor = '#895abf';
+        setMetaTheme('#895abf');
+      }
     } else if (weatherId === 741) {
       mainImgSrc = '/assets/icons/fog.png';
-      backgroundColor = '#6cb0e0';
-      setMetaTheme('#6cb0e0');
+      if (heureLocale > sunUp && heureLocale < sunDown) {
+        backgroundColor = '#6cb0e0';
+        setMetaTheme('#6cb0e0');
+      } else {
+        backgroundColor = '#895abf';
+        setMetaTheme('#895abf');
+      }
     } else if (weatherId === 781) {
       mainImgSrc = '/assets/icons/tornado.png';
-      backgroundColor = '#2c3c47';
-      setMetaTheme('#2c3c47');
+      if (heureLocale > sunUp && heureLocale < sunDown) {
+        backgroundColor = '#2c3c47';
+        setMetaTheme('#2c3c47');
+      } else {
+        backgroundColor = '#462c63';
+        setMetaTheme('#462c63');
+      }
     } else if (weatherId === 800) {
       if (heureLocale > sunUp && heureLocale < sunDown) {
         mainImgSrc = '/assets/icons/sun.png';
+        backgroundColor = '#1c95ec';
+        setMetaTheme('#1c95ec');
       } else {
         mainImgSrc = '/assets/icons/moon.png';
+        backgroundColor = '#723ead';
+        setMetaTheme('#723ead');
       }
-      backgroundColor = '#1c95ec';
-      setMetaTheme('#1c95ec');
     } else if (weatherId === 801 || weatherId === 802) {
       if (heureLocale > sunUp && heureLocale < sunDown) {
         mainImgSrc = '/assets/icons/fewclouds.png';
+        backgroundColor = '#5080a3';
+        setMetaTheme('#5080a3');
       } else {
         mainImgSrc = '/assets/icons/fewcloudsNight.png';
+        backgroundColor = '#5a308a';
+        setMetaTheme('#5a308a');
       }
-      backgroundColor = '#5080a3';
-      setMetaTheme('#5080a3');
-    } else if (weatherId === 803 || weatherId === 804) {
-      mainImgSrc = '/assets/icons/clouds.png';
-      backgroundColor = '#496c85';
-      setMetaTheme('#496c85');
     } else {
       mainImgSrc = '/assets/icons/clouds.png';
-      backgroundColor = '#496c85';
-      setMetaTheme('#496c85');
+      if (heureLocale > sunUp && heureLocale < sunDown) {
+        backgroundColor = '#496c85';
+        setMetaTheme('#496c85');
+      } else {
+        backgroundColor = '#4a2d6b';
+        setMetaTheme('#4a2d6b');
+      }
     }
+
     setMainImg(<Image src={mainImgSrc} className="mainImg" alt={weather[0].description} width={96} height={90} />);
     document.body.style.background = backgroundColor;
     fetchDataForecasts(data2);
+    fetchDataAirPollution(data3);
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     document.querySelector('.info-txt').style.display = 'block';
     const villeTrim = ville.trim();
+    if (villeTrim === '' || /\d/.test(villeTrim)) {
+      showError('Veuillez saisir une ville valide...');
+      document.querySelector('.info-txt').style.display = 'none';
+      return;
+    }
     const response = await fetch('/api/search', {
       method: 'POST',
       headers: {
@@ -343,8 +416,8 @@ export default function App(props) {
     });
     const data = await response.json();
     if (response.ok) {
-      const { currentData, forecastData } = data;
-      fetchDataCurrent(currentData, forecastData);
+      const { currentData, forecastData, airPollutionData } = data;
+      fetchDataCurrent(currentData, forecastData, airPollutionData);
       setShowComponents(true);
     } else {
       showError('Un problème est survenu, saisissez le nom complet de la ville...');
@@ -369,8 +442,8 @@ export default function App(props) {
         });
         const data = await response.json();
         if (response.ok) {
-          const { currentData, forecastData } = data;
-          fetchDataCurrent(currentData, forecastData);
+          const { currentData, forecastData, airPollutionData } = data;
+          fetchDataCurrent(currentData, forecastData, airPollutionData);
           setShowComponents(true);
         } else {
           showError('Un problème est survenu lors de la géolocalisation...');
@@ -388,6 +461,7 @@ export default function App(props) {
     setShowComponents(false);
     document.body.style.background = '#1c95ec';
     setMetaTheme('#1c95ec');
+    setVille(localStorage.getItem('ville'));
   };
 
   const handleUnity = () => {
@@ -434,10 +508,7 @@ export default function App(props) {
               <span id="heure">
                 {heure}
                 {' '}
-                {ville}
-                ,
-                {' '}
-                {pays}
+                {localStorage.getItem('ville')}
               </span>
               <button
                 type="button"
@@ -500,15 +571,15 @@ export default function App(props) {
                     </span>
                   </div>
                 </div>
-                <div className="bottom-details">
+                <div className="details">
                   <div className="column">
-                    <div className="details">
+                    <div className="detail">
                       <span>{humidite}</span>
                       <p>Humidité</p>
                     </div>
                   </div>
                   <div className="column">
-                    <div className="details">
+                    <div className="detail">
                       <span>
                         <svg width="18" height="18" viewBox="0 0 50 50">
                           <path d="M25 5 L40 45 L25 35 L10 45 Z" fill="currentColor" transform={`rotate(${ventDirection}, 25, 25)`} />
@@ -519,7 +590,7 @@ export default function App(props) {
                     </div>
                   </div>
                   <div className="column">
-                    <div className="details">
+                    <div className="detail">
                       <span>{pression}</span>
                       <p>Pression</p>
                     </div>
@@ -529,21 +600,32 @@ export default function App(props) {
               <div className="chart-part">
                 <div className="graphique">
                   <p className="titreGraph">Prévisions (24h)</p>
-                  <LineChart width={320} height={100} data={dataChart}>
-                    <XAxis axisLine={false} tick={false} dataKey="name" />
-                    <YAxis axisLine={false} tick={false} domain={['dataMin', 'dataMax']} width={0} />
-                    <Tooltip content={<CustomTooltip getImage={getImage} temperature={temperature} />} wrapperStyle={{ outline: 'none' }} />
-                    <Line
-                      dataKey="temp"
-                      stroke="rgba(255,255,255,.7)"
-                      strokeWidth="2"
-                      dot={{ r: 4 }}
-                    />
-                  </LineChart>
+                  <ResponsiveContainer width="90%" height={100} style={{ margin: 'auto' }}>
+                    <LineChart data={dataChart}>
+                      <XAxis axisLine={false} tick={false} dataKey="name" />
+                      <YAxis yAxisId="temperature" axisLine={false} tick={false} domain={['dataMin', 'dataMax']} width={0} />
+                      <YAxis yAxisId="rain" orientation="right" axisLine={false} tick={false} domain={[0, 'auto']} width={0} />
+                      <Tooltip content={<CustomTooltip getImage={getImage} temperature={temperature} />} wrapperStyle={{ outline: 'none' }} />
+                      <Line
+                        dataKey="temp"
+                        stroke="rgba(255,255,255,.7)"
+                        strokeWidth="2"
+                        dot={{ r: 4 }}
+                        yAxisId="temperature"
+                      />
+                      <Line
+                        dataKey="rain"
+                        stroke="rgba(57,196,243,.7)"
+                        strokeWidth="2"
+                        dot={{ r: 4 }}
+                        yAxisId="rain"
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
                 </div>
               </div>
               <div className="forecasts-part">
-                <div className="bottom-details">
+                <div className="details">
                   <div className="column">
                     <div className="detailsForecasts">
                       <p>{jour2}</p>
@@ -592,6 +674,13 @@ export default function App(props) {
                 </div>
                 <div className="sunPart">
                   <p>
+                    Pollution de l&#39;air :
+                    {' '}
+                    {airPollution}
+                  </p>
+                </div>
+                <div className="sunPart">
+                  <p>
                     <BsFillSunriseFill />
                     {lever}
                   </p>
@@ -604,6 +693,12 @@ export default function App(props) {
             </>
           )}
         </main>
+        {!showComponents && (
+        <footer className="copyright">
+          &copy;
+          <a href="https://leoseguin.fr/" target="_blank" rel="noreferrer" aria-label="Vers leoseguin.fr">leoseguin.fr</a>
+        </footer>
+        )}
         <Component />
         <Analytics />
       </div>

@@ -22,7 +22,7 @@ html {
 }
 
 * {
-  font-family: "OpenSans";
+  font-family: 'OpenSans', sans-serif;
   box-sizing: border-box
 }
 
@@ -189,21 +189,26 @@ header {
   flex-direction: column
 }
 
-.bottom-details {
+.details {
   display: flex;
   margin-bottom: 1rem;
-  width: 100%
+  width: 95%;
+  background: rgba(255, 255, 255, .1);
+  border-radius: 10px;
+  margin: auto;
+  padding: 5px
 }
 
 .graphique {
   text-align: center;
+  margin-top: 1.5rem;
 
   .titreGraph {
     font-size: .8rem;
     opacity: .8
   }
 
-  .recharts-wrapper {
+  .recharts-responsive-container {
     margin: 1rem auto
   }
 
@@ -235,7 +240,7 @@ header {
   }
 }
 
-.details p {
+.detail p {
   margin: 0 auto;
   font-size: .8rem;
   opacity: .8
@@ -249,7 +254,7 @@ header {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 1.5rem;
+  margin-top: 1.5rem;
 
   p {
     margin: 0 1rem;

@@ -1,27 +1,33 @@
 const fetchWeatherData = async (latitude, longitude) => {
   const key = process.env.API_KEY;
-  const [currentResponse, forecastResponse] = await Promise.all([
+  const [currentResponse, forecastResponse, airResponse] = await Promise.all([
     fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&appid=${key}`),
     fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&units=metric&appid=${key}`),
+    fetch(`http://api.openweathermap.org/data/2.5/air_pollution?lat=${latitude}&lon=${longitude}&appid=${key}`),
   ]);
-  if (!currentResponse.ok || !forecastResponse.ok) {
-    throw new Error('Erreur lors de la récupération des données météo. Veuillez réessayer plus tard...');
-  }
-  const [currentData, forecastData] = await Promise.all([
+  const [currentData, forecastData, airPollutionData] = await Promise.all([
     currentResponse.json(),
     forecastResponse.json(),
+    airResponse.json(),
   ]);
+
   return {
     currentData,
     forecastData,
+    airPollutionData,
   };
 };
+
 export default async function handler(req, res) {
   if (req.method === 'POST') {
     const { latitude, longitude } = req.body;
     try {
-      const { currentData, forecastData } = await fetchWeatherData(latitude, longitude);
-      res.status(200).json({ currentData, forecastData });
+      const {
+        currentData,
+        forecastData,
+        airPollutionData,
+      } = await fetchWeatherData(latitude, longitude);
+      res.status(200).json({ currentData, forecastData, airPollutionData });
     } catch (error) {
       res.status(400).json({ error: error.message });
     }
