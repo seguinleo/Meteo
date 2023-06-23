@@ -640,7 +640,7 @@ export default function App(props) {
                     <LineChart data={dataChart}>
                       <XAxis axisLine={false} tick={false} dataKey="name" />
                       <YAxis yAxisId="temperature" axisLine={false} tick={false} domain={['dataMin', 'dataMax']} width={0} />
-                      <YAxis yAxisId="rain" orientation="right" axisLine={false} tick={false} domain={[0, 'auto']} width={0} />
+                      <YAxis yAxisId="rain" orientation="right" axisLine={false} tick={false} domain={[0, 100]} width={0} />
                       <Tooltip content={<CustomTooltip getImage={getImage} temperature={temperature} />} wrapperStyle={{ outline: 'none' }} />
                       <Line
                         dataKey="temp"
