@@ -18,7 +18,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.10.1",
-    "recharts": "^2.7.2"
+    "recharts": "^2.7.2",
+    "semver": "^7.5.3"
   },
   "description": "Météo en temps réel, précise et fiable pour n'importe quelle ville du monde avec prévisions.",
   "main": "next.config.js",
