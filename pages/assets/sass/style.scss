@@ -3,7 +3,7 @@
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('../../assets/fonts/OpenSans.woff2') format('woff2');
+  src: url('../../assets/fonts/OpenSans.woff2') format('woff2')
 }
 
 @font-face {
@@ -11,7 +11,7 @@
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: url('../../assets/fonts/OpenSans-700.woff2') format('woff2');
+  src: url('../../assets/fonts/OpenSans-700.woff2') format('woff2')
 }
 
 html {
@@ -56,7 +56,7 @@ svg {
 .wrapper {
   margin: 1rem 0;
   padding: 1.5rem 0;
-  width: 500px;
+  width: 550px;
   border-radius: 10px;
   max-width: 95vw;
   background: linear-gradient(to top left, rgba(0, 0, 0, .3), rgba(0, 0, 0, .1));
@@ -189,6 +189,11 @@ header {
   flex-direction: column
 }
 
+summary {
+  margin: 1rem;
+  cursor: pointer
+}
+
 .details {
   display: flex;
   margin-bottom: 1rem;
@@ -196,6 +201,8 @@ header {
   background: rgba(255, 255, 255, .1);
   border-radius: 10px;
   margin: auto;
+  overflow: hidden;
+  overflow-x: auto;
   padding: 5px
 }
 
@@ -231,6 +238,7 @@ header {
 
 .column {
   width: 100%;
+  margin: .5rem;
   text-align: center;
   align-items: center;
   justify-content: center
@@ -246,14 +254,18 @@ header {
   margin: 0 auto
 }
 
-.sunPart {
+.pop span {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 1.5rem;
+  margin-top: 5px
+}
+
+.plusInfo {
+  margin: 1.5rem;
 
   p {
-    margin: 0 1rem;
+    margin: 1rem;
 
     svg {
       font-size: 1.5rem;
@@ -284,9 +296,6 @@ header {
 }
 
 .copyright {
-  opacity: .8;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  text-align: center;
   font-size: .8rem
 }

@@ -5,11 +5,16 @@ function CustomTooltip({
   payload, label, getImage, temperature,
 }) {
   if (payload && payload.length) {
-    const { weather } = payload[0].payload;
-    const { rain } = payload[0].payload;
-    const { humidity } = payload[0].payload;
-    const { wind } = payload[0].payload;
-    const { windDeg } = payload[0].payload;
+    const {
+      temp,
+      humidity,
+      pressure,
+      wind,
+      windDeg,
+      weather,
+      rain,
+      uv,
+    } = payload[0].payload;
     return (
       <div className="custom-tooltip">
         <p className="bold">
@@ -19,7 +24,7 @@ function CustomTooltip({
         <p>
           Température
           {' '}
-          {payload[0].value.toFixed(0)}
+          {temp.toFixed(0)}
           {temperature.endsWith('C') ? '°C' : '°F'}
         </p>
         <p>
@@ -27,6 +32,12 @@ function CustomTooltip({
           {' '}
           {humidity}
           %
+        </p>
+        <p>
+          Pressure
+          {' '}
+          {pressure}
+          hPa
         </p>
         <p>
           Vent
@@ -38,10 +49,15 @@ function CustomTooltip({
           {temperature.endsWith('C') ? 'km/h' : 'mph'}
         </p>
         <p>
-          Pluie (proba.)
+          Pluie
           {' '}
           {rain.toFixed(0)}
           %
+        </p>
+        <p>
+          Indice UV
+          {' '}
+          {uv.toFixed(0)}
         </p>
       </div>
     );

@@ -1,19 +1,25 @@
 const fetchWeatherData = async (latitude, longitude) => {
   const key = process.env.API_KEY;
-  const [currentResponse, forecastResponse, airResponse] = await Promise.all([
-    fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&appid=${key}`),
-    fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&units=metric&appid=${key}`),
+  const geocodingResponse = await fetch(`https://api.openweathermap.org/geo/1.0/reverse?lat=${latitude}&lon=${longitude}&limit=1&appid=${key}`);
+  if (geocodingResponse.status === 404) {
+    throw new Error('Geocoding API returned 404');
+  }
+  const [geocodingData] = await geocodingResponse.json();
+  const [oneCallResponse, airPollutionResponse] = await Promise.all([
+    fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&appid=${key}&units=metric&exclude=minutely`),
     fetch(`http://api.openweathermap.org/data/2.5/air_pollution?lat=${latitude}&lon=${longitude}&appid=${key}`),
   ]);
-  const [currentData, forecastData, airPollutionData] = await Promise.all([
-    currentResponse.json(),
-    forecastResponse.json(),
-    airResponse.json(),
+  if (oneCallResponse.status === 404) {
+    throw new Error('Weather API returned 404');
+  }
+  const [oneCallData, airPollutionData] = await Promise.all([
+    oneCallResponse.json(),
+    airPollutionResponse.json(),
   ]);
 
   return {
-    currentData,
-    forecastData,
+    city: `${geocodingData.name}, ${geocodingData.country}`,
+    oneCallData,
     airPollutionData,
   };
 };
@@ -22,12 +28,8 @@ export default async function handler(req, res) {
   if (req.method === 'POST') {
     const { latitude, longitude } = req.body;
     try {
-      const {
-        currentData,
-        forecastData,
-        airPollutionData,
-      } = await fetchWeatherData(latitude, longitude);
-      res.status(200).json({ currentData, forecastData, airPollutionData });
+      const { city, oneCallData, airPollutionData } = await fetchWeatherData(latitude, longitude);
+      res.status(200).json({ city, oneCallData, airPollutionData });
     } catch (error) {
       res.status(400).json({ error: error.message });
     }

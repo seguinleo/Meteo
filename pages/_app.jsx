@@ -5,7 +5,7 @@ import {
   LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer,
 } from 'recharts';
 import { RxMagnifyingGlass } from 'react-icons/rx';
-import { BsFillSunriseFill, BsFillSunsetFill } from 'react-icons/bs';
+import { BsFillSunriseFill, BsFillSunsetFill, BsFillDropletFill } from 'react-icons/bs';
 import { RiFahrenheitFill, RiCelsiusFill } from 'react-icons/ri';
 // eslint-disable-next-line import/no-unresolved
 import { Analytics } from '@vercel/analytics/react';
@@ -30,6 +30,10 @@ export default function App(props) {
   const [lever, setLever] = useState(null);
   const [coucher, setCoucher] = useState(null);
   const [airPollution, setAirPollution] = useState(null);
+  const [uv, setUv] = useState(null);
+  const [latitudeVille, setLatitudeVille] = useState(null);
+  const [longitudeVille, setLongitudeVille] = useState(null);
+  const [moonPhase, setMoonPhase] = useState(null);
   const [dataChart, setDataChart] = useState(null);
   const [heure, setHeure] = useState(null);
   const [jour2, setJour2] = useState(null);
@@ -37,16 +41,29 @@ export default function App(props) {
   const [jour4, setJour4] = useState(null);
   const [jour5, setJour5] = useState(null);
   const [jour6, setJour6] = useState(null);
+  const [jour7, setJour7] = useState(null);
+  const [jour8, setJour8] = useState(null);
   const [temp2, setTemp2] = useState(null);
   const [temp3, setTemp3] = useState(null);
   const [temp4, setTemp4] = useState(null);
   const [temp5, setTemp5] = useState(null);
   const [temp6, setTemp6] = useState(null);
+  const [temp7, setTemp7] = useState(null);
+  const [temp8, setTemp8] = useState(null);
+  const [rain2, setRain2] = useState(null);
+  const [rain3, setRain3] = useState(null);
+  const [rain4, setRain4] = useState(null);
+  const [rain5, setRain5] = useState(null);
+  const [rain6, setRain6] = useState(null);
+  const [rain7, setRain7] = useState(null);
+  const [rain8, setRain8] = useState(null);
   const [img2, setImg2] = useState(null);
   const [img3, setImg3] = useState(null);
   const [img4, setImg4] = useState(null);
   const [img5, setImg5] = useState(null);
   const [img6, setImg6] = useState(null);
+  const [img7, setImg7] = useState(null);
+  const [img8, setImg8] = useState(null);
   const [error, setError] = useState(false);
 
   useEffect(() => {
@@ -137,70 +154,76 @@ export default function App(props) {
   };
 
   const fetchDataForecasts = async (data) => {
-    const { list, city } = data;
-    const forecasts = list.filter((forecast) => {
-      const forecastDateTime = new Date(forecast.dt_txt);
-      const timezoneOffset = city.timezone / 3600;
-      const localTime = new Date(forecastDateTime.getTime() + timezoneOffset * 60 * 60 * 1000);
-      const forecastTime = localTime.toLocaleTimeString('fr-FR', {
+    const { hourly, daily } = data;
+    const forecastsHourly = hourly.slice(1, 24);
+    const chartData = forecastsHourly.filter((item, index) => index % 2 === 0).map((item) => {
+      const forecastDateTime = new Date(item.dt * 1000);
+      const forecastTime = forecastDateTime.toLocaleTimeString('fr-FR', {
         hour: '2-digit',
         minute: '2-digit',
-        timeZone: 'UTC',
-      });
-      return (
-        forecastTime.includes('12:') || forecastTime.includes('13:') || forecastTime.includes('14:')
-      );
-    });
-    const temperatures = forecasts.map((forecast) => Math.floor(forecast.main.temp));
-    const weatherIds = forecasts.map((forecast) => forecast.weather[0].id);
-    const days = ['DIM', 'LUN', 'MAR', 'MER', 'JEU', 'VEN', 'SAM'];
-    const dates = forecasts.map((forecast) => new Date(forecast.dt_txt.slice(0, -9)));
-    const daysOfWeek = dates.map((date) => days[date.getDay()]);
-    const chartData = list.slice(0, 8).map((item) => {
-      const forecastDateTime = new Date(item.dt_txt);
-      const timezoneOffset = city.timezone / 60;
-      const localTime = new Date(forecastDateTime.getTime() + timezoneOffset * 60 * 1000);
-      const forecastTime = localTime.toLocaleTimeString('fr-FR', {
-        hour: '2-digit',
-        minute: '2-digit',
-        timeZone: 'UTC',
+        timeZone: data.timezone,
       });
       return {
         name: forecastTime,
-        temp: item.main.temp,
-        humidity: item.main.humidity,
-        wind: item.wind.speed,
-        windDeg: item.wind.deg,
+        temp: item.temp,
+        humidity: item.humidity,
+        pressure: item.pressure,
+        wind: item.wind_speed,
+        windDeg: item.wind_deg,
         weather: item.weather[0],
         rain: (item.pop * 100) || 0,
+        uv: item.uvi,
       };
     });
-    setImg2(getImage(weatherIds[0]));
-    setImg3(getImage(weatherIds[1]));
-    setImg4(getImage(weatherIds[2]));
-    setImg5(getImage(weatherIds[3]));
-    setImg6(getImage(weatherIds[4]));
-    setTemp2(`${temperatures[0]}°C`);
-    setTemp3(`${temperatures[1]}°C`);
-    setTemp4(`${temperatures[2]}°C`);
-    setTemp5(`${temperatures[3]}°C`);
-    setTemp6(`${temperatures[4]}°C`);
+
+    const forecastsDaily = daily.slice(1, 8);
+    const temperaturesDaily = forecastsDaily.map((forecast) => Math.floor(forecast.temp.day));
+    const weatherIdsDaily = forecastsDaily.map((forecast) => forecast.weather[0].id);
+    const days = ['DIM', 'LUN', 'MAR', 'MER', 'JEU', 'VEN', 'SAM'];
+    const dates = daily.slice(1, 8).map((forecast) => new Date(forecast.dt * 1000));
+    const daysOfWeek = dates.map((date) => days[date.getDay()]);
+
+    setImg2(getImage(weatherIdsDaily[0]));
+    setImg3(getImage(weatherIdsDaily[1]));
+    setImg4(getImage(weatherIdsDaily[2]));
+    setImg5(getImage(weatherIdsDaily[3]));
+    setImg6(getImage(weatherIdsDaily[4]));
+    setImg7(getImage(weatherIdsDaily[5]));
+    setImg8(getImage(weatherIdsDaily[6]));
+    setTemp2(`${temperaturesDaily[0]}°C`);
+    setTemp3(`${temperaturesDaily[1]}°C`);
+    setTemp4(`${temperaturesDaily[2]}°C`);
+    setTemp5(`${temperaturesDaily[3]}°C`);
+    setTemp6(`${temperaturesDaily[4]}°C`);
+    setTemp7(`${temperaturesDaily[5]}°C`);
+    setTemp8(`${temperaturesDaily[6]}°C`);
+    setRain2(`${Math.floor(forecastsDaily[0].pop * 100)}%`);
+    setRain3(`${Math.floor(forecastsDaily[1].pop * 100)}%`);
+    setRain4(`${Math.floor(forecastsDaily[2].pop * 100)}%`);
+    setRain5(`${Math.floor(forecastsDaily[3].pop * 100)}%`);
+    setRain6(`${Math.floor(forecastsDaily[4].pop * 100)}%`);
+    setRain7(`${Math.floor(forecastsDaily[5].pop * 100)}%`);
+    setRain8(`${Math.floor(forecastsDaily[6].pop * 100)}%`);
     setJour2(daysOfWeek[0]);
     setJour3(daysOfWeek[1]);
     setJour4(daysOfWeek[2]);
     setJour5(daysOfWeek[3]);
     setJour6(daysOfWeek[4]);
+    setJour7(daysOfWeek[5]);
+    setJour8(daysOfWeek[6]);
     setDataChart(chartData);
   };
 
-  const fetchDataCurrent = async (data, data2, data3) => {
+  const fetchDataCurrent = async (city, data, data2) => {
     const {
-      name, sys, main, wind, weather,
+      current,
+      timezone_offset: timezoneOffset,
     } = data;
-    const weatherId = weather[0].id;
-    const ventDeg = wind.deg ? wind.deg : 0;
+    const { moon_phase: moonPhaseCurrent } = data.daily[0];
+    const weatherId = current.weather[0].id;
+    const ventDeg = current.wind_deg ? current.wind_deg : 0;
     const date = new Date();
-    const timezoneOffsetMinutes = data.timezone / 60;
+    const timezoneOffsetMinutes = timezoneOffset / 60;
     const timezoneOffsetHours = timezoneOffsetMinutes / 60;
     const utcDate = new Date(
       date.getUTCFullYear(),
@@ -212,29 +235,38 @@ export default function App(props) {
     );
     const localDate = new Date(utcDate.getTime() + (timezoneOffsetHours * 60 * 60 * 1000));
     const heureLocale = localDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-    const sunriseUTC = new Date(sys.sunrise * 1000);
-    const sunriseLocal = new Date(sunriseUTC.getTime()
+    const sunriseUTC = new Date(current.sunrise * 1000);
+    const sunriseLocal = new Date(
+      sunriseUTC.getTime()
       + (date.getTimezoneOffset() * 60 * 1000)
-      + (timezoneOffsetMinutes * 60 * 1000));
+      + (timezoneOffsetMinutes * 60 * 1000),
+    );
     const sunUp = sunriseLocal.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-    const sunsetUTC = new Date(sys.sunset * 1000);
-    const sunsetLocal = new Date(sunsetUTC.getTime()
+    const sunsetUTC = new Date(current.sunset * 1000);
+    const sunsetLocal = new Date(
+      sunsetUTC.getTime()
       + (date.getTimezoneOffset() * 60 * 1000)
-      + (timezoneOffsetMinutes * 60 * 1000));
+      + (timezoneOffsetMinutes * 60 * 1000),
+    );
     const sunDown = sunsetLocal.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    const name = city;
 
     setLever(sunUp);
     setCoucher(sunDown);
     setHeure(heureLocale);
     setVille(name);
-    setTemperature(`${main.temp.toFixed(1)}°C`);
-    setRessenti(`${main.feels_like.toFixed(0)}°C`);
-    setHumidite(`${main.humidity}%`);
-    setVent(`${(3.6 * wind.speed).toFixed(0)}km/h`);
-    setPression(`${main.pressure}hPa`);
+    setTemperature(`${current.temp.toFixed(1)}°C`);
+    setRessenti(`${current.feels_like.toFixed(0)}°C`);
+    setHumidite(`${current.humidity}%`);
+    setVent(`${(3.6 * current.wind_speed).toFixed(0)}km/h`);
+    setPression(`${current.pressure}hPa`);
     setVentDirection(ventDeg + 180);
+    setUv(current.uvi);
+    setLatitudeVille(data.lat);
+    setLongitudeVille(data.lon);
+    setMoonPhase(moonPhaseCurrent);
 
-    localStorage.setItem('ville', `${name}, ${sys.country}`);
+    localStorage.setItem('ville', name);
 
     let mainImgSrc;
     let backgroundColor;
@@ -390,17 +422,17 @@ export default function App(props) {
       }
     }
 
-    setMainImg(<Image src={mainImgSrc} className="mainImg" alt={weather[0].description} width={96} height={90} />);
+    setMainImg(<Image src={mainImgSrc} className="mainImg" alt={current.weather[0].description} width={96} height={90} />);
     document.body.style.background = backgroundColor;
-    fetchDataForecasts(data2);
-    fetchDataAirPollution(data3);
+    fetchDataForecasts(data);
+    fetchDataAirPollution(data2);
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     document.querySelector('.info-txt').style.display = 'block';
-    const villeTrim = ville.trim().replace('Arrondissement de ', '').replace('Arrondissement d\'', '');
-    if (villeTrim === '' || /\d/.test(villeTrim)) {
+    const villeTrim = ville.trim();
+    if (villeTrim === '') {
       showError('Veuillez saisir une ville valide...');
       document.querySelector('.info-txt').style.display = 'none';
       return;
@@ -416,8 +448,8 @@ export default function App(props) {
     });
     const data = await response.json();
     if (response.ok) {
-      const { currentData, forecastData, airPollutionData } = data;
-      fetchDataCurrent(currentData, forecastData, airPollutionData);
+      const { city, oneCallData, airPollutionData } = data;
+      fetchDataCurrent(city, oneCallData, airPollutionData);
       setShowComponents(true);
     } else {
       showError('Un problème est survenu, saisissez le nom complet de la ville...');
@@ -442,8 +474,8 @@ export default function App(props) {
         });
         const data = await response.json();
         if (response.ok) {
-          const { currentData, forecastData, airPollutionData } = data;
-          fetchDataCurrent(currentData, forecastData, airPollutionData);
+          const { city, oneCallData, airPollutionData } = data;
+          fetchDataCurrent(city, oneCallData, airPollutionData);
           setShowComponents(true);
         } else {
           showError('Un problème est survenu lors de la géolocalisation...');
@@ -474,6 +506,8 @@ export default function App(props) {
       setTemp4(`${(temp4.slice(0, -2) * 1.8 + 32).toFixed(0)}°F`);
       setTemp5(`${(temp5.slice(0, -2) * 1.8 + 32).toFixed(0)}°F`);
       setTemp6(`${(temp6.slice(0, -2) * 1.8 + 32).toFixed(0)}°F`);
+      setTemp7(`${(temp7.slice(0, -2) * 1.8 + 32).toFixed(0)}°F`);
+      setTemp8(`${(temp8.slice(0, -2) * 1.8 + 32).toFixed(0)}°F`);
       setDataChart(dataChart.map((item) => ({
         ...item,
         temp: (item.temp * 1.8 + 32),
@@ -488,6 +522,8 @@ export default function App(props) {
       setTemp4(`${((temp4.slice(0, -2) - 32) / 1.8).toFixed(0)}°C`);
       setTemp5(`${((temp5.slice(0, -2) - 32) / 1.8).toFixed(0)}°C`);
       setTemp6(`${((temp6.slice(0, -2) - 32) / 1.8).toFixed(0)}°C`);
+      setTemp7(`${((temp7.slice(0, -2) - 32) / 1.8).toFixed(0)}°C`);
+      setTemp8(`${((temp8.slice(0, -2) - 32) / 1.8).toFixed(0)}°C`);
       setDataChart(dataChart.map((item) => ({
         ...item,
         temp: ((item.temp - 32) / 1.8),
@@ -599,7 +635,7 @@ export default function App(props) {
               </div>
               <div className="chart-part">
                 <div className="graphique">
-                  <p className="titreGraph">Prévisions (24h)</p>
+                  <p className="titreGraph">Prévisions</p>
                   <ResponsiveContainer width="90%" height={100} style={{ margin: 'auto' }}>
                     <LineChart data={dataChart}>
                       <XAxis axisLine={false} tick={false} dataKey="name" />
@@ -633,6 +669,12 @@ export default function App(props) {
                       <div className="temp">
                         <span>{temp2}</span>
                       </div>
+                      <div className="pop">
+                        <span>
+                          <BsFillDropletFill />
+                          {rain2}
+                        </span>
+                      </div>
                     </div>
                   </div>
                   <div className="column">
@@ -641,6 +683,12 @@ export default function App(props) {
                       {img3}
                       <div className="temp">
                         <span>{temp3}</span>
+                      </div>
+                      <div className="pop">
+                        <span>
+                          <BsFillDropletFill />
+                          {rain3}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -651,6 +699,12 @@ export default function App(props) {
                       <div className="temp">
                         <span>{temp4}</span>
                       </div>
+                      <div className="pop">
+                        <span>
+                          <BsFillDropletFill />
+                          {rain4}
+                        </span>
+                      </div>
                     </div>
                   </div>
                   <div className="column">
@@ -659,6 +713,12 @@ export default function App(props) {
                       {img5}
                       <div className="temp">
                         <span>{temp5}</span>
+                      </div>
+                      <div className="pop">
+                        <span>
+                          <BsFillDropletFill />
+                          {rain5}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -669,26 +729,82 @@ export default function App(props) {
                       <div className="temp">
                         <span>{temp6}</span>
                       </div>
+                      <div className="pop">
+                        <span>
+                          <BsFillDropletFill />
+                          {rain6}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="column">
+                    <div className="detailsForecasts">
+                      <p>{jour7}</p>
+                      {img7}
+                      <div className="temp">
+                        <span>{temp7}</span>
+                      </div>
+                      <div className="pop">
+                        <span>
+                          <BsFillDropletFill />
+                          {rain7}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="column">
+                    <div className="detailsForecasts">
+                      <p>{jour8}</p>
+                      {img8}
+                      <div className="temp">
+                        <span>{temp8}</span>
+                      </div>
+                      <div className="pop">
+                        <span>
+                          <BsFillDropletFill />
+                          {rain8}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
-                <div className="sunPart">
-                  <p>
-                    Pollution de l&#39;air :
-                    {' '}
-                    {airPollution}
-                  </p>
-                </div>
-                <div className="sunPart">
-                  <p>
-                    <BsFillSunriseFill />
-                    {lever}
-                  </p>
-                  <p>
-                    <BsFillSunsetFill />
-                    {coucher}
-                  </p>
-                </div>
+                <details>
+                  <summary>Plus d&#39;informations</summary>
+                  <div className="plusInfo">
+                    <p>
+                      Pollution de l&#39;air :
+                      {' '}
+                      {airPollution}
+                    </p>
+                    <p>
+                      Indice UV :
+                      {' '}
+                      {uv}
+                    </p>
+                    <p>
+                      Longitude :
+                      {' '}
+                      {longitudeVille}
+                    </p>
+                    <p>
+                      Latitude :
+                      {' '}
+                      {latitudeVille}
+                    </p>
+                    <p>
+                      <BsFillSunriseFill />
+                      {lever}
+                      {' '}
+                      <BsFillSunsetFill />
+                      {coucher}
+                    </p>
+                    <p>
+                      Phase de lune :
+                      {' '}
+                      {moonPhase}
+                    </p>
+                  </div>
+                </details>
               </div>
             </>
           )}
@@ -697,6 +813,10 @@ export default function App(props) {
         <footer className="copyright">
           &copy;
           <a href="https://leoseguin.fr/" target="_blank" rel="noreferrer" aria-label="Vers leoseguin.fr">leoseguin.fr</a>
+          {' '}
+          -
+          {' '}
+          <a href="https://leoseguin.fr/mentionslegales" target="_blank" rel="noreferrer" aria-label="Vers mentions légales">Mentions légales</a>
         </footer>
         )}
         <Component />
