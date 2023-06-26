@@ -174,19 +174,19 @@ export default function App(props) {
     if (phase === 0) {
       phase = <WiMoonAltNew />;
     } else if (phase > 0 && phase < 0.25) {
-      phase = <WiMoonAltWaxingCrescent3 />;
+      phase = <WiMoonAltWaningCrescent3 />;
     } else if (phase === 0.25) {
-      phase = <WiMoonAltFirstQuarter />;
+      phase = <WiMoonAltThirdQuarter />;
     } else if (phase > 0.25 && phase < 0.5) {
-      phase = <WiMoonAltWaxingGibbous3 />;
+      phase = <WiMoonAltWaningGibbous3 />;
     } else if (phase === 0.5) {
       phase = <WiMoonAltFull />;
     } else if (phase > 0.5 && phase < 0.75) {
-      phase = <WiMoonAltWaningGibbous3 />;
+      phase = <WiMoonAltWaxingGibbous3 />;
     } else if (phase === 0.75) {
-      phase = <WiMoonAltThirdQuarter />;
+      phase = <WiMoonAltFirstQuarter />;
     } else if (phase > 0.75 && phase < 1) {
-      phase = <WiMoonAltWaningCrescent3 />;
+      phase = <WiMoonAltWaxingCrescent3 />;
     } else {
       phase = <WiMoonAltNew />;
     }
