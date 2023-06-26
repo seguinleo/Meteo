@@ -1,16 +1,30 @@
-/* eslint-disable react/jsx-no-bind */
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
-  LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
 } from 'recharts';
 import { RxMagnifyingGlass } from 'react-icons/rx';
 import { BsFillSunriseFill, BsFillSunsetFill, BsFillDropletFill } from 'react-icons/bs';
 import { RiFahrenheitFill, RiCelsiusFill } from 'react-icons/ri';
-// eslint-disable-next-line import/no-unresolved
-import { Analytics } from '@vercel/analytics/react';
+import {
+  WiMoonAltNew,
+  WiMoonAltWaxingCrescent3,
+  WiMoonAltFirstQuarter,
+  WiMoonAltWaxingGibbous3,
+  WiMoonAltFull,
+  WiMoonAltWaningGibbous3,
+  WiMoonAltThirdQuarter,
+  WiMoonAltWaningCrescent3,
+} from 'react-icons/wi';
 import Head from 'next/head';
 import Image from 'next/image';
+// eslint-disable-next-line import/no-unresolved
+import { Analytics } from '@vercel/analytics/react';
 import CustomTooltip from './components/CustomTooltip';
 import './assets/css/style.css';
 
@@ -34,7 +48,8 @@ export default function App(props) {
   const [latitudeVille, setLatitudeVille] = useState(null);
   const [longitudeVille, setLongitudeVille] = useState(null);
   const [moonPhase, setMoonPhase] = useState(null);
-  const [dataChart, setDataChart] = useState(null);
+  const [dataChart1, setDataChart1] = useState(null);
+  const [dataChart2, setDataChart2] = useState(null);
   const [heure, setHeure] = useState(null);
   const [jour2, setJour2] = useState(null);
   const [jour3, setJour3] = useState(null);
@@ -77,7 +92,7 @@ export default function App(props) {
     }
   }, [metaTheme]);
 
-  function showError(message) {
+  const showError = (message) => {
     if (timeoutError) clearTimeout(timeoutError);
     const notification = document.querySelector('#errorNotification');
     setError(message);
@@ -85,9 +100,9 @@ export default function App(props) {
     timeoutError = setTimeout(() => {
       notification.style.display = 'none';
     }, 5000);
-  }
+  };
 
-  function getImage(number) {
+  const getImage = (number) => {
     if ((number >= 200 && number <= 202) || (number >= 230 && number <= 232)) {
       return <Image src="/assets/icons/storm.png" alt="Tempête" width={48} height={45} />;
     }
@@ -134,7 +149,7 @@ export default function App(props) {
       return <Image src="/assets/icons/fewclouds.png" alt="Quelques nuages" width={48} height={45} />;
     }
     return <Image src="/assets/icons/clouds.png" alt="Nuages" width={48} height={45} />;
-  }
+  };
 
   const fetchDataAirPollution = (data) => {
     let { aqi } = data.list[0].main;
@@ -153,10 +168,44 @@ export default function App(props) {
     setAirPollution(aqi);
   };
 
+  const fetchDataMoon = (data) => {
+    let phase = data;
+
+    if (phase === 0) {
+      phase = <WiMoonAltNew />;
+    } else if (phase > 0 && phase < 0.25) {
+      phase = <WiMoonAltWaxingCrescent3 />;
+    } else if (phase === 0.25) {
+      phase = <WiMoonAltFirstQuarter />;
+    } else if (phase > 0.25 && phase < 0.5) {
+      phase = <WiMoonAltWaxingGibbous3 />;
+    } else if (phase === 0.5) {
+      phase = <WiMoonAltFull />;
+    } else if (phase > 0.5 && phase < 0.75) {
+      phase = <WiMoonAltWaningGibbous3 />;
+    } else if (phase === 0.75) {
+      phase = <WiMoonAltThirdQuarter />;
+    } else if (phase > 0.75 && phase < 1) {
+      phase = <WiMoonAltWaningCrescent3 />;
+    } else {
+      phase = <WiMoonAltNew />;
+    }
+    setMoonPhase(phase);
+  };
+
   const fetchDataForecasts = async (data) => {
     const { hourly, daily } = data;
-    const forecastsHourly = hourly.slice(1, 24);
-    const chartData = forecastsHourly.filter((item, index) => index % 2 === 0).map((item) => {
+    const currentDateTime = new Date();
+    const currentDay = currentDateTime.toLocaleDateString('fr-FR', { timeZone: data.timezone });
+    const nextDay = new Date(currentDateTime);
+    nextDay.setDate(nextDay.getDate() + 1);
+    const nextDayFormatted = nextDay.toLocaleDateString('fr-FR', { timeZone: data.timezone });
+
+    const chartData1 = hourly.filter((item) => {
+      const forecastDateTime = new Date(item.dt * 1000);
+      const forecastDay = forecastDateTime.toLocaleDateString('fr-FR', { timeZone: data.timezone });
+      return forecastDay === currentDay;
+    }).slice(1).map((item) => {
       const forecastDateTime = new Date(item.dt * 1000);
       const forecastTime = forecastDateTime.toLocaleTimeString('fr-FR', {
         hour: '2-digit',
@@ -170,7 +219,31 @@ export default function App(props) {
         pressure: item.pressure,
         wind: item.wind_speed,
         windDeg: item.wind_deg,
-        weather: item.weather[0],
+        weather: item.weather[0].id,
+        rain: (item.pop * 100) || 0,
+        uv: item.uvi,
+      };
+    });
+
+    const chartData2 = hourly.filter((item, index) => {
+      const forecastDateTime = new Date(item.dt * 1000);
+      const forecastDay = forecastDateTime.toLocaleDateString('fr-FR', { timeZone: data.timezone });
+      return forecastDay === nextDayFormatted && index % 2 === 0;
+    }).map((item) => {
+      const forecastDateTime = new Date(item.dt * 1000);
+      const forecastTime = forecastDateTime.toLocaleTimeString('fr-FR', {
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZone: data.timezone,
+      });
+      return {
+        name: forecastTime,
+        temp: item.temp,
+        humidity: item.humidity,
+        pressure: item.pressure,
+        wind: item.wind_speed,
+        windDeg: item.wind_deg,
+        weather: item.weather[0].id,
         rain: (item.pop * 100) || 0,
         uv: item.uvi,
       };
@@ -211,7 +284,8 @@ export default function App(props) {
     setJour6(daysOfWeek[4]);
     setJour7(daysOfWeek[5]);
     setJour8(daysOfWeek[6]);
-    setDataChart(chartData);
+    setDataChart1(chartData1);
+    setDataChart2(chartData2);
   };
 
   const fetchDataCurrent = async (city, data, data2) => {
@@ -261,10 +335,10 @@ export default function App(props) {
     setVent(`${(3.6 * current.wind_speed).toFixed(0)}km/h`);
     setPression(`${current.pressure}hPa`);
     setVentDirection(ventDeg + 180);
-    setUv(current.uvi);
+    setUv(current.uvi.toFixed(0));
     setLatitudeVille(data.lat);
     setLongitudeVille(data.lon);
-    setMoonPhase(moonPhaseCurrent);
+    fetchDataMoon(moonPhaseCurrent);
 
     localStorage.setItem('ville', name);
 
@@ -357,8 +431,8 @@ export default function App(props) {
     } else if (weatherId >= 701 && weatherId <= 721) {
       if (heureLocale > sunUp && heureLocale < sunDown) {
         mainImgSrc = '/assets/icons/haze.png';
-        backgroundColor = '#6cb0e0';
-        setMetaTheme('#6cb0e0');
+        backgroundColor = '#38aafc';
+        setMetaTheme('#38aafc');
       } else {
         mainImgSrc = '/assets/icons/hazeNight.png';
         backgroundColor = '#895abf';
@@ -367,8 +441,8 @@ export default function App(props) {
     } else if (weatherId === 731 || (weatherId >= 751 && weatherId <= 771)) {
       mainImgSrc = '/assets/icons/dust.png';
       if (heureLocale > sunUp && heureLocale < sunDown) {
-        backgroundColor = '#6cb0e0';
-        setMetaTheme('#6cb0e0');
+        backgroundColor = '#38aafc';
+        setMetaTheme('#38aafc');
       } else {
         backgroundColor = '#895abf';
         setMetaTheme('#895abf');
@@ -376,8 +450,8 @@ export default function App(props) {
     } else if (weatherId === 741) {
       mainImgSrc = '/assets/icons/fog.png';
       if (heureLocale > sunUp && heureLocale < sunDown) {
-        backgroundColor = '#6cb0e0';
-        setMetaTheme('#6cb0e0');
+        backgroundColor = '#38aafc';
+        setMetaTheme('#38aafc');
       } else {
         backgroundColor = '#895abf';
         setMetaTheme('#895abf');
@@ -431,8 +505,7 @@ export default function App(props) {
   const handleSubmit = async (event) => {
     event.preventDefault();
     document.querySelector('.info-txt').style.display = 'block';
-    const villeTrim = ville.trim();
-    if (villeTrim === '') {
+    if (ville === '' || /^[0-9]+$/.test(ville)) {
       showError('Veuillez saisir une ville valide...');
       document.querySelector('.info-txt').style.display = 'none';
       return;
@@ -443,7 +516,7 @@ export default function App(props) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        villeTrim,
+        ville,
       }),
     });
     const data = await response.json();
@@ -508,7 +581,12 @@ export default function App(props) {
       setTemp6(`${(temp6.slice(0, -2) * 1.8 + 32).toFixed(0)}°F`);
       setTemp7(`${(temp7.slice(0, -2) * 1.8 + 32).toFixed(0)}°F`);
       setTemp8(`${(temp8.slice(0, -2) * 1.8 + 32).toFixed(0)}°F`);
-      setDataChart(dataChart.map((item) => ({
+      setDataChart1(dataChart1.map((item) => ({
+        ...item,
+        temp: (item.temp * 1.8 + 32),
+        wind: (item.wind / 1.609),
+      })));
+      setDataChart2(dataChart2.map((item) => ({
         ...item,
         temp: (item.temp * 1.8 + 32),
         wind: (item.wind / 1.609),
@@ -524,7 +602,12 @@ export default function App(props) {
       setTemp6(`${((temp6.slice(0, -2) - 32) / 1.8).toFixed(0)}°C`);
       setTemp7(`${((temp7.slice(0, -2) - 32) / 1.8).toFixed(0)}°C`);
       setTemp8(`${((temp8.slice(0, -2) - 32) / 1.8).toFixed(0)}°C`);
-      setDataChart(dataChart.map((item) => ({
+      setDataChart1(dataChart1.map((item) => ({
+        ...item,
+        temp: ((item.temp - 32) / 1.8),
+        wind: (item.wind * 1.609),
+      })));
+      setDataChart2(dataChart2.map((item) => ({
         ...item,
         temp: ((item.temp - 32) / 1.8),
         wind: (item.wind * 1.609),
@@ -574,8 +657,9 @@ export default function App(props) {
                 <input
                   type="text"
                   placeholder="Paris, FR"
-                  maxLength="40"
+                  maxLength="50"
                   aria-label="Rechercher"
+                  id="ville"
                   value={ville}
                   onChange={(event) => setVille(event.target.value)}
                   aria-required="true"
@@ -604,6 +688,10 @@ export default function App(props) {
                       Ressenti
                       {' '}
                       {ressenti}
+                      {' '}
+                      | UV
+                      {' '}
+                      {uv}
                     </span>
                   </div>
                 </div>
@@ -635,13 +723,36 @@ export default function App(props) {
               </div>
               <div className="chart-part">
                 <div className="graphique">
-                  <p className="titreGraph">Prévisions</p>
+                  <p className="titreGraph">Ajourd&#39;hui</p>
                   <ResponsiveContainer width="90%" height={100} style={{ margin: 'auto' }}>
-                    <LineChart data={dataChart}>
+                    <LineChart data={dataChart1}>
                       <XAxis axisLine={false} tick={false} dataKey="name" />
                       <YAxis yAxisId="temperature" axisLine={false} tick={false} domain={['dataMin', 'dataMax']} width={0} />
                       <YAxis yAxisId="rain" orientation="right" axisLine={false} tick={false} domain={[0, 100]} width={0} />
-                      <Tooltip content={<CustomTooltip getImage={getImage} temperature={temperature} />} wrapperStyle={{ outline: 'none' }} />
+                      <Tooltip content={<CustomTooltip getImage={getImage} temperature={temperature} />} wrapperStyle={{ outline: 'none', zIndex: '999' }} />
+                      <Line
+                        dataKey="temp"
+                        stroke="rgba(255,255,255,.7)"
+                        strokeWidth="2"
+                        dot={{ r: 4 }}
+                        yAxisId="temperature"
+                      />
+                      <Line
+                        dataKey="rain"
+                        stroke="rgba(57,196,243,.7)"
+                        strokeWidth="2"
+                        dot={{ r: 4 }}
+                        yAxisId="rain"
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                  <p className="titreGraph">Demain</p>
+                  <ResponsiveContainer width="90%" height={100} style={{ margin: 'auto' }}>
+                    <LineChart data={dataChart2}>
+                      <XAxis axisLine={false} tick={false} dataKey="name" />
+                      <YAxis yAxisId="temperature" axisLine={false} tick={false} domain={['dataMin', 'dataMax']} width={0} />
+                      <YAxis yAxisId="rain" orientation="right" axisLine={false} tick={false} domain={[0, 100]} width={0} />
+                      <Tooltip content={<CustomTooltip getImage={getImage} temperature={temperature} />} wrapperStyle={{ outline: 'none', zIndex: '999' }} />
                       <Line
                         dataKey="temp"
                         stroke="rgba(255,255,255,.7)"
@@ -777,21 +888,6 @@ export default function App(props) {
                       {airPollution}
                     </p>
                     <p>
-                      Indice UV :
-                      {' '}
-                      {uv}
-                    </p>
-                    <p>
-                      Longitude :
-                      {' '}
-                      {longitudeVille}
-                    </p>
-                    <p>
-                      Latitude :
-                      {' '}
-                      {latitudeVille}
-                    </p>
-                    <p>
                       <BsFillSunriseFill />
                       {lever}
                       {' '}
@@ -802,6 +898,16 @@ export default function App(props) {
                       Phase de lune :
                       {' '}
                       {moonPhase}
+                    </p>
+                    <p>
+                      Longitude :
+                      {' '}
+                      {longitudeVille}
+                    </p>
+                    <p>
+                      Latitude :
+                      {' '}
+                      {latitudeVille}
                     </p>
                   </div>
                 </details>

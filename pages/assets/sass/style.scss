@@ -18,7 +18,19 @@ html {
   color: #ffffff;
   -webkit-tap-highlight-color: transparent;
   -webkit-user-select: none;
-  user-select: none
+  user-select: none;
+  scroll-behavior: smooth;
+  scrollbar-color: rgba(255, 255, 255, .5) rgba(0, 0, 0, 0);
+  scrollbar-width: thin;
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, .5)
 }
 
 * {
@@ -211,12 +223,11 @@ summary {
   margin-top: 1.5rem;
 
   .titreGraph {
-    font-size: .8rem;
-    opacity: .8
+    font-size: .8rem
   }
 
   .recharts-responsive-container {
-    margin: 1rem auto
+    margin: 10px auto
   }
 
   .custom-tooltip {
@@ -246,8 +257,7 @@ summary {
 
 .detail p {
   margin: 0 auto;
-  font-size: .8rem;
-  opacity: .8
+  font-size: .8rem
 }
 
 .detailsForecasts p {
@@ -289,10 +299,6 @@ summary {
   border-radius: 5px;
   display: none;
   z-index: 999
-}
-
-.bold {
-  font-weight: 700
 }
 
 .copyright {

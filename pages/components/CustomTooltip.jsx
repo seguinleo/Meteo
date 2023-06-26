@@ -17,9 +17,9 @@ function CustomTooltip({
     } = payload[0].payload;
     return (
       <div className="custom-tooltip">
-        <p className="bold">
+        <p>
           {label}
-          {getImage(weather.id)}
+          {getImage(weather)}
         </p>
         <p>
           Température
@@ -34,12 +34,6 @@ function CustomTooltip({
           %
         </p>
         <p>
-          Pressure
-          {' '}
-          {pressure}
-          hPa
-        </p>
-        <p>
           Vent
           {' '}
           <svg width="18" height="18" viewBox="0 0 50 50">
@@ -49,13 +43,19 @@ function CustomTooltip({
           {temperature.endsWith('C') ? 'km/h' : 'mph'}
         </p>
         <p>
+          Pression
+          {' '}
+          {pressure}
+          hPa
+        </p>
+        <p>
           Pluie
           {' '}
           {rain.toFixed(0)}
           %
         </p>
         <p>
-          Indice UV
+          UV
           {' '}
           {uv.toFixed(0)}
         </p>
@@ -66,8 +66,20 @@ function CustomTooltip({
 }
 
 CustomTooltip.propTypes = {
-  // eslint-disable-next-line react/forbid-prop-types
-  payload: PropTypes.arrayOf(PropTypes.object),
+  payload: PropTypes.arrayOf(
+    PropTypes.shape({
+      payload: PropTypes.shape({
+        temp: PropTypes.number.isRequired,
+        humidity: PropTypes.number.isRequired,
+        pressure: PropTypes.number.isRequired,
+        wind: PropTypes.number.isRequired,
+        windDeg: PropTypes.number.isRequired,
+        weather: PropTypes.number.isRequired,
+        rain: PropTypes.number.isRequired,
+        uv: PropTypes.number.isRequired,
+      }).isRequired,
+    }),
+  ),
   label: PropTypes.string,
   getImage: PropTypes.func.isRequired,
   temperature: PropTypes.string.isRequired,
