@@ -174,19 +174,19 @@ export default function App(props) {
     if (phase === 0) {
       phase = <WiMoonAltNew />;
     } else if (phase > 0 && phase < 0.25) {
-      phase = <WiMoonAltWaningCrescent3 />;
+      phase = <WiMoonAltWaningGibbous3 />;
     } else if (phase === 0.25) {
       phase = <WiMoonAltThirdQuarter />;
     } else if (phase > 0.25 && phase < 0.5) {
-      phase = <WiMoonAltWaningGibbous3 />;
+      phase = <WiMoonAltWaningCrescent3 />;
     } else if (phase === 0.5) {
       phase = <WiMoonAltFull />;
     } else if (phase > 0.5 && phase < 0.75) {
-      phase = <WiMoonAltWaxingGibbous3 />;
+      phase = <WiMoonAltWaxingCrescent3 />;
     } else if (phase === 0.75) {
       phase = <WiMoonAltFirstQuarter />;
     } else if (phase > 0.75 && phase < 1) {
-      phase = <WiMoonAltWaxingCrescent3 />;
+      phase = <WiMoonAltWaxingGibbous3 />;
     } else {
       phase = <WiMoonAltNew />;
     }
@@ -201,11 +201,17 @@ export default function App(props) {
     nextDay.setDate(nextDay.getDate() + 1);
     const nextDayFormatted = nextDay.toLocaleDateString('fr-FR', { timeZone: data.timezone });
 
-    const chartData1 = hourly.filter((item) => {
+    let chartData1 = hourly.filter((item) => {
       const forecastDateTime = new Date(item.dt * 1000);
       const forecastDay = forecastDateTime.toLocaleDateString('fr-FR', { timeZone: data.timezone });
       return forecastDay === currentDay;
-    }).slice(1).map((item) => {
+    }).slice(1);
+
+    if (chartData1.length > 12) {
+      chartData1 = chartData1.filter((item, index) => index % 2 === 0);
+    }
+
+    chartData1 = chartData1.map((item) => {
       const forecastDateTime = new Date(item.dt * 1000);
       const forecastTime = forecastDateTime.toLocaleTimeString('fr-FR', {
         hour: '2-digit',
@@ -723,36 +729,56 @@ export default function App(props) {
               </div>
               <div className="chart-part">
                 <div className="graphique">
-                  <p className="titreGraph">Ajourd&#39;hui</p>
-                  <ResponsiveContainer width="90%" height={100} style={{ margin: 'auto' }}>
-                    <LineChart data={dataChart1}>
-                      <XAxis axisLine={false} tick={false} dataKey="name" />
-                      <YAxis yAxisId="temperature" axisLine={false} tick={false} domain={['dataMin', 'dataMax']} width={0} />
-                      <YAxis yAxisId="rain" orientation="right" axisLine={false} tick={false} domain={[0, 100]} width={0} />
-                      <Tooltip content={<CustomTooltip getImage={getImage} temperature={temperature} />} wrapperStyle={{ outline: 'none', zIndex: '999' }} />
-                      <Line
-                        dataKey="temp"
-                        stroke="rgba(255,255,255,.7)"
-                        strokeWidth="2"
-                        dot={{ r: 4 }}
-                        yAxisId="temperature"
-                      />
-                      <Line
-                        dataKey="rain"
-                        stroke="rgba(57,196,243,.7)"
-                        strokeWidth="2"
-                        dot={{ r: 4 }}
-                        yAxisId="rain"
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
+                  {dataChart1.length > 0 && (
+                  <>
+                    <p className="titreGraph">Ajourd&#39;hui</p>
+                    <ResponsiveContainer width="100%" height={100} style={{ margin: 'auto' }}>
+                      <LineChart data={dataChart1}>
+                        <XAxis axisLine={false} tick={false} dataKey="name" />
+                        <YAxis yAxisId="temperature" domain={['dataMin', 'dataMax']} width={0} />
+                        <YAxis yAxisId="rain" domain={[0, 100]} width={0} />
+                        <Tooltip
+                          content={(
+                            <CustomTooltip
+                              getImage={getImage}
+                              temperature={temperature}
+                            />
+                          )}
+                          wrapperStyle={{ zIndex: '999' }}
+                        />
+                        <Line
+                          dataKey="temp"
+                          stroke="rgba(255,255,255,.7)"
+                          strokeWidth="2"
+                          dot={{ r: 4 }}
+                          yAxisId="temperature"
+                        />
+                        <Line
+                          dataKey="rain"
+                          stroke="rgba(57,196,243,.7)"
+                          strokeWidth="2"
+                          dot={{ r: 4 }}
+                          yAxisId="rain"
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </>
+                  )}
                   <p className="titreGraph">Demain</p>
-                  <ResponsiveContainer width="90%" height={100} style={{ margin: 'auto' }}>
+                  <ResponsiveContainer width="100%" height={100} style={{ margin: 'auto' }}>
                     <LineChart data={dataChart2}>
                       <XAxis axisLine={false} tick={false} dataKey="name" />
-                      <YAxis yAxisId="temperature" axisLine={false} tick={false} domain={['dataMin', 'dataMax']} width={0} />
-                      <YAxis yAxisId="rain" orientation="right" axisLine={false} tick={false} domain={[0, 100]} width={0} />
-                      <Tooltip content={<CustomTooltip getImage={getImage} temperature={temperature} />} wrapperStyle={{ outline: 'none', zIndex: '999' }} />
+                      <YAxis yAxisId="temperature" domain={['dataMin', 'dataMax']} width={0} />
+                      <YAxis yAxisId="rain" domain={[0, 100]} width={0} />
+                      <Tooltip
+                        content={(
+                          <CustomTooltip
+                            getImage={getImage}
+                            temperature={temperature}
+                          />
+                        )}
+                        wrapperStyle={{ Index: '999' }}
+                      />
                       <Line
                         dataKey="temp"
                         stroke="rgba(255,255,255,.7)"
