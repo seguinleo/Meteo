@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import Image from 'next/image';
 
 function CustomTooltip({
   payload, label, getImage, temperature,
@@ -14,12 +15,14 @@ function CustomTooltip({
       weather,
       rain,
       uv,
+      sunDownH,
+      sunUpH,
     } = payload[0].payload;
     return (
       <div className="custom-tooltip">
         <p>
           {label}
-          {getImage(weather)}
+          <Image src={getImage(weather, sunDownH, sunUpH, label, false).imgSrc} alt="" width={48} height={45} />
         </p>
         <p>
           Température
@@ -77,6 +80,8 @@ CustomTooltip.propTypes = {
         weather: PropTypes.number.isRequired,
         rain: PropTypes.number.isRequired,
         uv: PropTypes.number.isRequired,
+        sunDownH: PropTypes.string.isRequired,
+        sunUpH: PropTypes.string.isRequired,
       }).isRequired,
     }),
   ),

@@ -1,12 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
+  LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer,
 } from 'recharts';
 import { RxMagnifyingGlass } from 'react-icons/rx';
 import { BsFillSunriseFill, BsFillSunsetFill, BsFillDropletFill } from 'react-icons/bs';
@@ -51,34 +46,10 @@ export default function App(props) {
   const [dataChart1, setDataChart1] = useState(null);
   const [dataChart2, setDataChart2] = useState(null);
   const [heure, setHeure] = useState(null);
-  const [jour2, setJour2] = useState(null);
-  const [jour3, setJour3] = useState(null);
-  const [jour4, setJour4] = useState(null);
-  const [jour5, setJour5] = useState(null);
-  const [jour6, setJour6] = useState(null);
-  const [jour7, setJour7] = useState(null);
-  const [jour8, setJour8] = useState(null);
-  const [temp2, setTemp2] = useState(null);
-  const [temp3, setTemp3] = useState(null);
-  const [temp4, setTemp4] = useState(null);
-  const [temp5, setTemp5] = useState(null);
-  const [temp6, setTemp6] = useState(null);
-  const [temp7, setTemp7] = useState(null);
-  const [temp8, setTemp8] = useState(null);
-  const [rain2, setRain2] = useState(null);
-  const [rain3, setRain3] = useState(null);
-  const [rain4, setRain4] = useState(null);
-  const [rain5, setRain5] = useState(null);
-  const [rain6, setRain6] = useState(null);
-  const [rain7, setRain7] = useState(null);
-  const [rain8, setRain8] = useState(null);
-  const [img2, setImg2] = useState(null);
-  const [img3, setImg3] = useState(null);
-  const [img4, setImg4] = useState(null);
-  const [img5, setImg5] = useState(null);
-  const [img6, setImg6] = useState(null);
-  const [img7, setImg7] = useState(null);
-  const [img8, setImg8] = useState(null);
+  const [jours, setJours] = useState(Array(7).fill(null));
+  const [tempJours, setTempJours] = useState(Array(7).fill(null));
+  const [rainJours, setRainJours] = useState(Array(7).fill(null));
+  const [imgJours, setImgJours] = useState(Array(7).fill(null));
   const [error, setError] = useState(false);
 
   useEffect(() => {
@@ -102,58 +73,207 @@ export default function App(props) {
     }, 5000);
   };
 
-  const getImage = (number) => {
-    if ((number >= 200 && number <= 202) || (number >= 230 && number <= 232)) {
-      return <Image src="/assets/icons/storm.png" alt="Tempête" width={48} height={45} />;
+  const getImage = (id, sunDown, sunUp, time, main) => {
+    let imgSrc = '';
+    let backgroundColor = '';
+
+    if ((id >= 200 && id <= 202) || (id >= 230 && id <= 232)) {
+      imgSrc = '/assets/icons/storm.png';
+      if (main) {
+        if (time >= sunUp && time < sunDown) {
+          backgroundColor = '#19242b';
+          setMetaTheme('#19242b');
+        } else {
+          backgroundColor = '#281e33';
+          setMetaTheme('#281e33');
+        }
+      }
+    } else if (id >= 210 && id <= 221) {
+      imgSrc = '/assets/icons/thunder.png';
+      if (main) {
+        if (time >= sunUp && time < sunDown) {
+          backgroundColor = '#202d36';
+          setMetaTheme('#202d36');
+        } else {
+          backgroundColor = '#2f1f3f';
+          setMetaTheme('#2f1f3f');
+        }
+      }
+    } else if (id >= 300 && id <= 321) {
+      if (time >= sunUp && time < sunDown) {
+        imgSrc = '/assets/icons/drizzle.png';
+        if (main) {
+          backgroundColor = '#425b6b';
+          setMetaTheme('#425b6b');
+        }
+      } else {
+        imgSrc = '/assets/icons/drizzleNight.png';
+        if (main) {
+          backgroundColor = '#543973';
+          setMetaTheme('#543973');
+        }
+      }
+    } else if (id === 500) {
+      imgSrc = '/assets/icons/rain.png';
+      if (main) {
+        if (time >= sunUp && time < sunDown) {
+          backgroundColor = '#3d5669';
+          setMetaTheme('#3d5669');
+        } else {
+          backgroundColor = '#412e57';
+          setMetaTheme('#412e57');
+        }
+      }
+    } else if ((id >= 501 && id <= 504) || (id >= 520 && id <= 531)) {
+      imgSrc = '/assets/icons/shower.png';
+      if (main) {
+        if (time >= sunUp && time < sunDown) {
+          backgroundColor = '#2c3c47';
+          setMetaTheme('#2c3c47');
+        } else {
+          backgroundColor = '#312440';
+          setMetaTheme('#312440');
+        }
+      }
+    } else if (id === 511) {
+      imgSrc = '/assets/icons/hail.png';
+      if (main) {
+        if (time >= sunUp && time < sunDown) {
+          backgroundColor = '#879eb0';
+          setMetaTheme('#879eb0');
+        } else {
+          backgroundColor = '#5a4c6b';
+          setMetaTheme('#5a4c6b');
+        }
+      }
+    } else if (id === 600) {
+      imgSrc = '/assets/icons/snow.png';
+      if (main) {
+        if (time >= sunUp && time < sunDown) {
+          backgroundColor = '#879eb0';
+          setMetaTheme('#879eb0');
+        } else {
+          backgroundColor = '#77668a';
+          setMetaTheme('#77668a');
+        }
+      }
+    } else if ((id === 601 || id === 602) || (id >= 620 && id <= 622)) {
+      imgSrc = '/assets/icons/blizzard.png';
+      if (main) {
+        if (time >= sunUp && time < sunDown) {
+          backgroundColor = '#657682';
+          setMetaTheme('#657682');
+        } else {
+          backgroundColor = '#857a91';
+          setMetaTheme('#857a91');
+        }
+      }
+    } else if (id >= 611 && id <= 616) {
+      if (time >= sunUp && time < sunDown) {
+        imgSrc = '/assets/icons/sleet.png';
+        if (main) {
+          backgroundColor = '#2c3c47';
+          setMetaTheme('#2c3c47');
+        }
+      } else {
+        imgSrc = '/assets/icons/sleetNight.png';
+        if (main) {
+          backgroundColor = '#462c63';
+          setMetaTheme('#462c63');
+        }
+      }
+    } else if (id >= 701 && id <= 721) {
+      if (time >= sunUp && time < sunDown) {
+        imgSrc = '/assets/icons/haze.png';
+        if (main) {
+          backgroundColor = '#38aafc';
+          setMetaTheme('#38aafc');
+        }
+      } else {
+        imgSrc = '/assets/icons/hazeNight.png';
+        if (main) {
+          backgroundColor = '#895abf';
+          setMetaTheme('#895abf');
+        }
+      }
+    } else if (id === 731 || (id >= 751 && id <= 771)) {
+      imgSrc = '/assets/icons/dust.png';
+      if (main) {
+        if (time >= sunUp && time < sunDown) {
+          backgroundColor = '#38aafc';
+          setMetaTheme('#38aafc');
+        } else {
+          backgroundColor = '#895abf';
+          setMetaTheme('#895abf');
+        }
+      }
+    } else if (id === 741) {
+      imgSrc = '/assets/icons/fog.png';
+      if (main) {
+        if (time >= sunUp && time < sunDown) {
+          backgroundColor = '#38aafc';
+          setMetaTheme('#38aafc');
+        } else {
+          backgroundColor = '#895abf';
+          setMetaTheme('#895abf');
+        }
+      }
+    } else if (id === 781) {
+      imgSrc = '/assets/icons/tornado.png';
+      if (main) {
+        if (time >= sunUp && time < sunDown) {
+          backgroundColor = '#2c3c47';
+          setMetaTheme('#2c3c47');
+        } else {
+          backgroundColor = '#462c63';
+          setMetaTheme('#462c63');
+        }
+      }
+    } else if (id === 800) {
+      if (time >= sunUp && time < sunDown) {
+        imgSrc = '/assets/icons/sun.png';
+        if (main) {
+          backgroundColor = '#1c95ec';
+          setMetaTheme('#1c95ec');
+        }
+      } else {
+        imgSrc = '/assets/icons/moon.png';
+        if (main) {
+          backgroundColor = '#723ead';
+          setMetaTheme('#723ead');
+        }
+      }
+    } else if (id === 801 || id === 802) {
+      if (time >= sunUp && time < sunDown) {
+        imgSrc = '/assets/icons/fewclouds.png';
+        if (main) {
+          backgroundColor = '#5080a3';
+          setMetaTheme('#5080a3');
+        }
+      } else {
+        imgSrc = '/assets/icons/fewcloudsNight.png';
+        if (main) {
+          backgroundColor = '#5a308a';
+          setMetaTheme('#5a308a');
+        }
+      }
+    } else {
+      imgSrc = '/assets/icons/clouds.png';
+      if (main) {
+        if (time >= sunUp && time < sunDown) {
+          backgroundColor = '#496c85';
+          setMetaTheme('#496c85');
+        } else {
+          backgroundColor = '#4a2d6b';
+          setMetaTheme('#4a2d6b');
+        }
+      }
     }
-    if (number >= 210 && number <= 221) {
-      return <Image src="/assets/icons/thunder.png" alt="Orage" width={48} height={45} />;
-    }
-    if (number >= 300 && number <= 321) {
-      return <Image src="/assets/icons/drizzle.png" alt="Bruine" width={48} height={45} />;
-    }
-    if (number === 500) {
-      return <Image src="/assets/icons/rain.png" alt="Pluie" width={48} height={45} />;
-    }
-    if ((number >= 501 && number <= 504) || (number >= 520 && number <= 531)) {
-      return <Image src="/assets/icons/shower.png" alt="Pluie forte" width={48} height={45} />;
-    }
-    if (number === 511) {
-      return <Image src="/assets/icons/hail.png" alt="Grêle" width={48} height={45} />;
-    }
-    if (number === 600) {
-      return <Image src="/assets/icons/snow.png" alt="Neige" width={48} height={45} />;
-    }
-    if ((number === 601 || number === 602) || (number >= 620 && number <= 622)) {
-      return <Image src="/assets/icons/blizzard.png" alt="Neige forte" width={48} height={45} />;
-    }
-    if (number >= 611 && number <= 616) {
-      return <Image src="/assets/icons/sleet.png" alt="Pluie verglaçante" width={48} height={45} />;
-    }
-    if (number >= 701 && number <= 721) {
-      return <Image src="/assets/icons/haze.png" alt="Brume" width={48} height={45} />;
-    }
-    if (number === 731 || (number >= 751 && number <= 771)) {
-      return <Image src="/assets/icons/dust.png" alt="Poussières" width={48} height={45} />;
-    }
-    if (number === 741) {
-      return <Image src="/assets/icons/fog.png" alt="Brouillard" width={48} height={45} />;
-    }
-    if (number === 781) {
-      return <Image src="/assets/icons/tornado.png" alt="Tornade" width={48} height={45} />;
-    }
-    if (number === 800) {
-      return <Image src="/assets/icons/sun.png" alt="Soleil" width={48} height={45} />;
-    }
-    if (number === 801 || number === 802) {
-      return <Image src="/assets/icons/fewclouds.png" alt="Quelques nuages" width={48} height={45} />;
-    }
-    return <Image src="/assets/icons/clouds.png" alt="Nuages" width={48} height={45} />;
+    return { imgSrc, backgroundColor };
   };
 
-  const fetchDataAirPollution = (data) => {
-    let { aqi } = data.list[0].main;
-
+  const fetchDataAirPollution = async (data) => {
+    let aqi = data;
     if (aqi === 1) {
       aqi = `${aqi} - Excellent`;
     } else if (aqi === 2) {
@@ -168,9 +288,8 @@ export default function App(props) {
     setAirPollution(aqi);
   };
 
-  const fetchDataMoon = (data) => {
+  const fetchDataMoon = async (data) => {
     let phase = data;
-
     if (phase === 0) {
       phase = <WiMoonAltNew />;
     } else if (phase > 0 && phase < 0.25) {
@@ -193,15 +312,37 @@ export default function App(props) {
     setMoonPhase(phase);
   };
 
-  const fetchDataForecasts = async (data) => {
+  const fetchDataForecasts = async (data, sunDown, sunUp) => {
     const { hourly, daily } = data;
     const currentDateTime = new Date();
     const currentDay = currentDateTime.toLocaleDateString('fr-FR', { timeZone: data.timezone });
-    const nextDay = new Date(currentDateTime);
-    nextDay.setDate(nextDay.getDate() + 1);
+    const nextDay = new Date(currentDateTime.getTime() + 24 * 60 * 60 * 1000);
     const nextDayFormatted = nextDay.toLocaleDateString('fr-FR', { timeZone: data.timezone });
+    const createChartData = (items, filterFn) => items
+      .filter(filterFn)
+      .map((item) => {
+        const forecastDateTime = new Date(item.dt * 1000);
+        const forecastTime = forecastDateTime.toLocaleTimeString('fr-FR', {
+          hour: '2-digit',
+          minute: '2-digit',
+          timeZone: data.timezone,
+        });
+        return {
+          name: forecastTime,
+          temp: item.temp,
+          humidity: item.humidity,
+          pressure: item.pressure,
+          wind: item.wind_speed,
+          windDeg: item.wind_deg,
+          weather: item.weather[0].id,
+          rain: (item.pop * 100) || 0,
+          uv: item.uvi,
+          sunDownH: sunDown,
+          sunUpH: sunUp,
+        };
+      });
 
-    let chartData1 = hourly.filter((item) => {
+    let chartData1 = createChartData(hourly, (item) => {
       const forecastDateTime = new Date(item.dt * 1000);
       const forecastDay = forecastDateTime.toLocaleDateString('fr-FR', { timeZone: data.timezone });
       return forecastDay === currentDay;
@@ -211,50 +352,11 @@ export default function App(props) {
       chartData1 = chartData1.filter((item, index) => index % 2 === 0);
     }
 
-    chartData1 = chartData1.map((item) => {
-      const forecastDateTime = new Date(item.dt * 1000);
-      const forecastTime = forecastDateTime.toLocaleTimeString('fr-FR', {
-        hour: '2-digit',
-        minute: '2-digit',
-        timeZone: data.timezone,
-      });
-      return {
-        name: forecastTime,
-        temp: item.temp,
-        humidity: item.humidity,
-        pressure: item.pressure,
-        wind: item.wind_speed,
-        windDeg: item.wind_deg,
-        weather: item.weather[0].id,
-        rain: (item.pop * 100) || 0,
-        uv: item.uvi,
-      };
-    });
-
-    const chartData2 = hourly.filter((item, index) => {
+    const chartData2 = createChartData(hourly, (item, index) => {
       const forecastDateTime = new Date(item.dt * 1000);
       const forecastDay = forecastDateTime.toLocaleDateString('fr-FR', { timeZone: data.timezone });
       return forecastDay === nextDayFormatted && index % 2 === 0;
-    }).map((item) => {
-      const forecastDateTime = new Date(item.dt * 1000);
-      const forecastTime = forecastDateTime.toLocaleTimeString('fr-FR', {
-        hour: '2-digit',
-        minute: '2-digit',
-        timeZone: data.timezone,
-      });
-      return {
-        name: forecastTime,
-        temp: item.temp,
-        humidity: item.humidity,
-        pressure: item.pressure,
-        wind: item.wind_speed,
-        windDeg: item.wind_deg,
-        weather: item.weather[0].id,
-        rain: (item.pop * 100) || 0,
-        uv: item.uvi,
-      };
     });
-
     const forecastsDaily = daily.slice(1, 8);
     const temperaturesDaily = forecastsDaily.map((forecast) => Math.floor(forecast.temp.day));
     const weatherIdsDaily = forecastsDaily.map((forecast) => forecast.weather[0].id);
@@ -262,49 +364,43 @@ export default function App(props) {
     const dates = daily.slice(1, 8).map((forecast) => new Date(forecast.dt * 1000));
     const daysOfWeek = dates.map((date) => days[date.getDay()]);
 
-    setImg2(getImage(weatherIdsDaily[0]));
-    setImg3(getImage(weatherIdsDaily[1]));
-    setImg4(getImage(weatherIdsDaily[2]));
-    setImg5(getImage(weatherIdsDaily[3]));
-    setImg6(getImage(weatherIdsDaily[4]));
-    setImg7(getImage(weatherIdsDaily[5]));
-    setImg8(getImage(weatherIdsDaily[6]));
-    setTemp2(`${temperaturesDaily[0]}°C`);
-    setTemp3(`${temperaturesDaily[1]}°C`);
-    setTemp4(`${temperaturesDaily[2]}°C`);
-    setTemp5(`${temperaturesDaily[3]}°C`);
-    setTemp6(`${temperaturesDaily[4]}°C`);
-    setTemp7(`${temperaturesDaily[5]}°C`);
-    setTemp8(`${temperaturesDaily[6]}°C`);
-    setRain2(`${Math.floor(forecastsDaily[0].pop * 100)}%`);
-    setRain3(`${Math.floor(forecastsDaily[1].pop * 100)}%`);
-    setRain4(`${Math.floor(forecastsDaily[2].pop * 100)}%`);
-    setRain5(`${Math.floor(forecastsDaily[3].pop * 100)}%`);
-    setRain6(`${Math.floor(forecastsDaily[4].pop * 100)}%`);
-    setRain7(`${Math.floor(forecastsDaily[5].pop * 100)}%`);
-    setRain8(`${Math.floor(forecastsDaily[6].pop * 100)}%`);
-    setJour2(daysOfWeek[0]);
-    setJour3(daysOfWeek[1]);
-    setJour4(daysOfWeek[2]);
-    setJour5(daysOfWeek[3]);
-    setJour6(daysOfWeek[4]);
-    setJour7(daysOfWeek[5]);
-    setJour8(daysOfWeek[6]);
+    for (let i = 0; i < 7; i += 1) {
+      setJours((prevJour) => [
+        ...prevJour.slice(0, i),
+        daysOfWeek[i],
+        ...prevJour.slice(i + 1),
+      ]);
+
+      setTempJours((prevTemp) => [
+        ...prevTemp.slice(0, i),
+        `${temperaturesDaily[i]}°C`,
+        ...prevTemp.slice(i + 1),
+      ]);
+
+      setRainJours((prevRain) => [
+        ...prevRain.slice(0, i),
+        `${Math.floor(forecastsDaily[i].pop * 100)}%`,
+        ...prevRain.slice(i + 1),
+      ]);
+
+      setImgJours((prevImg) => [
+        ...prevImg.slice(0, i),
+        getImage(weatherIdsDaily[i], '1', '0', '0', false).imgSrc,
+        ...prevImg.slice(i + 1),
+      ]);
+    }
+
     setDataChart1(chartData1);
     setDataChart2(chartData2);
   };
 
   const fetchDataCurrent = async (city, data, data2) => {
-    const {
-      current,
-      timezone_offset: timezoneOffset,
-    } = data;
-    const { moon_phase: moonPhaseCurrent } = data.daily[0];
+    const { current, timezone_offset: timezoneOffset } = data;
     const weatherId = current.weather[0].id;
-    const ventDeg = current.wind_deg ? current.wind_deg : 0;
+    const ventDeg = current.wind_deg || 0;
     const date = new Date();
     const timezoneOffsetMinutes = timezoneOffset / 60;
-    const timezoneOffsetHours = timezoneOffsetMinutes / 60;
+    const timezoneOffsetHours = timezoneOffset / 3600;
     const utcDate = new Date(
       date.getUTCFullYear(),
       date.getUTCMonth(),
@@ -315,21 +411,17 @@ export default function App(props) {
     );
     const localDate = new Date(utcDate.getTime() + (timezoneOffsetHours * 60 * 60 * 1000));
     const heureLocale = localDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-    const sunriseUTC = new Date(current.sunrise * 1000);
-    const sunriseLocal = new Date(
-      sunriseUTC.getTime()
-      + (date.getTimezoneOffset() * 60 * 1000)
-      + (timezoneOffsetMinutes * 60 * 1000),
-    );
-    const sunUp = sunriseLocal.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-    const sunsetUTC = new Date(current.sunset * 1000);
-    const sunsetLocal = new Date(
-      sunsetUTC.getTime()
-      + (date.getTimezoneOffset() * 60 * 1000)
-      + (timezoneOffsetMinutes * 60 * 1000),
-    );
-    const sunDown = sunsetLocal.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    const sunriseUTC = new Date(current.sunrise * 1000 || 0);
+    const sunsetUTC = new Date(current.sunset * 1000 || 0);
+    const offsetMilliseconds = (date.getTimezoneOffset() + timezoneOffsetMinutes) * 60 * 1000;
+    const sunriseLocal = new Date(sunriseUTC.getTime() + offsetMilliseconds);
+    const sunsetLocal = new Date(sunsetUTC.getTime() + offsetMilliseconds);
+    const timeOptions = { hour: '2-digit', minute: '2-digit' };
+    const sunUp = sunriseLocal.toLocaleTimeString('fr-FR', timeOptions);
+    const sunDown = sunsetLocal.toLocaleTimeString('fr-FR', timeOptions);
     const name = city;
+    const result = getImage(weatherId, sunDown, sunUp, heureLocale, true);
+    const { imgSrc, backgroundColor } = result;
 
     setLever(sunUp);
     setCoucher(sunDown);
@@ -344,168 +436,20 @@ export default function App(props) {
     setUv(current.uvi.toFixed(0));
     setLatitudeVille(data.lat);
     setLongitudeVille(data.lon);
-    fetchDataMoon(moonPhaseCurrent);
+    setMainImg(<Image
+      src={imgSrc}
+      className="mainImg"
+      alt={current.weather[0].description}
+      width={96}
+      height={90}
+    />);
 
+    document.body.style.background = backgroundColor;
     localStorage.setItem('ville', name);
 
-    let mainImgSrc;
-    let backgroundColor;
-
-    if ((weatherId >= 200 && weatherId <= 202) || (weatherId >= 230 && weatherId <= 232)) {
-      mainImgSrc = '/assets/icons/storm.png';
-      if (heureLocale > sunUp && heureLocale < sunDown) {
-        backgroundColor = '#19242b';
-        setMetaTheme('#19242b');
-      } else {
-        backgroundColor = '#281e33';
-        setMetaTheme('#281e33');
-      }
-    } else if (weatherId >= 210 && weatherId <= 221) {
-      mainImgSrc = '/assets/icons/thunder.png';
-      if (heureLocale > sunUp && heureLocale < sunDown) {
-        backgroundColor = '#202d36';
-        setMetaTheme('#202d36');
-      } else {
-        backgroundColor = '#2f1f3f';
-        setMetaTheme('#2f1f3f');
-      }
-    } else if (weatherId >= 300 && weatherId <= 321) {
-      if (heureLocale > sunUp && heureLocale < sunDown) {
-        mainImgSrc = '/assets/icons/drizzle.png';
-        backgroundColor = '#425b6b';
-        setMetaTheme('#425b6b');
-      } else {
-        mainImgSrc = '/assets/icons/drizzleNight.png';
-        backgroundColor = '#543973';
-        setMetaTheme('#543973');
-      }
-    } else if (weatherId === 500) {
-      mainImgSrc = '/assets/icons/rain.png';
-      if (heureLocale > sunUp && heureLocale < sunDown) {
-        backgroundColor = '#3d5669';
-        setMetaTheme('#3d5669');
-      } else {
-        backgroundColor = '#412e57';
-        setMetaTheme('#412e57');
-      }
-    } else if ((weatherId >= 501 && weatherId <= 504) || (weatherId >= 520 && weatherId <= 531)) {
-      mainImgSrc = '/assets/icons/shower.png';
-      if (heureLocale > sunUp && heureLocale < sunDown) {
-        backgroundColor = '#2c3c47';
-        setMetaTheme('#2c3c47');
-      } else {
-        backgroundColor = '#312440';
-        setMetaTheme('#312440');
-      }
-    } else if (weatherId === 511) {
-      mainImgSrc = '/assets/icons/hail.png';
-      if (heureLocale > sunUp && heureLocale < sunDown) {
-        backgroundColor = '#879eb0';
-        setMetaTheme('#879eb0');
-      } else {
-        backgroundColor = '#5a4c6b';
-        setMetaTheme('#5a4c6b');
-      }
-    } else if (weatherId === 600) {
-      mainImgSrc = '/assets/icons/snow.png';
-      if (heureLocale > sunUp && heureLocale < sunDown) {
-        backgroundColor = '#879eb0';
-        setMetaTheme('#879eb0');
-      } else {
-        backgroundColor = '#77668a';
-        setMetaTheme('#77668a');
-      }
-    } else if ((weatherId === 601 || weatherId === 602) || (weatherId >= 620 && weatherId <= 622)) {
-      mainImgSrc = '/assets/icons/blizzard.png';
-      if (heureLocale > sunUp && heureLocale < sunDown) {
-        backgroundColor = '#657682';
-        setMetaTheme('#657682');
-      } else {
-        backgroundColor = '#857a91';
-        setMetaTheme('#857a91');
-      }
-    } else if (weatherId >= 611 && weatherId <= 616) {
-      if (heureLocale > sunUp && heureLocale < sunDown) {
-        mainImgSrc = '/assets/icons/sleet.png';
-        backgroundColor = '#2c3c47';
-        setMetaTheme('#2c3c47');
-      } else {
-        mainImgSrc = '/assets/icons/sleetNight.png';
-        backgroundColor = '#462c63';
-        setMetaTheme('#462c63');
-      }
-    } else if (weatherId >= 701 && weatherId <= 721) {
-      if (heureLocale > sunUp && heureLocale < sunDown) {
-        mainImgSrc = '/assets/icons/haze.png';
-        backgroundColor = '#38aafc';
-        setMetaTheme('#38aafc');
-      } else {
-        mainImgSrc = '/assets/icons/hazeNight.png';
-        backgroundColor = '#895abf';
-        setMetaTheme('#895abf');
-      }
-    } else if (weatherId === 731 || (weatherId >= 751 && weatherId <= 771)) {
-      mainImgSrc = '/assets/icons/dust.png';
-      if (heureLocale > sunUp && heureLocale < sunDown) {
-        backgroundColor = '#38aafc';
-        setMetaTheme('#38aafc');
-      } else {
-        backgroundColor = '#895abf';
-        setMetaTheme('#895abf');
-      }
-    } else if (weatherId === 741) {
-      mainImgSrc = '/assets/icons/fog.png';
-      if (heureLocale > sunUp && heureLocale < sunDown) {
-        backgroundColor = '#38aafc';
-        setMetaTheme('#38aafc');
-      } else {
-        backgroundColor = '#895abf';
-        setMetaTheme('#895abf');
-      }
-    } else if (weatherId === 781) {
-      mainImgSrc = '/assets/icons/tornado.png';
-      if (heureLocale > sunUp && heureLocale < sunDown) {
-        backgroundColor = '#2c3c47';
-        setMetaTheme('#2c3c47');
-      } else {
-        backgroundColor = '#462c63';
-        setMetaTheme('#462c63');
-      }
-    } else if (weatherId === 800) {
-      if (heureLocale > sunUp && heureLocale < sunDown) {
-        mainImgSrc = '/assets/icons/sun.png';
-        backgroundColor = '#1c95ec';
-        setMetaTheme('#1c95ec');
-      } else {
-        mainImgSrc = '/assets/icons/moon.png';
-        backgroundColor = '#723ead';
-        setMetaTheme('#723ead');
-      }
-    } else if (weatherId === 801 || weatherId === 802) {
-      if (heureLocale > sunUp && heureLocale < sunDown) {
-        mainImgSrc = '/assets/icons/fewclouds.png';
-        backgroundColor = '#5080a3';
-        setMetaTheme('#5080a3');
-      } else {
-        mainImgSrc = '/assets/icons/fewcloudsNight.png';
-        backgroundColor = '#5a308a';
-        setMetaTheme('#5a308a');
-      }
-    } else {
-      mainImgSrc = '/assets/icons/clouds.png';
-      if (heureLocale > sunUp && heureLocale < sunDown) {
-        backgroundColor = '#496c85';
-        setMetaTheme('#496c85');
-      } else {
-        backgroundColor = '#4a2d6b';
-        setMetaTheme('#4a2d6b');
-      }
-    }
-
-    setMainImg(<Image src={mainImgSrc} className="mainImg" alt={current.weather[0].description} width={96} height={90} />);
-    document.body.style.background = backgroundColor;
-    fetchDataForecasts(data);
-    fetchDataAirPollution(data2);
+    await fetchDataMoon(data.daily[0].moon_phase);
+    await fetchDataAirPollution(data2.list[0].main.aqi);
+    await fetchDataForecasts(data, sunDown, sunUp);
   };
 
   const handleSubmit = async (event) => {
@@ -528,7 +472,7 @@ export default function App(props) {
     const data = await response.json();
     if (response.ok) {
       const { city, oneCallData, airPollutionData } = data;
-      fetchDataCurrent(city, oneCallData, airPollutionData);
+      await fetchDataCurrent(city, oneCallData, airPollutionData);
       setShowComponents(true);
     } else {
       showError('Un problème est survenu, saisissez le nom complet de la ville...');
@@ -554,7 +498,7 @@ export default function App(props) {
         const data = await response.json();
         if (response.ok) {
           const { city, oneCallData, airPollutionData } = data;
-          fetchDataCurrent(city, oneCallData, airPollutionData);
+          await fetchDataCurrent(city, oneCallData, airPollutionData);
           setShowComponents(true);
         } else {
           showError('Un problème est survenu lors de la géolocalisation...');
@@ -580,43 +524,31 @@ export default function App(props) {
       setTemperature(`${(temperature.slice(0, -2) * 1.8 + 32).toFixed(1)}°F`);
       setRessenti(`${(ressenti.slice(0, -2) * 1.8 + 32).toFixed(0)}°F`);
       setVent(`${(vent.slice(0, -4) / 1.609).toFixed(0)}mph`);
-      setTemp2(`${(temp2.slice(0, -2) * 1.8 + 32).toFixed(0)}°F`);
-      setTemp3(`${(temp3.slice(0, -2) * 1.8 + 32).toFixed(0)}°F`);
-      setTemp4(`${(temp4.slice(0, -2) * 1.8 + 32).toFixed(0)}°F`);
-      setTemp5(`${(temp5.slice(0, -2) * 1.8 + 32).toFixed(0)}°F`);
-      setTemp6(`${(temp6.slice(0, -2) * 1.8 + 32).toFixed(0)}°F`);
-      setTemp7(`${(temp7.slice(0, -2) * 1.8 + 32).toFixed(0)}°F`);
-      setTemp8(`${(temp8.slice(0, -2) * 1.8 + 32).toFixed(0)}°F`);
+      setTempJours(tempJours.map((temp) => `${(parseInt(temp.slice(0, -2), 10) * 1.8 + 32).toFixed(0)}°F`));
       setDataChart1(dataChart1.map((item) => ({
         ...item,
-        temp: (item.temp * 1.8 + 32),
-        wind: (item.wind / 1.609),
+        temp: item.temp * 1.8 + 32,
+        wind: item.wind / 1.609,
       })));
       setDataChart2(dataChart2.map((item) => ({
         ...item,
-        temp: (item.temp * 1.8 + 32),
-        wind: (item.wind / 1.609),
+        temp: item.temp * 1.8 + 32,
+        wind: item.wind / 1.609,
       })));
     } else {
       setTemperature(`${((temperature.slice(0, -2) - 32) / 1.8).toFixed(1)}°C`);
       setRessenti(`${((ressenti.slice(0, -2) - 32) / 1.8).toFixed(0)}°C`);
       setVent(`${(vent.slice(0, -3) * 1.609).toFixed(0)}km/h`);
-      setTemp2(`${((temp2.slice(0, -2) - 32) / 1.8).toFixed(0)}°C`);
-      setTemp3(`${((temp3.slice(0, -2) - 32) / 1.8).toFixed(0)}°C`);
-      setTemp4(`${((temp4.slice(0, -2) - 32) / 1.8).toFixed(0)}°C`);
-      setTemp5(`${((temp5.slice(0, -2) - 32) / 1.8).toFixed(0)}°C`);
-      setTemp6(`${((temp6.slice(0, -2) - 32) / 1.8).toFixed(0)}°C`);
-      setTemp7(`${((temp7.slice(0, -2) - 32) / 1.8).toFixed(0)}°C`);
-      setTemp8(`${((temp8.slice(0, -2) - 32) / 1.8).toFixed(0)}°C`);
+      setTempJours(tempJours.map((temp) => `${((parseInt(temp.slice(0, -2), 10) - 32) / 1.8).toFixed(0)}°C`));
       setDataChart1(dataChart1.map((item) => ({
         ...item,
-        temp: ((item.temp - 32) / 1.8),
-        wind: (item.wind * 1.609),
+        temp: (item.temp - 32) / 1.8,
+        wind: item.wind * 1.609,
       })));
       setDataChart2(dataChart2.map((item) => ({
         ...item,
-        temp: ((item.temp - 32) / 1.8),
-        wind: (item.wind * 1.609),
+        temp: (item.temp - 32) / 1.8,
+        wind: item.wind * 1.609,
       })));
     }
   };
@@ -801,105 +733,105 @@ export default function App(props) {
                 <div className="details">
                   <div className="column">
                     <div className="detailsForecasts">
-                      <p>{jour2}</p>
-                      {img2}
+                      <p>{jours[0]}</p>
+                      <Image src={imgJours[0]} alt="" width={48} height={45} />
                       <div className="temp">
-                        <span>{temp2}</span>
+                        <span>{tempJours[0]}</span>
                       </div>
                       <div className="pop">
                         <span>
                           <BsFillDropletFill />
-                          {rain2}
+                          {rainJours[0]}
                         </span>
                       </div>
                     </div>
                   </div>
                   <div className="column">
                     <div className="detailsForecasts">
-                      <p>{jour3}</p>
-                      {img3}
+                      <p>{jours[1]}</p>
+                      <Image src={imgJours[1]} alt="" width={48} height={45} />
                       <div className="temp">
-                        <span>{temp3}</span>
+                        <span>{tempJours[1]}</span>
                       </div>
                       <div className="pop">
                         <span>
                           <BsFillDropletFill />
-                          {rain3}
+                          {rainJours[1]}
                         </span>
                       </div>
                     </div>
                   </div>
                   <div className="column">
                     <div className="detailsForecasts">
-                      <p>{jour4}</p>
-                      {img4}
+                      <p>{jours[2]}</p>
+                      <Image src={imgJours[2]} alt="" width={48} height={45} />
                       <div className="temp">
-                        <span>{temp4}</span>
+                        <span>{tempJours[2]}</span>
                       </div>
                       <div className="pop">
                         <span>
                           <BsFillDropletFill />
-                          {rain4}
+                          {rainJours[2]}
                         </span>
                       </div>
                     </div>
                   </div>
                   <div className="column">
                     <div className="detailsForecasts">
-                      <p>{jour5}</p>
-                      {img5}
+                      <p>{jours[3]}</p>
+                      <Image src={imgJours[3]} alt="" width={48} height={45} />
                       <div className="temp">
-                        <span>{temp5}</span>
+                        <span>{tempJours[3]}</span>
                       </div>
                       <div className="pop">
                         <span>
                           <BsFillDropletFill />
-                          {rain5}
+                          {rainJours[3]}
                         </span>
                       </div>
                     </div>
                   </div>
                   <div className="column">
                     <div className="detailsForecasts">
-                      <p>{jour6}</p>
-                      {img6}
+                      <p>{jours[4]}</p>
+                      <Image src={imgJours[4]} alt="" width={48} height={45} />
                       <div className="temp">
-                        <span>{temp6}</span>
+                        <span>{tempJours[4]}</span>
                       </div>
                       <div className="pop">
                         <span>
                           <BsFillDropletFill />
-                          {rain6}
+                          {rainJours[4]}
                         </span>
                       </div>
                     </div>
                   </div>
                   <div className="column">
                     <div className="detailsForecasts">
-                      <p>{jour7}</p>
-                      {img7}
+                      <p>{jours[5]}</p>
+                      <Image src={imgJours[5]} alt="" width={48} height={45} />
                       <div className="temp">
-                        <span>{temp7}</span>
+                        <span>{tempJours[5]}</span>
                       </div>
                       <div className="pop">
                         <span>
                           <BsFillDropletFill />
-                          {rain7}
+                          {rainJours[5]}
                         </span>
                       </div>
                     </div>
                   </div>
                   <div className="column">
                     <div className="detailsForecasts">
-                      <p>{jour8}</p>
-                      {img8}
+                      <p>{jours[6]}</p>
+                      <Image src={imgJours[6]} alt="" width={48} height={45} />
                       <div className="temp">
-                        <span>{temp8}</span>
+                        <span>{tempJours[6]}</span>
                       </div>
                       <div className="pop">
                         <span>
                           <BsFillDropletFill />
-                          {rain8}
+                          {rainJours[6]}
                         </span>
                       </div>
                     </div>
