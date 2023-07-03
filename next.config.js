@@ -4,7 +4,7 @@ const nextConfig = {
   env: {
     API_KEY: process.env.API_KEY,
   },
-  /*headers: async () => [
+  headers: async () => [
     {
       source: '/(.*)',
       headers: [
@@ -46,7 +46,7 @@ const nextConfig = {
         },
       ],
     },
-  ],*/
+  ],
 };
 
 module.exports = nextConfig
