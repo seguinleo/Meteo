@@ -61,6 +61,11 @@ export default function App(props) {
       const savedVille = localStorage.getItem('ville');
       setVille(savedVille || '');
     }
+    if ('serviceWorker' in navigator) {
+      (async () => {
+        await navigator.serviceWorker.register('/sw.js');
+      })();
+    }
   }, [metaTheme]);
 
   const showError = (message) => {

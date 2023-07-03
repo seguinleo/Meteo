@@ -1,6 +1,6 @@
 {
-  "name": "meteo-nextjs",
-  "version": "3.0.0",
+  "name": "meteo",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -11,22 +11,16 @@
   "dependencies": {
     "@vercel/analytics": "^1.0.1",
     "dotenv": "^16.3.1",
-    "eslint-config-next": "^13.4.7",
-    "next": "^13.4.7",
-    "next-pwa": "^5.6.0",
+    "eslint-config-next": "13.4.7",
+    "next": "13.4.7",
     "prop-types": "^15.8.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
     "react-icons": "^4.10.1",
-    "recharts": "^2.7.2",
-    "semver": "^7.5.3"
+    "recharts": "^2.7.2"
   },
-  "description": "Météo en temps réel, précise et fiable pour n'importe quelle ville du monde avec prévisions.",
-  "main": "next.config.js",
-  "author": "PouletEnSlip",
-  "license": "CC-BY-4.0",
   "devDependencies": {
-    "eslint": "^8.43.0",
+    "eslint": "^8.44.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-jsx-a11y": "^6.7.1",
