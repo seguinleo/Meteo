@@ -7,14 +7,14 @@ import { RxMagnifyingGlass } from 'react-icons/rx';
 import { BsFillSunriseFill, BsFillSunsetFill, BsFillDropletFill } from 'react-icons/bs';
 import { RiFahrenheitFill, RiCelsiusFill } from 'react-icons/ri';
 import {
+  WiMoonAltWaningGibbous3,
+  WiMoonAltThirdQuarter,
+  WiMoonAltWaningCrescent3,
   WiMoonAltNew,
   WiMoonAltWaxingCrescent3,
   WiMoonAltFirstQuarter,
   WiMoonAltWaxingGibbous3,
   WiMoonAltFull,
-  WiMoonAltWaningGibbous3,
-  WiMoonAltThirdQuarter,
-  WiMoonAltWaningCrescent3,
 } from 'react-icons/wi';
 import Head from 'next/head';
 import Image from 'next/image';
@@ -290,16 +290,14 @@ export default function App(props) {
 
   const fetchDataMoon = async (data) => {
     let phase = data;
-    if (phase === 0) {
-      phase = <WiMoonAltNew />;
-    } else if (phase > 0 && phase < 0.25) {
+    if (phase > 0 && phase < 0.25) {
       phase = <WiMoonAltWaningGibbous3 />;
     } else if (phase === 0.25) {
       phase = <WiMoonAltThirdQuarter />;
     } else if (phase > 0.25 && phase < 0.5) {
       phase = <WiMoonAltWaningCrescent3 />;
     } else if (phase === 0.5) {
-      phase = <WiMoonAltFull />;
+      phase = <WiMoonAltNew />;
     } else if (phase > 0.5 && phase < 0.75) {
       phase = <WiMoonAltWaxingCrescent3 />;
     } else if (phase === 0.75) {
@@ -307,7 +305,7 @@ export default function App(props) {
     } else if (phase > 0.75 && phase < 1) {
       phase = <WiMoonAltWaxingGibbous3 />;
     } else {
-      phase = <WiMoonAltNew />;
+      phase = <WiMoonAltFull />;
     }
     setMoonPhase(phase);
   };
