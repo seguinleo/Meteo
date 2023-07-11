@@ -3,7 +3,7 @@
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('../../assets/fonts/OpenSans.woff2') format('woff2')
+  src: url('../../assets/fonts/OpenSans.woff2') format('woff2');
 }
 
 @font-face {
@@ -11,7 +11,7 @@
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: url('../../assets/fonts/OpenSans-700.woff2') format('woff2')
+  src: url('../../assets/fonts/OpenSans-700.woff2') format('woff2');
 }
 
 html {
@@ -26,26 +26,26 @@ html {
 
 ::-webkit-scrollbar {
   width: 5px;
-  height: 5px
+  height: 5px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, .5)
+  background: rgba(255, 255, 255, .5);
 }
 
 * {
   font-family: 'OpenSans', sans-serif;
-  box-sizing: border-box
+  box-sizing: border-box;
 }
 
 h1 {
   font-size: 1.5rem;
-  font-weight: 400
+  font-weight: 400;
 }
 
 a {
   text-decoration: none;
-  color: #ffffff
+  color: #ffffff;
 }
 
 body {
@@ -54,15 +54,15 @@ body {
   min-height: 100vh;
   display: flex;
   align-items: center;
-  justify-content: center
+  justify-content: center;
 }
 
 svg {
-  vertical-align: middle
+  vertical-align: middle;
 }
 
 ::placeholder {
-  color: #ffffff
+  color: #ffffff;
 }
 
 .wrapper {
@@ -72,7 +72,7 @@ svg {
   border-radius: 10px;
   max-width: 95vw;
   background: linear-gradient(to top left, rgba(0, 0, 0, .3), rgba(0, 0, 0, .1));
-  box-shadow: 8px 8px 20px rgba(0, 0, 0, .2)
+  box-shadow: 8px 8px 20px rgba(0, 0, 0, .2);
 }
 
 header {
@@ -86,7 +86,7 @@ header {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    height: 40px
+    height: 40px;
   }
 
   button {
@@ -102,7 +102,7 @@ header {
     transition: .2s;
 
     &:hover {
-      background: rgba(255, 255, 255, .1)
+      background: rgba(255, 255, 255, .1);
     }
   }
 }
@@ -114,7 +114,7 @@ header {
     height: 1px;
     background: #ffffff;
     width: 80%;
-    margin: 25px auto
+    margin: 25px auto;
   }
 
   input,
@@ -128,7 +128,7 @@ header {
     border-radius: 10px;
 
     &:focus {
-      outline: 3px solid rgba(0, 0, 0, .5)
+      outline: 3px solid rgba(0, 0, 0, .5);
     }
   }
 
@@ -139,7 +139,7 @@ header {
     background: none;
 
     &::placeholder {
-      opacity: .7
+      opacity: .7;
     }
   }
 
@@ -148,9 +148,20 @@ header {
     background: rgba(0, 0, 0, .3);
 
     &:hover {
-      background: rgba(0, 0, 0, .2)
+      background: rgba(0, 0, 0, .2);
     }
   }
+}
+
+.alerts-part {
+  margin: 1rem auto;
+  padding: 5px;
+  width: 95%;
+  border-radius: 0px;
+  text-align: center;
+  color: #222222;
+  font-weight: 700;
+  background: #ffb82b;
 }
 
 .main-info {
@@ -160,7 +171,7 @@ header {
   margin-bottom: 1rem;
 
   img {
-    margin: .5rem 2rem
+    margin: .5rem 2rem;
   }
 
   .temp {
@@ -172,12 +183,12 @@ header {
     .mainTemp {
       display: block;
       font-size: 2.5rem;
-      font-weight: 700
+      font-weight: 700;
     }
 
     .tempRessenti {
       display: block;
-      opacity: .8
+      opacity: .8;
     }
   }
 }
@@ -191,19 +202,19 @@ header {
   border-radius: 10px;
   line-height: 38px;
   display: none;
-  background: rgba(31, 169, 255, .5)
+  background: rgba(31, 169, 255, .5);
 }
 
 .weather-part {
   margin: 5px 0 0;
   align-items: center;
   justify-content: center;
-  flex-direction: column
+  flex-direction: column;
 }
 
 summary {
   margin: 1rem;
-  cursor: pointer
+  cursor: pointer;
 }
 
 .details {
@@ -215,7 +226,7 @@ summary {
   margin: auto;
   overflow: hidden;
   overflow-x: auto;
-  padding: 5px
+  padding: 5px;
 }
 
 .graphique {
@@ -223,15 +234,15 @@ summary {
   margin-top: 1.5rem;
 
   .titreGraph {
-    font-size: .8rem
+    font-size: .8rem;
   }
 
   .recharts-surface {
-    padding: 0 1rem
+    padding: 0 1rem;
   }
 
   .recharts-responsive-container {
-    margin: 0 auto
+    margin: 0 auto;
   }
 
   .custom-tooltip {
@@ -242,11 +253,11 @@ summary {
     padding: 5px 1rem;
 
     * {
-      vertical-align: middle
+      vertical-align: middle;
     }
 
     img {
-      margin: 0 .5rem
+      margin: 0 .5rem;
     }
   }
 }
@@ -256,23 +267,23 @@ summary {
   margin: .5rem;
   text-align: center;
   align-items: center;
-  justify-content: center
+  justify-content: center;
 }
 
 .detail p {
   margin: 0 auto;
-  font-size: .8rem
+  font-size: .8rem;
 }
 
 .detailsForecasts p {
-  margin: 0 auto
+  margin: 0 auto;
 }
 
 .pop span {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 5px
+  margin-top: 5px;
 }
 
 .plusInfo {
@@ -284,7 +295,7 @@ summary {
     svg {
       font-size: 1.5rem;
       margin: 0 5px;
-      vertical-align: middle
+      vertical-align: middle;
     }
   }
 }
@@ -297,15 +308,15 @@ summary {
   margin: 1rem auto;
   text-align: center;
   max-width: 300px;
-  background-color: #a93b3b;
+  background: #a93b3b;
   color: #ffffff;
   padding: 10px;
   border-radius: 5px;
   display: none;
-  z-index: 999
+  z-index: 999;
 }
 
 .copyright {
   text-align: center;
-  font-size: .8rem
+  font-size: .8rem;
 }

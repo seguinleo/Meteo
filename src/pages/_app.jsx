@@ -50,6 +50,9 @@ export default function App(props) {
   const [tempJours, setTempJours] = useState(Array(7).fill(null));
   const [rainJours, setRainJours] = useState(Array(7).fill(null));
   const [imgJours, setImgJours] = useState(Array(7).fill(null));
+  const [sender, setSender] = useState(false);
+  const [thunderMessage, setThunderMessage] = useState(false);
+  const [alertsMessage, setAlertsMessage] = useState(false);
   const [error, setError] = useState(false);
 
   useEffect(() => {
@@ -398,7 +401,7 @@ export default function App(props) {
   };
 
   const fetchDataCurrent = async (city, data, data2) => {
-    const { current, timezone_offset: timezoneOffset } = data;
+    const { current, alerts, timezone_offset: timezoneOffset } = data;
     const weatherId = current.weather[0].id;
     const ventDeg = current.wind_deg || 0;
     const date = new Date();
@@ -434,8 +437,8 @@ export default function App(props) {
     setRessenti(`${current.feels_like.toFixed(0)}°C`);
     setHumidite(`${current.humidity}%`);
     setVent(`${(3.6 * current.wind_speed).toFixed(0)}km/h`);
-    setPression(`${current.pressure}hPa`);
     setVentDirection(ventDeg + 180);
+    setPression(`${current.pressure}hPa`);
     setUv(current.uvi.toFixed(0));
     setLatitudeVille(data.lat);
     setLongitudeVille(data.lon);
@@ -446,6 +449,20 @@ export default function App(props) {
       width={96}
       height={90}
     />);
+
+    if (alerts) {
+      setSender(alerts[0].sender_name);
+      setAlertsMessage(alerts.map((alert) => alert.event).join(', '));
+    } else {
+      setSender('');
+      setAlertsMessage('');
+    }
+
+    if (alerts && alerts.some((alert) => alert.event.includes('thunder'))) {
+      setThunderMessage('VIGILANCE - ORAGES');
+    } else {
+      setThunderMessage('');
+    }
 
     document.body.style.background = backgroundColor;
     localStorage.setItem('ville', name);
@@ -618,6 +635,11 @@ export default function App(props) {
           )}
           {showComponents && (
             <>
+              {thunderMessage.length > 0 && (
+                <div className="alerts-part">
+                  <span>{thunderMessage}</span>
+                </div>
+              )}
               <div className="current-part">
                 <div className="main-info">
                   <div className="temp">
@@ -870,6 +892,17 @@ export default function App(props) {
                       {' '}
                       {latitudeVille}
                     </p>
+                    {sender.length > 0 && alertsMessage.length > 0 && (
+                      <p>
+                        Informations de
+                        {' '}
+                        {sender}
+                        {' '}
+                        :
+                        {' '}
+                        {alertsMessage}
+                      </p>
+                    )}
                   </div>
                 </details>
               </div>
