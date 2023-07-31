@@ -11,20 +11,20 @@
   "dependencies": {
     "@vercel/analytics": "^1.0.1",
     "dotenv": "^16.3.1",
-    "eslint-config-next": "13.4.9",
-    "next": "13.4.9",
+    "eslint-config-next": "13.4.12",
+    "next": "13.4.12",
     "prop-types": "^15.8.1",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-icons": "^4.10.1",
     "recharts": "^2.7.2"
   },
   "devDependencies": {
-    "eslint": "^8.44.0",
+    "eslint": "^8.46.0",
     "eslint-config-airbnb": "^19.0.4",
-    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-import": "^2.28.0",
     "eslint-plugin-jsx-a11y": "^6.7.1",
-    "eslint-plugin-react": "^7.32.2",
+    "eslint-plugin-react": "^7.33.1",
     "eslint-plugin-react-hooks": "^4.6.0"
   }
 }

@@ -13,6 +13,7 @@ function CustomTooltip({
       wind,
       windDeg,
       weather,
+      precipitation,
       rain,
       uv,
       sunDownH,
@@ -27,7 +28,7 @@ function CustomTooltip({
         <p>
           Température
           {' '}
-          {temp.toFixed(0)}
+          {temp.toFixed(1)}
           {temperature.endsWith('C') ? '°C' : '°F'}
         </p>
         <p>
@@ -52,10 +53,16 @@ function CustomTooltip({
           hPa
         </p>
         <p>
-          Pluie
+          Pluie (proba.)
           {' '}
           {rain.toFixed(0)}
           %
+        </p>
+        <p>
+          Précipitations
+          {' '}
+          {precipitation}
+          mm
         </p>
         <p>
           UV
@@ -78,6 +85,7 @@ CustomTooltip.propTypes = {
         wind: PropTypes.number.isRequired,
         windDeg: PropTypes.number.isRequired,
         weather: PropTypes.number.isRequired,
+        precipitation: PropTypes.number.isRequired,
         rain: PropTypes.number.isRequired,
         uv: PropTypes.number.isRequired,
         sunDownH: PropTypes.string.isRequired,

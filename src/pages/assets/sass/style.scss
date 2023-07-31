@@ -34,7 +34,7 @@ html {
 }
 
 * {
-  font-family: 'OpenSans', sans-serif;
+  font-family: OpenSans, sans-serif;
   box-sizing: border-box;
 }
 
@@ -61,8 +61,8 @@ svg {
   vertical-align: middle;
 }
 
-::placeholder {
-  color: #ffffff;
+summary {
+  margin: 1rem;
 }
 
 .wrapper {
@@ -139,6 +139,7 @@ header {
     background: none;
 
     &::placeholder {
+      color: #ffffff;
       opacity: .7;
     }
   }
@@ -210,11 +211,6 @@ header {
   align-items: center;
   justify-content: center;
   flex-direction: column;
-}
-
-summary {
-  margin: 1rem;
-  cursor: pointer;
 }
 
 .details {

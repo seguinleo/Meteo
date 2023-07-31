@@ -341,6 +341,7 @@ export default function App(props) {
           wind: item.wind_speed,
           windDeg: item.wind_deg,
           weather: item.weather[0].id,
+          precipitation: item.rain ? item.rain['1h'] : 0,
           rain: (item.pop * 100) || 0,
           uv: item.uvi,
           sunDownH: sunDown,
