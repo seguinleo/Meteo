@@ -1,5 +1,6 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import {
   LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer,
 } from 'recharts';
@@ -16,16 +17,12 @@ import {
   WiMoonAltWaxingGibbous3,
   WiMoonAltFull,
 } from 'react-icons/wi';
-import Head from 'next/head';
 import Image from 'next/image';
-// eslint-disable-next-line import/no-unresolved
-import { Analytics } from '@vercel/analytics/react';
 import CustomTooltip from './components/CustomTooltip';
 import './assets/css/style.css';
 
-export default function App(props) {
+export default function Home() {
   let timeoutError;
-  const { Component } = props;
   const [showComponents, setShowComponents] = useState(false);
   const [metaTheme, setMetaTheme] = useState('#1c95ec');
   const [mainImg, setMainImg] = useState(null);
@@ -240,10 +237,6 @@ export default function App(props) {
     } else if (id === 800) {
       if (time >= sunUp && time < sunDown) {
         imgSrc = '/assets/icons/sun.png';
-        if (main) {
-          backgroundColor = '#1c95ec';
-          setMetaTheme('#1c95ec');
-        }
       } else {
         imgSrc = '/assets/icons/moon.png';
         if (main) {
@@ -575,343 +568,339 @@ export default function App(props) {
   };
 
   return (
-    <>
-      <Head>
-        <title>Météo &#8211; Léo SEGUIN</title>
-      </Head>
-      <div className="wrapper">
-        <header>
-          {showComponents ? (
-            <>
-              <span id="heure">
-                {heure}
-                {' '}
-                {localStorage.getItem('ville')}
-              </span>
-              <button
-                type="button"
-                aria-label="Changer d'unité"
-                onClick={handleUnity}
-              >
-                {temperature.endsWith('C') ? <RiFahrenheitFill color="white" size="25px" /> : <RiCelsiusFill color="white" size="25px" />}
-              </button>
-              <button
-                type="button"
-                aria-label="Retour"
-                onClick={handleReturn}
-              >
-                <RxMagnifyingGlass color="white" size="25px" />
-              </button>
-            </>
-          ) : (
-            <h1>Météo</h1>
-          )}
-        </header>
+    <div className="wrapper">
+      <header>
+        {showComponents ? (
+          <>
+            <span id="heure">
+              {heure}
+              {' '}
+              {localStorage.getItem('ville')}
+            </span>
+            <button
+              type="button"
+              aria-label="Changer d'unité"
+              onClick={handleUnity}
+            >
+              {temperature.endsWith('C') ? <RiFahrenheitFill color="white" size="25px" /> : <RiCelsiusFill color="white" size="25px" />}
+            </button>
+            <button
+              type="button"
+              aria-label="Retour"
+              onClick={handleReturn}
+            >
+              <RxMagnifyingGlass color="white" size="25px" />
+            </button>
+          </>
+        ) : (
+          <h1>Météo</h1>
+        )}
         <div id="errorNotification">{error}</div>
-        <main>
-          {!showComponents && (
-            <form onSubmit={handleSubmit}>
-              <div className="input-part">
-                <p className="info-txt">Chargement...</p>
-                <input
-                  type="text"
-                  placeholder="Paris, FR"
-                  maxLength="50"
-                  aria-label="Rechercher"
-                  id="ville"
-                  value={ville}
-                  onChange={(event) => setVille(event.target.value)}
-                  aria-required="true"
-                  required
-                />
-                <button type="submit">
-                  Rechercher
-                </button>
-                <div className="separator" />
-                <button type="button" onClick={geolocation}>
-                  Localisation actuelle
-                </button>
-              </div>
-            </form>
+      </header>
+      <main>
+        {!showComponents && (
+        <form onSubmit={handleSubmit}>
+          <div className="input-part">
+            <p className="info-txt">Chargement...</p>
+            <input
+              type="text"
+              placeholder="Paris, FR"
+              maxLength="50"
+              aria-label="Rechercher"
+              id="ville"
+              value={ville}
+              onChange={(event) => setVille(event.target.value)}
+              aria-required="true"
+              required
+            />
+            <button type="submit">
+              Rechercher
+            </button>
+            <div className="separator" />
+            <button type="button" onClick={geolocation}>
+              Localisation actuelle
+            </button>
+          </div>
+        </form>
+        )}
+        {showComponents && (
+        <>
+          {thunderMessage.length > 0 && (
+          <div className="alerts-part">
+            <span>{thunderMessage}</span>
+          </div>
           )}
-          {showComponents && (
-            <>
-              {thunderMessage.length > 0 && (
-                <div className="alerts-part">
-                  <span>{thunderMessage}</span>
+          <div className="current-part">
+            <div className="main-info">
+              <div className="temp">
+                {mainImg}
+              </div>
+              <div className="temp">
+                <span className="mainTemp">{temperature}</span>
+                <span className="tempRessenti">
+                  Ressenti
+                  {' '}
+                  {ressenti}
+                  {' '}
+                  | UV
+                  {' '}
+                  {uv}
+                </span>
+              </div>
+            </div>
+            <div className="details">
+              <div className="column">
+                <div className="detail">
+                  <span>{humidite}</span>
+                  <p>Humidité</p>
                 </div>
+              </div>
+              <div className="column">
+                <div className="detail">
+                  <span>
+                    <svg width="18" height="18" viewBox="0 0 50 50">
+                      <path d="M25 5 L40 45 L25 35 L10 45 Z" fill="currentColor" transform={`rotate(${ventDirection}, 25, 25)`} />
+                    </svg>
+                    {vent}
+                  </span>
+                  <p>Vent</p>
+                </div>
+              </div>
+              <div className="column">
+                <div className="detail">
+                  <span>{pression}</span>
+                  <p>Pression</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="chart-part">
+            <div className="graphique">
+              {dataChart1.length > 0 && (
+              <>
+                <p className="titreGraph">Ajourd&#39;hui</p>
+                <ResponsiveContainer width="100%" height={100} style={{ margin: 'auto' }}>
+                  <LineChart data={dataChart1}>
+                    <XAxis axisLine={false} tick={false} dataKey="name" />
+                    <YAxis yAxisId="temperature" domain={['dataMin', 'dataMax']} width={0} />
+                    <YAxis yAxisId="rain" domain={[0, 100]} width={0} />
+                    <Tooltip
+                      content={(
+                        <CustomTooltip
+                          getImage={getImage}
+                          temperature={temperature}
+                        />
+                          )}
+                      wrapperStyle={{ zIndex: '999' }}
+                    />
+                    <Line
+                      dataKey="temp"
+                      stroke="rgba(255,255,255,.7)"
+                      strokeWidth="2"
+                      dot={{ r: 4 }}
+                      yAxisId="temperature"
+                    />
+                    <Line
+                      dataKey="rain"
+                      stroke="rgba(57,196,243,.7)"
+                      strokeWidth="2"
+                      dot={{ r: 4 }}
+                      yAxisId="rain"
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </>
               )}
-              <div className="current-part">
-                <div className="main-info">
+              <p className="titreGraph">Demain</p>
+              <ResponsiveContainer width="100%" height={100} style={{ margin: 'auto' }}>
+                <LineChart data={dataChart2}>
+                  <XAxis axisLine={false} tick={false} dataKey="name" />
+                  <YAxis yAxisId="temperature" domain={['dataMin', 'dataMax']} width={0} />
+                  <YAxis yAxisId="rain" domain={[0, 100]} width={0} />
+                  <Tooltip
+                    content={(
+                      <CustomTooltip
+                        getImage={getImage}
+                        temperature={temperature}
+                      />
+                        )}
+                    wrapperStyle={{ Index: '999' }}
+                  />
+                  <Line
+                    dataKey="temp"
+                    stroke="rgba(255,255,255,.7)"
+                    strokeWidth="2"
+                    dot={{ r: 4 }}
+                    yAxisId="temperature"
+                  />
+                  <Line
+                    dataKey="rain"
+                    stroke="rgba(57,196,243,.7)"
+                    strokeWidth="2"
+                    dot={{ r: 4 }}
+                    yAxisId="rain"
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+          <div className="forecasts-part">
+            <div className="details">
+              <div className="column">
+                <div className="detailsForecasts">
+                  <p>{jours[0]}</p>
+                  <Image src={imgJours[0]} alt="" width={48} height={45} />
                   <div className="temp">
-                    {mainImg}
+                    <span>{tempJours[0]}</span>
                   </div>
-                  <div className="temp">
-                    <span className="mainTemp">{temperature}</span>
-                    <span className="tempRessenti">
-                      Ressenti
-                      {' '}
-                      {ressenti}
-                      {' '}
-                      | UV
-                      {' '}
-                      {uv}
+                  <div className="pop">
+                    <span>
+                      <BsFillDropletFill />
+                      {rainJours[0]}
                     </span>
                   </div>
                 </div>
-                <div className="details">
-                  <div className="column">
-                    <div className="detail">
-                      <span>{humidite}</span>
-                      <p>Humidité</p>
-                    </div>
+              </div>
+              <div className="column">
+                <div className="detailsForecasts">
+                  <p>{jours[1]}</p>
+                  <Image src={imgJours[1]} alt="" width={48} height={45} />
+                  <div className="temp">
+                    <span>{tempJours[1]}</span>
                   </div>
-                  <div className="column">
-                    <div className="detail">
-                      <span>
-                        <svg width="18" height="18" viewBox="0 0 50 50">
-                          <path d="M25 5 L40 45 L25 35 L10 45 Z" fill="currentColor" transform={`rotate(${ventDirection}, 25, 25)`} />
-                        </svg>
-                        {vent}
-                      </span>
-                      <p>Vent</p>
-                    </div>
-                  </div>
-                  <div className="column">
-                    <div className="detail">
-                      <span>{pression}</span>
-                      <p>Pression</p>
-                    </div>
+                  <div className="pop">
+                    <span>
+                      <BsFillDropletFill />
+                      {rainJours[1]}
+                    </span>
                   </div>
                 </div>
               </div>
-              <div className="chart-part">
-                <div className="graphique">
-                  {dataChart1.length > 0 && (
-                  <>
-                    <p className="titreGraph">Ajourd&#39;hui</p>
-                    <ResponsiveContainer width="100%" height={100} style={{ margin: 'auto' }}>
-                      <LineChart data={dataChart1}>
-                        <XAxis axisLine={false} tick={false} dataKey="name" />
-                        <YAxis yAxisId="temperature" domain={['dataMin', 'dataMax']} width={0} />
-                        <YAxis yAxisId="rain" domain={[0, 100]} width={0} />
-                        <Tooltip
-                          content={(
-                            <CustomTooltip
-                              getImage={getImage}
-                              temperature={temperature}
-                            />
-                          )}
-                          wrapperStyle={{ zIndex: '999' }}
-                        />
-                        <Line
-                          dataKey="temp"
-                          stroke="rgba(255,255,255,.7)"
-                          strokeWidth="2"
-                          dot={{ r: 4 }}
-                          yAxisId="temperature"
-                        />
-                        <Line
-                          dataKey="rain"
-                          stroke="rgba(57,196,243,.7)"
-                          strokeWidth="2"
-                          dot={{ r: 4 }}
-                          yAxisId="rain"
-                        />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </>
-                  )}
-                  <p className="titreGraph">Demain</p>
-                  <ResponsiveContainer width="100%" height={100} style={{ margin: 'auto' }}>
-                    <LineChart data={dataChart2}>
-                      <XAxis axisLine={false} tick={false} dataKey="name" />
-                      <YAxis yAxisId="temperature" domain={['dataMin', 'dataMax']} width={0} />
-                      <YAxis yAxisId="rain" domain={[0, 100]} width={0} />
-                      <Tooltip
-                        content={(
-                          <CustomTooltip
-                            getImage={getImage}
-                            temperature={temperature}
-                          />
-                        )}
-                        wrapperStyle={{ Index: '999' }}
-                      />
-                      <Line
-                        dataKey="temp"
-                        stroke="rgba(255,255,255,.7)"
-                        strokeWidth="2"
-                        dot={{ r: 4 }}
-                        yAxisId="temperature"
-                      />
-                      <Line
-                        dataKey="rain"
-                        stroke="rgba(57,196,243,.7)"
-                        strokeWidth="2"
-                        dot={{ r: 4 }}
-                        yAxisId="rain"
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-              <div className="forecasts-part">
-                <div className="details">
-                  <div className="column">
-                    <div className="detailsForecasts">
-                      <p>{jours[0]}</p>
-                      <Image src={imgJours[0]} alt="" width={48} height={45} />
-                      <div className="temp">
-                        <span>{tempJours[0]}</span>
-                      </div>
-                      <div className="pop">
-                        <span>
-                          <BsFillDropletFill />
-                          {rainJours[0]}
-                        </span>
-                      </div>
-                    </div>
+              <div className="column">
+                <div className="detailsForecasts">
+                  <p>{jours[2]}</p>
+                  <Image src={imgJours[2]} alt="" width={48} height={45} />
+                  <div className="temp">
+                    <span>{tempJours[2]}</span>
                   </div>
-                  <div className="column">
-                    <div className="detailsForecasts">
-                      <p>{jours[1]}</p>
-                      <Image src={imgJours[1]} alt="" width={48} height={45} />
-                      <div className="temp">
-                        <span>{tempJours[1]}</span>
-                      </div>
-                      <div className="pop">
-                        <span>
-                          <BsFillDropletFill />
-                          {rainJours[1]}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="column">
-                    <div className="detailsForecasts">
-                      <p>{jours[2]}</p>
-                      <Image src={imgJours[2]} alt="" width={48} height={45} />
-                      <div className="temp">
-                        <span>{tempJours[2]}</span>
-                      </div>
-                      <div className="pop">
-                        <span>
-                          <BsFillDropletFill />
-                          {rainJours[2]}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="column">
-                    <div className="detailsForecasts">
-                      <p>{jours[3]}</p>
-                      <Image src={imgJours[3]} alt="" width={48} height={45} />
-                      <div className="temp">
-                        <span>{tempJours[3]}</span>
-                      </div>
-                      <div className="pop">
-                        <span>
-                          <BsFillDropletFill />
-                          {rainJours[3]}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="column">
-                    <div className="detailsForecasts">
-                      <p>{jours[4]}</p>
-                      <Image src={imgJours[4]} alt="" width={48} height={45} />
-                      <div className="temp">
-                        <span>{tempJours[4]}</span>
-                      </div>
-                      <div className="pop">
-                        <span>
-                          <BsFillDropletFill />
-                          {rainJours[4]}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="column">
-                    <div className="detailsForecasts">
-                      <p>{jours[5]}</p>
-                      <Image src={imgJours[5]} alt="" width={48} height={45} />
-                      <div className="temp">
-                        <span>{tempJours[5]}</span>
-                      </div>
-                      <div className="pop">
-                        <span>
-                          <BsFillDropletFill />
-                          {rainJours[5]}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="column">
-                    <div className="detailsForecasts">
-                      <p>{jours[6]}</p>
-                      <Image src={imgJours[6]} alt="" width={48} height={45} />
-                      <div className="temp">
-                        <span>{tempJours[6]}</span>
-                      </div>
-                      <div className="pop">
-                        <span>
-                          <BsFillDropletFill />
-                          {rainJours[6]}
-                        </span>
-                      </div>
-                    </div>
+                  <div className="pop">
+                    <span>
+                      <BsFillDropletFill />
+                      {rainJours[2]}
+                    </span>
                   </div>
                 </div>
-                <details>
-                  <summary>Plus d&#39;informations</summary>
-                  <div className="plusInfo">
-                    <p>
-                      Pollution de l&#39;air :
-                      {' '}
-                      {airPollution}
-                    </p>
-                    <p>
-                      <BsFillSunriseFill />
-                      {lever}
-                      {' '}
-                      <BsFillSunsetFill />
-                      {coucher}
-                    </p>
-                    <p>
-                      Phase de lune :
-                      {' '}
-                      {moonPhase}
-                    </p>
-                    <p>
-                      Longitude :
-                      {' '}
-                      {longitudeVille}
-                    </p>
-                    <p>
-                      Latitude :
-                      {' '}
-                      {latitudeVille}
-                    </p>
-                    {sender.length > 0 && alertsMessage.length > 0 && (
-                      <p>
-                        Informations de
-                        {' '}
-                        {sender}
-                        {' '}
-                        :
-                        {' '}
-                        {alertsMessage}
-                      </p>
-                    )}
-                  </div>
-                </details>
               </div>
-            </>
-          )}
-        </main>
-        {!showComponents && (
-        <footer className="copyright">
+              <div className="column">
+                <div className="detailsForecasts">
+                  <p>{jours[3]}</p>
+                  <Image src={imgJours[3]} alt="" width={48} height={45} />
+                  <div className="temp">
+                    <span>{tempJours[3]}</span>
+                  </div>
+                  <div className="pop">
+                    <span>
+                      <BsFillDropletFill />
+                      {rainJours[3]}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="column">
+                <div className="detailsForecasts">
+                  <p>{jours[4]}</p>
+                  <Image src={imgJours[4]} alt="" width={48} height={45} />
+                  <div className="temp">
+                    <span>{tempJours[4]}</span>
+                  </div>
+                  <div className="pop">
+                    <span>
+                      <BsFillDropletFill />
+                      {rainJours[4]}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="column">
+                <div className="detailsForecasts">
+                  <p>{jours[5]}</p>
+                  <Image src={imgJours[5]} alt="" width={48} height={45} />
+                  <div className="temp">
+                    <span>{tempJours[5]}</span>
+                  </div>
+                  <div className="pop">
+                    <span>
+                      <BsFillDropletFill />
+                      {rainJours[5]}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="column">
+                <div className="detailsForecasts">
+                  <p>{jours[6]}</p>
+                  <Image src={imgJours[6]} alt="" width={48} height={45} />
+                  <div className="temp">
+                    <span>{tempJours[6]}</span>
+                  </div>
+                  <div className="pop">
+                    <span>
+                      <BsFillDropletFill />
+                      {rainJours[6]}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <details>
+              <summary>Plus d&#39;informations</summary>
+              <div className="plusInfo">
+                <p>
+                  Pollution de l&#39;air :
+                  {' '}
+                  {airPollution}
+                </p>
+                <p>
+                  <BsFillSunriseFill />
+                  {lever}
+                  {' '}
+                  <BsFillSunsetFill />
+                  {coucher}
+                </p>
+                <p>
+                  Phase de lune :
+                  {' '}
+                  {moonPhase}
+                </p>
+                <p>
+                  Longitude :
+                  {' '}
+                  {longitudeVille}
+                </p>
+                <p>
+                  Latitude :
+                  {' '}
+                  {latitudeVille}
+                </p>
+                {sender.length > 0 && alertsMessage.length > 0 && (
+                <p>
+                  Informations de
+                  {' '}
+                  {sender}
+                  {' '}
+                  :
+                  {' '}
+                  {alertsMessage}
+                </p>
+                )}
+              </div>
+            </details>
+          </div>
+        </>
+        )}
+      </main>
+      {!showComponents && (
+        <footer>
           &copy;
           <a href="https://leoseguin.fr/" target="_blank" rel="noreferrer" aria-label="Vers leoseguin.fr">leoseguin.fr</a>
           {' '}
@@ -919,14 +908,7 @@ export default function App(props) {
           {' '}
           <a href="https://leoseguin.fr/mentionslegales" target="_blank" rel="noreferrer" aria-label="Vers mentions légales">Mentions légales</a>
         </footer>
-        )}
-        <Component />
-        <Analytics />
-      </div>
-    </>
+      )}
+    </div>
   );
 }
-
-App.propTypes = {
-  Component: PropTypes.elementType.isRequired,
-};

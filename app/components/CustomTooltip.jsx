@@ -1,9 +1,12 @@
+/* eslint-disable react/prop-types */
 import React from 'react';
-import PropTypes from 'prop-types';
 import Image from 'next/image';
 
-function CustomTooltip({
-  payload, label, getImage, temperature,
+export default function CustomTooltip({
+  payload = [],
+  label = '',
+  getImage = '',
+  temperature = 0,
 }) {
   if (payload && payload.length) {
     const {
@@ -72,35 +75,4 @@ function CustomTooltip({
       </div>
     );
   }
-  return null;
 }
-
-CustomTooltip.propTypes = {
-  payload: PropTypes.arrayOf(
-    PropTypes.shape({
-      payload: PropTypes.shape({
-        temp: PropTypes.number.isRequired,
-        humidity: PropTypes.number.isRequired,
-        pressure: PropTypes.number.isRequired,
-        wind: PropTypes.number.isRequired,
-        windDeg: PropTypes.number.isRequired,
-        weather: PropTypes.number.isRequired,
-        precipitation: PropTypes.number.isRequired,
-        rain: PropTypes.number.isRequired,
-        uv: PropTypes.number.isRequired,
-        sunDownH: PropTypes.string.isRequired,
-        sunUpH: PropTypes.string.isRequired,
-      }).isRequired,
-    }),
-  ),
-  label: PropTypes.string,
-  getImage: PropTypes.func.isRequired,
-  temperature: PropTypes.string.isRequired,
-};
-
-CustomTooltip.defaultProps = {
-  label: '',
-  payload: [],
-};
-
-export default CustomTooltip;

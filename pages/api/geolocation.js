@@ -1,4 +1,6 @@
 const fetchWeatherData = async (latitude, longitude) => {
+  'use server';
+
   const key = process.env.API_KEY;
   const geocodingResponse = await fetch(`https://api.openweathermap.org/geo/1.0/reverse?lat=${latitude}&lon=${longitude}&limit=1&appid=${key}`);
   if (geocodingResponse.status === 404) {

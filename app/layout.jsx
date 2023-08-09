@@ -1,12 +1,11 @@
+/* eslint-disable react/prop-types */
 import React from 'react';
-import {
-  Html, Head, Main, NextScript,
-} from 'next/document';
 
-export default function Document() {
+export default function RootLayout({ children }) {
   return (
-    <Html lang="fr-FR">
-      <Head>
+    <html lang="fr-FR">
+      <head>
+        <title>Météo &#8211; Léo SEGUIN</title>
         <meta name="theme-color" className="themecolor" content="#1c95ec" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" className="themecolor" content="#1c95ec" />
@@ -23,12 +22,11 @@ export default function Document() {
         <link rel="canonical" href="https://meteo-leoseguin.vercel.app/" />
         <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
         <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png" />
-        <link rel="manifest" href="/manifest.json" />
-      </Head>
+        <link rel="manifest" href="/app.webmanifest" />
+      </head>
       <body>
-        <Main />
-        <NextScript />
+        { children }
       </body>
-    </Html>
+    </html>
   );
 }
