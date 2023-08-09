@@ -16,7 +16,7 @@ module.exports = {
           },
           {
             key: 'content-security-policy',
-            value: 'upgrade-insecure-requests; default-src \'none\'; base-uri \'none\'; child-src \'none\'; connect-src \'self\'; frame-src \'none\'; frame-ancestors \'none\'; font-src \'self\'; form-action \'self\'; img-src \'self\'; manifest-src \'self\'; media-src \'none\'; object-src \'none\'; script-src \'self\'; script-src-attr \'none\'; script-src-elem \'self\'; style-src \'self\'; worker-src \'self\';',
+            value: 'upgrade-insecure-requests; default-src \'none\'; base-uri \'none\'; child-src \'none\'; connect-src \'self\'; frame-src \'none\'; frame-ancestors \'none\'; font-src \'self\'; form-action \'self\'; img-src \'self\'; manifest-src \'self\'; media-src \'none\'; object-src \'none\'; script-src \'self\'; script-src-attr \'none\'; script-src-elem \'self\' \'unsafe-inline\'; style-src \'self\'; worker-src \'self\';',
           },
           {
             key: 'cross-origin-embedder-policy',
