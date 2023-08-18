@@ -8,7 +8,7 @@ const fetchWeatherData = async (latitude, longitude) => {
   }
   const [geocodingData] = await geocodingResponse.json();
   const [oneCallResponse, airPollutionResponse] = await Promise.all([
-    fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&appid=${key}&units=metric&exclude=minutely`),
+    fetch(`https://api.openweathermap.org/data/3.0/onecall?lat=${latitude}&lon=${longitude}&appid=${key}&units=metric&lang=fr`),
     fetch(`https://api.openweathermap.org/data/2.5/air_pollution?lat=${latitude}&lon=${longitude}&appid=${key}`),
   ]);
   if (oneCallResponse.status !== 200) {

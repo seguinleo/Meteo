@@ -19,15 +19,17 @@ import {
 } from 'react-icons/wi';
 import Image from 'next/image';
 import CustomTooltip from './components/CustomTooltip';
+import RainJauge from './components/RainJauge';
 import './assets/css/style.css';
 
 export default function Home() {
-  let timeoutError;
+  let timeoutError = null;
   const [showComponents, setShowComponents] = useState(false);
   const [metaTheme, setMetaTheme] = useState('#1c95ec');
   const [mainImg, setMainImg] = useState(null);
   const [ville, setVille] = useState('');
   const [temperature, setTemperature] = useState(null);
+  const [description, setDescription] = useState(null);
   const [ressenti, setRessenti] = useState(null);
   const [humidite, setHumidite] = useState(null);
   const [vent, setVent] = useState(null);
@@ -36,20 +38,22 @@ export default function Home() {
   const [lever, setLever] = useState(null);
   const [coucher, setCoucher] = useState(null);
   const [airPollution, setAirPollution] = useState(null);
+  const [minutelyData, setMinutelyData] = useState([]);
   const [uv, setUv] = useState(null);
   const [latitudeVille, setLatitudeVille] = useState(null);
   const [longitudeVille, setLongitudeVille] = useState(null);
+  const [mapURL, setMapURL] = useState(null);
   const [moonPhase, setMoonPhase] = useState(null);
   const [dataChart1, setDataChart1] = useState(null);
   const [dataChart2, setDataChart2] = useState(null);
   const [heure, setHeure] = useState(null);
   const [jours, setJours] = useState(Array(7).fill(null));
-  const [tempJours, setTempJours] = useState(Array(7).fill(null));
-  const [rainJours, setRainJours] = useState(Array(7).fill(null));
+  const [tempMinJours, setTempMinJours] = useState(Array(7).fill(null));
+  const [tempMaxJours, setTempMaxJours] = useState(Array(7).fill(null));
+  const [precipitationJours, setPrecipitationJours] = useState(Array(7).fill(null));
   const [imgJours, setImgJours] = useState(Array(7).fill(null));
-  const [sender, setSender] = useState(false);
   const [thunderMessage, setThunderMessage] = useState(false);
-  const [alertsMessage, setAlertsMessage] = useState(false);
+  const [heatMessage, setHeatMessage] = useState(false);
   const [error, setError] = useState(false);
 
   useEffect(() => {
@@ -70,7 +74,7 @@ export default function Home() {
 
   const showError = (message) => {
     if (timeoutError) clearTimeout(timeoutError);
-    const notification = document.querySelector('#errorNotification');
+    const notification = document.querySelector('#error-notification');
     setError(message);
     notification.style.display = 'block';
     timeoutError = setTimeout(() => {
@@ -312,7 +316,7 @@ export default function Home() {
   };
 
   const fetchDataForecasts = async (data, sunDown, sunUp) => {
-    const { hourly, daily } = data;
+    const { minutely, hourly, daily } = data;
     const currentDateTime = new Date();
     const currentDay = currentDateTime.toLocaleDateString('fr-FR', { timeZone: data.timezone });
     const nextDay = new Date(currentDateTime.getTime() + 24 * 60 * 60 * 1000);
@@ -357,11 +361,14 @@ export default function Home() {
       const forecastDay = forecastDateTime.toLocaleDateString('fr-FR', { timeZone: data.timezone });
       return forecastDay === nextDayFormatted && index % 2 === 0;
     });
-    const forecastsDaily = daily.slice(1, 8);
-    const temperaturesDaily = forecastsDaily.map((forecast) => Math.floor(forecast.temp.day));
+
+    const forecastsDaily = daily.slice(2);
+    const temperaturesDailyMax = forecastsDaily.map((forecast) => Math.floor(forecast.temp.max));
+    const temperaturesDailyMin = forecastsDaily.map((forecast) => Math.floor(forecast.temp.min));
+    const precipitationDaily = forecastsDaily.map((forecast) => (forecast.pop * 100).toFixed(0));
     const weatherIdsDaily = forecastsDaily.map((forecast) => forecast.weather[0].id);
     const days = ['DIM', 'LUN', 'MAR', 'MER', 'JEU', 'VEN', 'SAM'];
-    const dates = daily.slice(1, 8).map((forecast) => new Date(forecast.dt * 1000));
+    const dates = forecastsDaily.map((forecast) => new Date(forecast.dt * 1000));
     const daysOfWeek = dates.map((date) => days[date.getDay()]);
 
     for (let i = 0; i < 7; i += 1) {
@@ -371,16 +378,22 @@ export default function Home() {
         ...prevJour.slice(i + 1),
       ]);
 
-      setTempJours((prevTemp) => [
-        ...prevTemp.slice(0, i),
-        `${temperaturesDaily[i]}°C`,
-        ...prevTemp.slice(i + 1),
+      setPrecipitationJours((prevPrecipitation) => [
+        ...prevPrecipitation.slice(0, i),
+        `${precipitationDaily[i]}%`,
+        ...prevPrecipitation.slice(i + 1),
       ]);
 
-      setRainJours((prevRain) => [
-        ...prevRain.slice(0, i),
-        `${Math.floor(forecastsDaily[i].pop * 100)}%`,
-        ...prevRain.slice(i + 1),
+      setTempMinJours((prevTempMin) => [
+        ...prevTempMin.slice(0, i),
+        `${temperaturesDailyMin[i]}°C`,
+        ...prevTempMin.slice(i + 1),
+      ]);
+
+      setTempMaxJours((prevTempMax) => [
+        ...prevTempMax.slice(0, i),
+        `${temperaturesDailyMax[i]}°C`,
+        ...prevTempMax.slice(i + 1),
       ]);
 
       setImgJours((prevImg) => [
@@ -392,6 +405,7 @@ export default function Home() {
 
     setDataChart1(chartData1);
     setDataChart2(chartData2);
+    setMinutelyData(minutely);
   };
 
   const fetchDataCurrent = async (city, data, data2) => {
@@ -428,6 +442,7 @@ export default function Home() {
     setHeure(heureLocale);
     setVille(name);
     setTemperature(`${current.temp.toFixed(1)}°C`);
+    setDescription(current.weather[0].description);
     setRessenti(`${current.feels_like.toFixed(0)}°C`);
     setHumidite(`${current.humidity}%`);
     setVent(`${(3.6 * current.wind_speed).toFixed(0)}km/h`);
@@ -436,6 +451,7 @@ export default function Home() {
     setUv(current.uvi.toFixed(0));
     setLatitudeVille(data.lat);
     setLongitudeVille(data.lon);
+    setMapURL(`https://www.openstreetmap.org/export/embed.html?bbox=${data.lon - 0.1}%2C${data.lat - 0.1}%2C${data.lon + 0.1}%2C${data.lat + 0.1}&amp;layer=mapnik`);
     setMainImg(<Image
       src={imgSrc}
       className="mainImg"
@@ -445,17 +461,12 @@ export default function Home() {
     />);
 
     if (alerts) {
-      setSender(alerts[0].sender_name);
-      setAlertsMessage(alerts.map((alert) => alert.event).join(', '));
-    } else {
-      setSender('');
-      setAlertsMessage('');
-    }
-
-    if (alerts && alerts.some((alert) => alert.event.includes('thunder'))) {
-      setThunderMessage('VIGILANCE - ORAGES');
-    } else {
-      setThunderMessage('');
+      if (alerts.some((alert) => alert.event.includes('thunder'))) {
+        setThunderMessage('VIGILANCE - ORAGES');
+      }
+      if (alerts.some((alert) => alert.event.includes('high-temperature', 'heat'))) {
+        setHeatMessage('VIGILANCE - FORTES CHALEURS');
+      }
     }
 
     document.body.style.background = backgroundColor;
@@ -538,7 +549,8 @@ export default function Home() {
       setTemperature(`${(temperature.slice(0, -2) * 1.8 + 32).toFixed(1)}°F`);
       setRessenti(`${(ressenti.slice(0, -2) * 1.8 + 32).toFixed(0)}°F`);
       setVent(`${(vent.slice(0, -4) / 1.609).toFixed(0)}mph`);
-      setTempJours(tempJours.map((temp) => `${(parseInt(temp.slice(0, -2), 10) * 1.8 + 32).toFixed(0)}°F`));
+      setTempMinJours(tempMinJours.map((temp) => `${(parseInt(temp.slice(0, -2), 10) * 1.8 + 32).toFixed(0)}°F`));
+      setTempMaxJours(tempMaxJours.map((temp) => `${(parseInt(temp.slice(0, -2), 10) * 1.8 + 32).toFixed(0)}°F`));
       setDataChart1(dataChart1.map((item) => ({
         ...item,
         temp: item.temp * 1.8 + 32,
@@ -553,7 +565,8 @@ export default function Home() {
       setTemperature(`${((temperature.slice(0, -2) - 32) / 1.8).toFixed(1)}°C`);
       setRessenti(`${((ressenti.slice(0, -2) - 32) / 1.8).toFixed(0)}°C`);
       setVent(`${(vent.slice(0, -3) * 1.609).toFixed(0)}km/h`);
-      setTempJours(tempJours.map((temp) => `${((parseInt(temp.slice(0, -2), 10) - 32) / 1.8).toFixed(0)}°C`));
+      setTempMinJours(tempMinJours.map((temp) => `${((parseInt(temp.slice(0, -2), 10) - 32) / 1.8).toFixed(0)}°C`));
+      setTempMaxJours(tempMaxJours.map((temp) => `${((parseInt(temp.slice(0, -2), 10) - 32) / 1.8).toFixed(0)}°C`));
       setDataChart1(dataChart1.map((item) => ({
         ...item,
         temp: (item.temp - 32) / 1.8,
@@ -595,7 +608,7 @@ export default function Home() {
         ) : (
           <h1>Météo</h1>
         )}
-        <div id="errorNotification">{error}</div>
+        <div id="error-notification">{error}</div>
       </header>
       <main>
         {!showComponents && (
@@ -626,23 +639,30 @@ export default function Home() {
         {showComponents && (
         <>
           {thunderMessage.length > 0 && (
-          <div className="alerts-part">
+          <div className="alerts-thunder-part">
             <span>{thunderMessage}</span>
           </div>
           )}
-          <div className="current-part">
+          {heatMessage.length > 0 && (
+          <div className="alerts-heat-part">
+            <span>{heatMessage}</span>
+          </div>
+          )}
+          <section className="current-part">
             <div className="main-info">
               <div className="temp">
                 {mainImg}
               </div>
               <div className="temp">
-                <span className="mainTemp">{temperature}</span>
-                <span className="tempRessenti">
-                  Ressenti
+                <span className="main-temp">{temperature}</span>
+                <span className="line">{description}</span>
+                <span className="line">
+                  ressenti
                   {' '}
                   {ressenti}
-                  {' '}
-                  | UV
+                </span>
+                <span className="line">
+                  UV
                   {' '}
                   {uv}
                 </span>
@@ -673,24 +693,27 @@ export default function Home() {
                 </div>
               </div>
             </div>
-          </div>
-          <div className="chart-part">
+          </section>
+          <RainJauge minutely={minutelyData} />
+          <section className="chart-part">
             <div className="graphique">
               {dataChart1.length > 0 && (
               <>
-                <p className="titreGraph">Ajourd&#39;hui</p>
-                <ResponsiveContainer width="100%" height={100} style={{ margin: 'auto' }}>
-                  <LineChart data={dataChart1}>
+                <p className="sous-titre">Ajourd&#39;hui</p>
+                <ResponsiveContainer width="100%" height={100} style={{ margin: 'auto', overflowX: 'auto' }}>
+                  <LineChart
+                    margin={{
+                      top: 5, left: 5, right: 5, bottom: -24,
+                    }}
+                    data={dataChart1}
+                  >
                     <XAxis axisLine={false} tick={false} dataKey="name" />
                     <YAxis yAxisId="temperature" domain={['dataMin', 'dataMax']} width={0} />
-                    <YAxis yAxisId="rain" domain={[0, 100]} width={0} />
+                    <YAxis yAxisId="precipitation" width={0} />
                     <Tooltip
                       content={(
-                        <CustomTooltip
-                          getImage={getImage}
-                          temperature={temperature}
-                        />
-                          )}
+                        <CustomTooltip getImage={getImage} temperature={temperature} />
+                      )}
                       wrapperStyle={{ zIndex: '999' }}
                     />
                     <Line
@@ -701,29 +724,46 @@ export default function Home() {
                       yAxisId="temperature"
                     />
                     <Line
-                      dataKey="rain"
+                      dataKey="precipitation"
                       stroke="rgba(57,196,243,.7)"
                       strokeWidth="2"
                       dot={{ r: 4 }}
-                      yAxisId="rain"
+                      yAxisId="precipitation"
                     />
                   </LineChart>
                 </ResponsiveContainer>
+                <div className="images-chart1">
+                  {dataChart1.map((item) => (
+                    <Image
+                      src={
+                        getImage(item.weather, item.sunDownH, item.sunUpH, item.name, false).imgSrc
+                      }
+                      alt=""
+                      width={16}
+                      height={15}
+                      key={item.name}
+                    />
+                  ))}
+                </div>
               </>
               )}
-              <p className="titreGraph">Demain</p>
+            </div>
+            <div className="graphique">
+              <p className="sous-titre">Demain</p>
               <ResponsiveContainer width="100%" height={100} style={{ margin: 'auto' }}>
-                <LineChart data={dataChart2}>
+                <LineChart
+                  margin={{
+                    top: 5, left: 5, right: 5, bottom: -24,
+                  }}
+                  data={dataChart2}
+                >
                   <XAxis axisLine={false} tick={false} dataKey="name" />
                   <YAxis yAxisId="temperature" domain={['dataMin', 'dataMax']} width={0} />
-                  <YAxis yAxisId="rain" domain={[0, 100]} width={0} />
+                  <YAxis yAxisId="precipitation" width={0} />
                   <Tooltip
                     content={(
-                      <CustomTooltip
-                        getImage={getImage}
-                        temperature={temperature}
-                      />
-                        )}
+                      <CustomTooltip getImage={getImage} temperature={temperature} />
+                    )}
                     wrapperStyle={{ Index: '999' }}
                   />
                   <Line
@@ -734,127 +774,133 @@ export default function Home() {
                     yAxisId="temperature"
                   />
                   <Line
-                    dataKey="rain"
+                    dataKey="precipitation"
                     stroke="rgba(57,196,243,.7)"
                     strokeWidth="2"
                     dot={{ r: 4 }}
-                    yAxisId="rain"
+                    yAxisId="precipitation"
                   />
                 </LineChart>
               </ResponsiveContainer>
+              <div className="images-chart2">
+                {dataChart2.map((item) => (
+                  <Image
+                    src={
+                      getImage(item.weather, item.sunDownH, item.sunUpH, item.name, false).imgSrc
+                    }
+                    alt=""
+                    width={16}
+                    height={15}
+                    key={item.name}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
-          <div className="forecasts-part">
+          </section>
+          <section className="forecasts-part">
             <div className="details">
               <div className="column">
-                <div className="detailsForecasts">
-                  <p>{jours[0]}</p>
-                  <Image src={imgJours[0]} alt="" width={48} height={45} />
-                  <div className="temp">
-                    <span>{tempJours[0]}</span>
-                  </div>
-                  <div className="pop">
-                    <span>
-                      <BsFillDropletFill />
-                      {rainJours[0]}
-                    </span>
-                  </div>
+                <p>{jours[0]}</p>
+                <Image src={imgJours[0]} alt="" width={48} height={45} />
+                <div className="temp">
+                  <span>
+                    {tempMinJours[0]}
+                    /
+                    {tempMaxJours[0]}
+                  </span>
+                </div>
+                <div className="temp">
+                  <BsFillDropletFill />
+                  {precipitationJours[0]}
                 </div>
               </div>
               <div className="column">
-                <div className="detailsForecasts">
-                  <p>{jours[1]}</p>
-                  <Image src={imgJours[1]} alt="" width={48} height={45} />
-                  <div className="temp">
-                    <span>{tempJours[1]}</span>
-                  </div>
-                  <div className="pop">
-                    <span>
-                      <BsFillDropletFill />
-                      {rainJours[1]}
-                    </span>
-                  </div>
+                <p>{jours[1]}</p>
+                <Image src={imgJours[1]} alt="" width={48} height={45} />
+                <div className="temp">
+                  <span>
+                    {tempMinJours[1]}
+                    /
+                    {tempMaxJours[1]}
+                  </span>
+                </div>
+                <div className="temp">
+                  <BsFillDropletFill />
+                  {precipitationJours[1]}
                 </div>
               </div>
               <div className="column">
-                <div className="detailsForecasts">
-                  <p>{jours[2]}</p>
-                  <Image src={imgJours[2]} alt="" width={48} height={45} />
-                  <div className="temp">
-                    <span>{tempJours[2]}</span>
-                  </div>
-                  <div className="pop">
-                    <span>
-                      <BsFillDropletFill />
-                      {rainJours[2]}
-                    </span>
-                  </div>
+                <p>{jours[2]}</p>
+                <Image src={imgJours[2]} alt="" width={48} height={45} />
+                <div className="temp">
+                  <span>
+                    {tempMinJours[2]}
+                    /
+                    {tempMaxJours[2]}
+                  </span>
+                </div>
+                <div className="temp">
+                  <BsFillDropletFill />
+                  {precipitationJours[2]}
                 </div>
               </div>
               <div className="column">
-                <div className="detailsForecasts">
-                  <p>{jours[3]}</p>
-                  <Image src={imgJours[3]} alt="" width={48} height={45} />
-                  <div className="temp">
-                    <span>{tempJours[3]}</span>
-                  </div>
-                  <div className="pop">
-                    <span>
-                      <BsFillDropletFill />
-                      {rainJours[3]}
-                    </span>
-                  </div>
+                <p>{jours[3]}</p>
+                <Image src={imgJours[3]} alt="" width={48} height={45} />
+                <div className="temp">
+                  <span>
+                    {tempMinJours[3]}
+                    /
+                    {tempMaxJours[3]}
+                  </span>
+                </div>
+                <div className="temp">
+                  <BsFillDropletFill />
+                  {precipitationJours[3]}
                 </div>
               </div>
               <div className="column">
-                <div className="detailsForecasts">
-                  <p>{jours[4]}</p>
-                  <Image src={imgJours[4]} alt="" width={48} height={45} />
-                  <div className="temp">
-                    <span>{tempJours[4]}</span>
-                  </div>
-                  <div className="pop">
-                    <span>
-                      <BsFillDropletFill />
-                      {rainJours[4]}
-                    </span>
-                  </div>
+                <p>{jours[4]}</p>
+                <Image src={imgJours[4]} alt="" width={48} height={45} />
+                <div className="temp">
+                  <span>
+                    {tempMinJours[4]}
+                    /
+                    {tempMaxJours[4]}
+                  </span>
+                </div>
+                <div className="temp">
+                  <BsFillDropletFill />
+                  {precipitationJours[4]}
                 </div>
               </div>
               <div className="column">
-                <div className="detailsForecasts">
-                  <p>{jours[5]}</p>
-                  <Image src={imgJours[5]} alt="" width={48} height={45} />
-                  <div className="temp">
-                    <span>{tempJours[5]}</span>
-                  </div>
-                  <div className="pop">
-                    <span>
-                      <BsFillDropletFill />
-                      {rainJours[5]}
-                    </span>
-                  </div>
+                <p>{jours[5]}</p>
+                <Image src={imgJours[5]} alt="" width={48} height={45} />
+                <div className="temp">
+                  <span>
+                    {tempMinJours[5]}
+                    /
+                    {tempMaxJours[5]}
+                  </span>
                 </div>
-              </div>
-              <div className="column">
-                <div className="detailsForecasts">
-                  <p>{jours[6]}</p>
-                  <Image src={imgJours[6]} alt="" width={48} height={45} />
-                  <div className="temp">
-                    <span>{tempJours[6]}</span>
-                  </div>
-                  <div className="pop">
-                    <span>
-                      <BsFillDropletFill />
-                      {rainJours[6]}
-                    </span>
-                  </div>
+                <div className="temp">
+                  <BsFillDropletFill />
+                  {precipitationJours[5]}
                 </div>
               </div>
             </div>
+            <section className="carte">
+              <iframe
+                title="Carte"
+                width="95%"
+                height="150"
+                src={mapURL}
+              />
+            </section>
             <details>
               <summary>Plus d&#39;informations</summary>
-              <div className="plusInfo">
+              <div className="plus-info">
                 <p>
                   Pollution de l&#39;air :
                   {' '}
@@ -882,20 +928,14 @@ export default function Home() {
                   {' '}
                   {latitudeVille}
                 </p>
-                {sender.length > 0 && alertsMessage.length > 0 && (
-                <p>
-                  Informations de
+                <footer>
+                  Màj app :
                   {' '}
-                  {sender}
-                  {' '}
-                  :
-                  {' '}
-                  {alertsMessage}
-                </p>
-                )}
+                  <a href="https://github.com/PouletEnSlip/Meteo" target="_blank" rel="noreferrer" aria-label="Vers GitHub">18/08/2023</a>
+                </footer>
               </div>
             </details>
-          </div>
+          </section>
         </>
         )}
       </main>
