@@ -802,91 +802,91 @@ export default function Home() {
               <div className="column">
                 <p>{jours[0]}</p>
                 <Image src={imgJours[0]} alt="" width={48} height={45} />
-                <div className="temp">
+                <div className="temp-min-max">
                   <span>
                     {tempMinJours[0]}
                     /
                     {tempMaxJours[0]}
                   </span>
                 </div>
-                <div className="temp">
+                <div>
                   <BsFillDropletFill />
-                  {precipitationJours[0]}
+                  <span>{precipitationJours[0]}</span>
                 </div>
               </div>
               <div className="column">
                 <p>{jours[1]}</p>
                 <Image src={imgJours[1]} alt="" width={48} height={45} />
-                <div className="temp">
+                <div className="temp-min-max">
                   <span>
                     {tempMinJours[1]}
                     /
                     {tempMaxJours[1]}
                   </span>
                 </div>
-                <div className="temp">
+                <div>
                   <BsFillDropletFill />
-                  {precipitationJours[1]}
+                  <span>{precipitationJours[1]}</span>
                 </div>
               </div>
               <div className="column">
                 <p>{jours[2]}</p>
                 <Image src={imgJours[2]} alt="" width={48} height={45} />
-                <div className="temp">
+                <div className="temp-min-max">
                   <span>
                     {tempMinJours[2]}
                     /
                     {tempMaxJours[2]}
                   </span>
                 </div>
-                <div className="temp">
+                <div>
                   <BsFillDropletFill />
-                  {precipitationJours[2]}
+                  <span>{precipitationJours[2]}</span>
                 </div>
               </div>
               <div className="column">
                 <p>{jours[3]}</p>
                 <Image src={imgJours[3]} alt="" width={48} height={45} />
-                <div className="temp">
+                <div className="temp-min-max">
                   <span>
                     {tempMinJours[3]}
                     /
                     {tempMaxJours[3]}
                   </span>
                 </div>
-                <div className="temp">
+                <div>
                   <BsFillDropletFill />
-                  {precipitationJours[3]}
+                  <span>{precipitationJours[3]}</span>
                 </div>
               </div>
               <div className="column">
                 <p>{jours[4]}</p>
                 <Image src={imgJours[4]} alt="" width={48} height={45} />
-                <div className="temp">
+                <div className="temp-min-max">
                   <span>
                     {tempMinJours[4]}
                     /
                     {tempMaxJours[4]}
                   </span>
                 </div>
-                <div className="temp">
+                <div>
                   <BsFillDropletFill />
-                  {precipitationJours[4]}
+                  <span>{precipitationJours[4]}</span>
                 </div>
               </div>
               <div className="column">
                 <p>{jours[5]}</p>
                 <Image src={imgJours[5]} alt="" width={48} height={45} />
-                <div className="temp">
+                <div className="temp-min-max">
                   <span>
                     {tempMinJours[5]}
                     /
                     {tempMaxJours[5]}
                   </span>
                 </div>
-                <div className="temp">
+                <div>
                   <BsFillDropletFill />
-                  {precipitationJours[5]}
+                  <span>{precipitationJours[5]}</span>
                 </div>
               </div>
             </div>
@@ -928,11 +928,11 @@ export default function Home() {
                   {' '}
                   {latitudeVille}
                 </p>
-                <footer>
+                <p>
                   Màj app :
                   {' '}
                   <a href="https://github.com/PouletEnSlip/Meteo" target="_blank" rel="noreferrer" aria-label="Vers GitHub">18/08/2023</a>
-                </footer>
+                </p>
               </div>
             </details>
           </section>

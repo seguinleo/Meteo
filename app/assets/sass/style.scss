@@ -227,6 +227,10 @@ header {
   overflow: hidden;
   overflow-x: auto;
   padding: 5px;
+
+  span {
+    vertical-align: middle;
+  }
 }
 
 .carte {
@@ -282,7 +286,7 @@ header {
 }
 
 .forecasts-part .column {
-  min-width: 85px;
+  min-width: 80px;
 }
 
 .rain-jauge {
@@ -304,7 +308,9 @@ header {
   }
 }
 
-.jauge-labels, .images-chart1, .images-chart2 {
+.jauge-labels,
+.images-chart1,
+.images-chart2 {
   display: flex;
   justify-content: space-between;
   margin: 5px .8rem 0;
@@ -329,6 +335,10 @@ header {
       vertical-align: middle;
     }
   }
+}
+
+.temp-min-max {
+  font-size: .8rem;
 }
 
 #error-notification {
