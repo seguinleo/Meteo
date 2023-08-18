@@ -2,18 +2,24 @@
 
 ![Vercel](https://vercelbadge.vercel.app/api/pouletenslip/meteo)
 
-Weather website and PWA developed with Next.js and [OpenWeatherMapAPI](https://openweathermap.org/api).
+Weather PWA developed with Next.js and [OpenWeatherMapAPI](https://openweathermap.org/api).
 
 User can search a city by name or use its actual location.
-The website displays the current temperature, wind speed and direction, humidity and air quality.
-A chart for forecasts temperatures/precipitation is displayed with [Recharts](https://recharts.org/en-US/).
+A local storage is used to save the last city.
+The website displays current temperature, wind speed and direction, humidity, pressure, rain, air quality and more.
+
+Charts for forecasts are displayed with [Recharts](https://recharts.org/en-US/).
+A map is displayed with [OpenStreetMap](https://www.openstreetmap.org/).
 Weather icons from [Apple](https://support.apple.com/fr-fr/guide/iphone/iph4305794fb/15.0/ios/15.0).
-The website uses SSR requests with Node.js server.
+The website uses SSR requests with a Node.js server.
 
 Installation:
 ```
 npm i
 ```
+
+Create ``.env.local`` at root and add your API_KEY.
+
 ```
 npm run dev
 ```
