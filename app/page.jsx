@@ -332,6 +332,7 @@ export default function Home() {
         });
         return {
           name: forecastTime,
+          description: item.weather[0].description,
           temp: item.temp,
           humidity: item.humidity,
           pressure: item.pressure,
@@ -733,12 +734,12 @@ export default function Home() {
                   </LineChart>
                 </ResponsiveContainer>
                 <div className="images-chart1">
-                  {dataChart1.map((item) => (
+                  {dataChart1.length > 1 && dataChart1.map((item) => (
                     <Image
                       src={
                         getImage(item.weather, item.sunDownH, item.sunUpH, item.name, false).imgSrc
                       }
-                      alt=""
+                      alt={item.description}
                       width={16}
                       height={15}
                       key={item.name}
@@ -788,7 +789,7 @@ export default function Home() {
                     src={
                       getImage(item.weather, item.sunDownH, item.sunUpH, item.name, false).imgSrc
                     }
-                    alt=""
+                    alt={item.description}
                     width={16}
                     height={15}
                     key={item.name}

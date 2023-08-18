@@ -11,6 +11,7 @@ export default function CustomTooltip({
   if (payload && payload.length) {
     const {
       temp,
+      description,
       humidity,
       pressure,
       wind,
@@ -26,7 +27,12 @@ export default function CustomTooltip({
       <div className="custom-tooltip">
         <p>
           {label}
-          <Image src={getImage(weather, sunDownH, sunUpH, label, false).imgSrc} alt="" width={48} height={45} />
+          <Image
+            src={getImage(weather, sunDownH, sunUpH, label, false).imgSrc}
+            alt={description}
+            width={48}
+            height={45}
+          />
         </p>
         <p>
           Température
