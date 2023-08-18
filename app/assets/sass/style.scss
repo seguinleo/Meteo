@@ -65,16 +65,16 @@ svg {
 }
 
 section {
-  margin: 1.5rem auto;
+  margin: 1rem auto;
 }
 
 summary {
-  margin: 1rem;
+  margin: 0 1rem;
 }
 
 .wrapper {
   margin: 1rem 0;
-  padding: 1.5rem 0;
+  padding: 1rem 0 0;
   width: 750px;
   border-radius: 10px;
   max-width: 95vw;
@@ -219,7 +219,6 @@ header {
 
 .details {
   display: flex;
-  margin-bottom: 1rem;
   width: 95%;
   background: rgba(255, 255, 255, .1);
   border-radius: 10px;
@@ -279,7 +278,7 @@ header {
 
 .column {
   width: 100%;
-  margin: .5rem;
+  margin: 5px;
   text-align: center;
   align-items: center;
   justify-content: center;
