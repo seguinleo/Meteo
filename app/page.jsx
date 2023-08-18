@@ -406,7 +406,7 @@ export default function Home() {
 
     setDataChart1(chartData1);
     setDataChart2(chartData2);
-    setMinutelyData(minutely);
+    if (minutely) setMinutelyData(minutely);
   };
 
   const fetchDataCurrent = async (city, data, data2) => {
