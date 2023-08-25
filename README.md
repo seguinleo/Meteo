@@ -1,6 +1,6 @@
 # Météo
 
-![Vercel](https://vercelbadge.vercel.app/api/pouletenslip/meteo)
+![Vercel](https://vercelbadge.vercel.app/api/seguinleo/meteo)
 
 Weather PWA developed with Next.js and [OpenWeatherMapAPI](https://openweathermap.org/api).
 
@@ -24,4 +24,4 @@ Create ``.env.local`` at root and add your API_KEY.
 npm run dev
 ```
 
-![0](https://github.com/PouletEnSlip/Meteo/blob/main/image.png)
+![0](https://github.com/seguinleo/Meteo/blob/main/image.png)

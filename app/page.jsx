@@ -280,15 +280,15 @@ export default function Home() {
   const fetchDataAirPollution = async (data) => {
     let aqi = data;
     if (aqi === 1) {
-      aqi = `${aqi} - Excellent`;
+      aqi = `${aqi} \u2013 Excellent`;
     } else if (aqi === 2) {
-      aqi = `${aqi} - Bon`;
+      aqi = `${aqi} \u2013 Bon`;
     } else if (aqi === 3) {
-      aqi = `${aqi} - Moyen`;
+      aqi = `${aqi} \u2013 Moyen`;
     } else if (aqi === 4) {
-      aqi = `${aqi} - Mauvais`;
+      aqi = `${aqi} \u2013 Mauvais`;
     } else {
-      aqi = `${aqi} - Très mauvais`;
+      aqi = `${aqi} \u2013 Très mauvais`;
     }
     setAirPollution(aqi);
   };
@@ -333,15 +333,15 @@ export default function Home() {
         return {
           name: forecastTime,
           description: item.weather[0].description,
-          temp: item.temp,
+          temp: item.temp.toFixed(1),
           humidity: item.humidity,
           pressure: item.pressure,
-          wind: item.wind_speed,
+          wind: (item.wind_speed * 3.6).toFixed(0),
           windDeg: item.wind_deg,
           weather: item.weather[0].id,
-          precipitation: item.rain ? item.rain['1h'] : 0,
-          rain: (item.pop * 100) || 0,
-          uv: item.uvi,
+          precipitation: item.rain ? item.rain['1h'].toFixed(2) : 0,
+          rain: (item.pop * 100).toFixed(0) || 0,
+          uv: item.uvi.toFixed(0),
           sunDownH: sunDown,
           sunUpH: sunUp,
         };
@@ -353,14 +353,17 @@ export default function Home() {
       return forecastDay === currentDay;
     }).slice(1);
 
-    if (chartData1.length > 12) {
+    if (window.innerWidth < 768 && chartData1.length > 12) {
       chartData1 = chartData1.filter((item, index) => index % 2 === 0);
     }
 
     const chartData2 = createChartData(hourly, (item, index) => {
       const forecastDateTime = new Date(item.dt * 1000);
       const forecastDay = forecastDateTime.toLocaleDateString('fr-FR', { timeZone: data.timezone });
-      return forecastDay === nextDayFormatted && index % 2 === 0;
+      if (window.innerWidth < 768) {
+        return forecastDay === nextDayFormatted && index % 2 === 0;
+      }
+      return forecastDay === nextDayFormatted;
     });
 
     const forecastsDaily = daily.slice(2);
@@ -463,19 +466,19 @@ export default function Home() {
 
     if (alerts) {
       if (alerts.some((alert) => alert.event.includes('thunder'))) {
-        setThunderMessage('VIGILANCE - ORAGES');
+        setThunderMessage('VIGILANCE \u2013 ORAGES');
       }
       if (alerts.some((alert) => alert.event.includes('high-temperature', 'heat'))) {
-        setHeatMessage('VIGILANCE - FORTES CHALEURS');
+        setHeatMessage('VIGILANCE \u2013 FORTES CHALEURS');
       }
     }
 
     document.body.style.background = backgroundColor;
     localStorage.setItem('ville', name);
 
-    await fetchDataMoon(data.daily[0].moon_phase);
-    await fetchDataAirPollution(data2.list[0].main.aqi);
     await fetchDataForecasts(data, sunDown, sunUp);
+    await fetchDataMoon(data.daily[0].moon_phase);
+    if (data2.list[0].main.aqi) await fetchDataAirPollution(data2.list[0].main.aqi);
   };
 
   const handleSubmit = async (event) => {
@@ -620,7 +623,7 @@ export default function Home() {
               type="text"
               placeholder="Paris, FR"
               maxLength="50"
-              aria-label="Rechercher"
+              aria-label="Rechercher une ville"
               id="ville"
               value={ville}
               onChange={(event) => setVille(event.target.value)}
@@ -649,7 +652,7 @@ export default function Home() {
             <span>{heatMessage}</span>
           </div>
           )}
-          <section className="current-part">
+          <section>
             <div className="main-info">
               <div className="temp">
                 {mainImg}
@@ -696,7 +699,7 @@ export default function Home() {
             </div>
           </section>
           <RainJauge minutely={minutelyData} />
-          <section className="chart-part">
+          <section>
             <div className="graphique">
               {dataChart1.length > 0 && (
               <>
@@ -713,7 +716,7 @@ export default function Home() {
                     <YAxis yAxisId="precipitation" width={0} />
                     <Tooltip
                       content={(
-                        <CustomTooltip getImage={getImage} temperature={temperature} />
+                        <CustomTooltip temperature={temperature} />
                       )}
                       wrapperStyle={{ zIndex: '999' }}
                     />
@@ -895,7 +898,7 @@ export default function Home() {
               <iframe
                 title="Carte"
                 width="95%"
-                height="150"
+                height="125"
                 src={mapURL}
               />
             </section>
@@ -932,7 +935,7 @@ export default function Home() {
                 <p>
                   Màj app :
                   {' '}
-                  <a href="https://github.com/PouletEnSlip/Meteo" target="_blank" rel="noreferrer" aria-label="Vers GitHub">18/08/2023</a>
+                  <a href="https://github.com/seguinleo/Meteo" target="_blank" rel="noreferrer" aria-label="Vers GitHub">25/08/2023</a>
                 </p>
               </div>
             </details>
@@ -945,7 +948,7 @@ export default function Home() {
           &copy;
           <a href="https://leoseguin.fr/" target="_blank" rel="noreferrer" aria-label="Vers leoseguin.fr">leoseguin.fr</a>
           {' '}
-          -
+          &#x2013;
           {' '}
           <a href="https://leoseguin.fr/mentionslegales" target="_blank" rel="noreferrer" aria-label="Vers mentions légales">Mentions légales</a>
         </footer>
