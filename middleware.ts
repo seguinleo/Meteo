@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 export default function middleware (request: NextRequest): NextResponse {
-  const nonce = Buffer.from(crypto.randomUUID()).toString('base64')
   const cspHeader = `
-    default-src 'self';
+    upgrade-insecure-requests;
     base-uri 'none';
     child-src 'none';
     connect-src 'self';
@@ -15,7 +14,6 @@ export default function middleware (request: NextRequest): NextResponse {
     manifest-src 'self';
     media-src 'none';
     object-src 'none';
-    script-src 'self' 'unsafe-inline' 'strict-dynamic' 'nonce-${nonce}' 'unsafe-eval';
     script-src-attr 'none';
     style-src 'self';
     worker-src 'self';
