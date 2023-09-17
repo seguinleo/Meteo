@@ -39,3 +39,7 @@ export default function middleware (request: NextRequest): NextResponse {
     headers: requestHeaders
   })
 }
+
+export const config = {
+  matcher: '/',
+}
