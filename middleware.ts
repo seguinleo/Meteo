@@ -15,7 +15,7 @@ export default function middleware (request: NextRequest): NextResponse {
     manifest-src 'self';
     media-src 'none';
     object-src 'none';
-    script-src 'self' 'nonce-${nonce}' 'unsafe-eval';
+    script-src 'self' 'nonce-${nonce}' 'unsafe-inline' 'unsafe-eval';
     script-src-attr 'none';
     style-src 'self';
     worker-src 'self';
@@ -41,7 +41,5 @@ export default function middleware (request: NextRequest): NextResponse {
 }
 
 export const config = {
-  matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
-  ],
+  matcher: '/',
 }
