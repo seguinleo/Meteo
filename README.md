@@ -9,19 +9,17 @@ A local storage is used to save the last city.
 The website displays current temperature, wind speed and direction, humidity, pressure, rain, air quality and more.
 
 Charts for forecasts are displayed with [Recharts](https://recharts.org/en-US/).
-A map is displayed with [OpenStreetMap](https://www.openstreetmap.org/).
 Weather icons from [Apple](https://support.apple.com/fr-fr/guide/iphone/iph4305794fb/15.0/ios/15.0).
 The website uses SSR requests with a Node.js server.
 
-Installation:
-```
-npm i
-```
+## For developers
 
-Create ``.env.local`` at root and add your API_KEY.
+``npm i`` to install all dependencies
 
-```
-npm run dev
-```
+Create ``.env.local`` at root and add your API_KEY
+
+``npm run dev`` to start the server
+
+``npm run sass`` to compile Saas files
 
 ![0](https://github.com/seguinleo/Meteo/blob/main/image.png)

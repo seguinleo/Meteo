@@ -1,15 +1,22 @@
-/* eslint-disable react/prop-types */
-import React from 'react';
+import React from 'react'
+import type { Metadata } from 'next'
 
-export default function RootLayout({ children }) {
+export const metadata: Metadata = {
+  title: 'Météo – Léo SEGUIN',
+  description: 'Météo en temps réel, précise et fiable pour n\'importe quelle ville du monde avec prévisions.',
+}
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
     <html lang="fr-FR">
       <head>
-        <title>Météo &#8211; Léo SEGUIN</title>
         <meta name="theme-color" className="themecolor" content="#1c95ec" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" className="themecolor" content="#1c95ec" />
-        <meta name="description" content="Météo en temps réel, précise et fiable pour n'importe quelle ville du monde avec prévisions." />
         <meta name="twitter:card" content="summary" />
         <meta name="twitter:title" content="Météo &#8211; Léo SEGUIN" />
         <meta name="twitter:description" content="Météo en temps réel, précise et fiable pour n'importe quelle ville du monde avec prévisions." />
@@ -28,5 +35,5 @@ export default function RootLayout({ children }) {
         { children }
       </body>
     </html>
-  );
+  )
 }

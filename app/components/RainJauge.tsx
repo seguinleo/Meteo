@@ -1,14 +1,20 @@
-/* eslint-disable react/prop-types */
 import React from 'react';
 
-export default function RainJauge({ minutely }) {
-  const getColorForPrecipitation = (precipitation) => {
-    if (precipitation > 0.8) {
+interface RainJaugeProps {
+  minutely: Array<{
+    precipitation: number;
+  }>;
+}
+
+export default function RainJauge({ minutely }: RainJaugeProps): JSX.Element {
+  const getColorForPrecipitation = (precipitation: number): string => {
+    if (precipitation > 1) {
       return 'high';
-    } if (precipitation > 0) {
+    } else if (precipitation > 0) {
       return 'low';
+    } else {
+      return 'transparent';
     }
-    return 'transparent';
   };
 
   const sections = minutely.map((item, index) => ({
@@ -17,19 +23,19 @@ export default function RainJauge({ minutely }) {
     precipitation: item.precipitation.toFixed(2),
   }));
 
+  const totalPrecipitation = sections.reduce((acc, item) => acc + parseFloat(item.precipitation), 0);
+  const averagePrecipitation = (totalPrecipitation / sections.length).toFixed(2);
+
   return (
     <section>
       {sections.every((item) => item.color === 'transparent') ? (
         <p className="sous-titre">Pas de précipitations dans l&#39;heure</p>
       ) : (
         <>
-          <p className="sous-titre">Précipitations dans l&#39;heure</p>
+          <p className="sous-titre">Précipitations dans l&#39;heure (Moy: {averagePrecipitation} mm)</p>
           <div className="rain-jauge">
             {sections.map((item) => (
-              <div
-                key={item.id}
-                className={`jauge-section + ${item.color}`}
-              />
+              <div key={item.id} className={`jauge-section ${item.color}`} />
             ))}
           </div>
           <div className="jauge-labels">

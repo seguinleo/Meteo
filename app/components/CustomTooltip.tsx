@@ -1,12 +1,21 @@
-/* eslint-disable react/prop-types */
-import React from 'react';
+import React from 'react'
 
-export default function CustomTooltip({
+interface CustomTooltipProps {
+  payload?: any[]
+  label?: string
+  temperature?: string
+  getImage?: (id: any, sunDown: any, sunUp: any, time: any, main: any) => {
+    imgSrc: string
+    backgroundColor: string
+  };
+}
+
+export default function CustomTooltip ({
   payload = [],
   label = '',
-  temperature = 0,
-}) {
-  if (payload && payload.length) {
+  temperature = '0°C'
+}: CustomTooltipProps): JSX.Element | null {
+  if (Array.isArray(payload) && (payload.length > 0)) {
     const {
       temp,
       humidity,
@@ -15,8 +24,8 @@ export default function CustomTooltip({
       windDeg,
       precipitation,
       rain,
-      uv,
-    } = payload[0].payload;
+      uv
+    } = payload[0].payload
     return (
       <div className="custom-tooltip">
         <p className="bold">
@@ -67,6 +76,7 @@ export default function CustomTooltip({
           {uv}
         </p>
       </div>
-    );
+    )
   }
+  return null
 }

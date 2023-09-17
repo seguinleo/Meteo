@@ -33,6 +33,11 @@ html {
   background-color: rgba(255, 255, 255, .5);
 }
 
+::selection {
+  color: #1c95ec;
+  background: #ffffff;
+}
+
 * {
   font-family: OpenSans, sans-serif;
   box-sizing: border-box;
@@ -229,16 +234,6 @@ header {
 
   span {
     vertical-align: middle;
-  }
-}
-
-.carte {
-  text-align: center;
-
-  iframe {
-    border-radius: 10px;
-    border: none;
-    margin: auto;
   }
 }
 
