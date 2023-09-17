@@ -15,7 +15,7 @@ export default function middleware (request: NextRequest): NextResponse {
     manifest-src 'self';
     media-src 'none';
     object-src 'none';
-    script-src 'self' 'nonce-${nonce}' 'strict-dynamic' 'unsafe-eval';
+    script-src 'self' 'unsafe-inline' 'strict-dynamic' 'nonce-${nonce}' 'unsafe-eval';
     script-src-attr 'none';
     style-src 'self';
     worker-src 'self';
