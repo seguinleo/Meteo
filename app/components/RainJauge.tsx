@@ -20,10 +20,10 @@ export default function RainJauge({ minutely }: RainJaugeProps): JSX.Element {
   const sections = minutely.map((item, index) => ({
     id: index,
     color: getColorForPrecipitation(item.precipitation),
-    precipitation: item.precipitation.toFixed(2),
+    precipitation: +item.precipitation.toFixed(2),
   }));
 
-  const totalPrecipitation = sections.reduce((acc, item) => acc + parseFloat(item.precipitation), 0);
+  const totalPrecipitation = sections.reduce((acc, item) => acc + item.precipitation, 0);
   const averagePrecipitation = (totalPrecipitation / sections.length).toFixed(2);
 
   return (

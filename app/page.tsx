@@ -98,7 +98,7 @@ export default function Home (): JSX.Element {
   const [coucher, setCoucher] = useState("")
   const [airPollution, setAirPollution] = useState("")
   const [minutelyData, setMinutelyData] = useState([])
-  const [uv, setUv] = useState("")
+  const [uv, setUv] = useState(0)
   const [latitudeVille, setLatitudeVille] = useState("")
   const [longitudeVille, setLongitudeVille] = useState("")
   const [moonPhase, setMoonPhase] = useState(null as unknown as JSX.Element)
@@ -405,15 +405,15 @@ export default function Home (): JSX.Element {
           return {
             name: forecastTime,
             description: item.weather[0].description,
-            temp: item.temp.toFixed(1),
+            temp: +item.temp.toFixed(1),
             humidity: item.humidity,
             pressure: item.pressure,
-            wind: (item.wind_speed * 3.6).toFixed(0),
+            wind: +(item.wind_speed * 3.6).toFixed(0),
             windDeg: item.wind_deg,
             weather: item.weather[0].id,
-            precipitation: item.rain ? item.rain['1h'].toFixed(2) : '0',
-            rain: item.pop ? (item.pop * 100).toFixed(0) : '0',
-            uv: item.uvi.toFixed(0),
+            precipitation: item.rain ? +item.rain['1h'].toFixed(2) : 0,
+            rain: item.pop ? +(item.pop * 100).toFixed(0) : 0,
+            uv: +item.uvi.toFixed(0),
             sunDownH: sunDown,
             sunUpH: sunUp,
           }
@@ -442,7 +442,7 @@ export default function Home (): JSX.Element {
     const forecastsDaily = daily.slice(2)
     const temperaturesDailyMax = forecastsDaily.map((forecast: WeatherForecast) => Math.floor(forecast.temp.max))
     const temperaturesDailyMin = forecastsDaily.map((forecast: WeatherForecast) => Math.floor(forecast.temp.min))
-    const precipitationDaily = forecastsDaily.map((forecast: WeatherForecast) => (forecast.pop * 100).toFixed(0))
+    const precipitationDaily = forecastsDaily.map((forecast: WeatherForecast) => +(forecast.pop * 100).toFixed(0))
     const weatherIdsDaily = forecastsDaily.map((forecast: WeatherForecast) => forecast.weather[0].id)
     const days = ['DIM', 'LUN', 'MAR', 'MER', 'JEU', 'VEN', 'SAM']
     const dates = forecastsDaily.map((forecast: WeatherForecast) => new Date(forecast.dt * 1000))
@@ -518,14 +518,14 @@ export default function Home (): JSX.Element {
     setCoucher(sunDown)
     setHeure(heureLocale)
     setVille(name)
-    setTemperature(`${current.temp.toFixed(1)}°C`)
+    setTemperature(`${+current.temp.toFixed(1)}°C`)
     setDescription(current.weather[0].description)
-    setRessenti(`${current.feels_like.toFixed(0)}°C`)
+    setRessenti(`${+current.feels_like.toFixed(0)}°C`)
     setHumidite(`${current.humidity}%`)
-    setVent(`${(3.6 * current.wind_speed).toFixed(0)}km/h`)
+    setVent(`${+(3.6 * current.wind_speed).toFixed(0)}km/h`)
     setVentDirection(ventDeg + 180)
     setPression(`${current.pressure}hPa`)
-    setUv(current.uvi.toFixed(0))
+    setUv(+current.uvi.toFixed(0))
     setLatitudeVille(data.lat)
     setLongitudeVille(data.lon)
     setMainImg(<Image
@@ -631,48 +631,48 @@ export default function Home (): JSX.Element {
 
   const handleUnity = () => {
     if (temperature?.endsWith('C')) {
-      const temperatureInCelsius = parseFloat(temperature.slice(0, -2))
+      const temperatureInCelsius = +(temperature.slice(0, -2))
       const temperatureInFahrenheit = (temperatureInCelsius * 1.8 + 32).toFixed(1)
       setTemperature(`${temperatureInFahrenheit}°F`)
-      const ressentiInCelsius = parseFloat(ressenti.slice(0, -2))
+      const ressentiInCelsius = +(ressenti.slice(0, -2))
       const ressentiInFahrenheit = (ressentiInCelsius * 1.8 + 32).toFixed(0)
       setRessenti(`${ressentiInFahrenheit}°F`)
-      const ventInKilometersPerHour = parseFloat(vent.slice(0, -4))
+      const ventInKilometersPerHour = +(vent.slice(0, -4))
       const ventInMilesPerHour = (ventInKilometersPerHour / 1.609).toFixed(0)
       setVent(`${ventInMilesPerHour}mph`)
-      setTempMinJours(tempMinJours.map((temp) => `${(parseInt(temp.slice(0, -2), 10) * 1.8 + 32).toFixed(0)}°F`))
-      setTempMaxJours(tempMaxJours.map((temp) => `${(parseInt(temp.slice(0, -2), 10) * 1.8 + 32).toFixed(0)}°F`))
+      setTempMinJours(tempMinJours.map((temp) => `${((temp.slice(0, -2)) * 1.8 + 32).toFixed(0)}°F`))
+      setTempMaxJours(tempMaxJours.map((temp) => `${((temp.slice(0, -2)) * 1.8 + 32).toFixed(0)}°F`))
       setDataChart1(dataChart1?.map((item) => ({
         ...item,
-        temp: item.temp * 1.8 + 32,
-        wind: item.wind / 1.609
+        temp: +(item.temp * 1.8 + 32).toFixed(1),
+        wind: +(item.wind / 1.609).toFixed(0)
       })))
       setDataChart2(dataChart2?.map((item) => ({
         ...item,
-        temp: item.temp * 1.8 + 32,
-        wind: item.wind / 1.609
+        temp: +(item.temp * 1.8 + 32).toFixed(1),
+        wind: +(item.wind / 1.609).toFixed(0)
       })))
     } else {
-      const temperatureInFahrenheit = parseFloat(temperature.slice(0, -2))
+      const temperatureInFahrenheit = +(temperature.slice(0, -2))
       const temperatureInCelsius = ((temperatureInFahrenheit - 32) / 1.8).toFixed(1)
       setTemperature(`${temperatureInCelsius}°C`)
-      const ressentiInFahrenheit = parseFloat(ressenti.slice(0, -2))
+      const ressentiInFahrenheit = +(ressenti.slice(0, -2))
       const ressentiInCelsius = ((ressentiInFahrenheit - 32) / 1.8).toFixed(0)
       setRessenti(`${ressentiInCelsius}°C`)
-      const ventInMilesPerHour = parseFloat(vent.slice(0, -3))
+      const ventInMilesPerHour = +(vent.slice(0, -3))
       const ventInKilometersPerHour = (ventInMilesPerHour * 1.609).toFixed(0)
       setVent(`${ventInKilometersPerHour}km/h`)
-      setTempMinJours(tempMinJours.map((temp) => `${((parseInt(temp.slice(0, -2), 10) - 32) / 1.8).toFixed(0)}°C`))
-      setTempMaxJours(tempMaxJours.map((temp) => `${((parseInt(temp.slice(0, -2), 10) - 32) / 1.8).toFixed(0)}°C`))
+      setTempMinJours(tempMinJours.map((temp) => `${(((temp.slice(0, -2)) - 32) / 1.8).toFixed(0)}°C`))
+      setTempMaxJours(tempMaxJours.map((temp) => `${(((temp.slice(0, -2)) - 32) / 1.8).toFixed(0)}°C`))
       setDataChart1(dataChart1?.map((item) => ({
         ...item,
-        temp: (item.temp - 32) / 1.8,
-        wind: item.wind * 1.609
+        temp: +((item.temp - 32) / 1.8).toFixed(1),
+        wind: +(item.wind * 1.609).toFixed(0)
       })))
       setDataChart2(dataChart2?.map((item) => ({
         ...item,
-        temp: (item.temp - 32) / 1.8,
-        wind: item.wind * 1.609
+        temp: +((item.temp - 32) / 1.8).toFixed(1),
+        wind: +(item.wind * 1.609).toFixed(0)
       })))
     }
   }
@@ -1028,7 +1028,7 @@ export default function Home (): JSX.Element {
                 <p>
                   Màj app :
                   {' '}
-                  <Link href="https://github.com/seguinleo/Meteo" target="_blank" rel="noreferrer" aria-label="Vers GitHub">18/09/2023</Link>
+                  <Link href="https://github.com/seguinleo/Meteo" target="_blank" rel="noreferrer" aria-label="Vers GitHub">23/09/2023</Link>
                 </p>
               </div>
             </details>
