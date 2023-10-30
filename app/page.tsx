@@ -1025,11 +1025,6 @@ export default function Home (): JSX.Element {
                   {' '}
                   {latitudeVille}
                 </p>
-                <p>
-                  Màj app :
-                  {' '}
-                  <Link href="https://github.com/seguinleo/Meteo" target="_blank" rel="noreferrer" aria-label="Vers GitHub">23/09/2023</Link>
-                </p>
               </div>
             </details>
           </section>
