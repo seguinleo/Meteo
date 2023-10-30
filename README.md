@@ -14,6 +14,8 @@ The website uses SSR requests with a Node.js server.
 
 ## For developers
 
+Requirements: Node.js 18.17 or higher
+
 ``npm i`` to install all dependencies
 
 Create ``.env.local`` at root and add your API_KEY
