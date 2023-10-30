@@ -59,7 +59,7 @@ p {
 body {
   background-color: #1c95ec;
   margin: 0 1rem;
-  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -78,7 +78,7 @@ summary {
 }
 
 .wrapper {
-  margin: 1rem 0;
+  margin: .5rem 0;
   padding: 1rem 0 0;
   width: 750px;
   border-radius: 10px;
@@ -240,6 +240,7 @@ header {
 .sous-titre {
   font-size: .8rem;
   text-align: center;
+  margin: 1.5rem auto;
 }
 
 .graphique {
