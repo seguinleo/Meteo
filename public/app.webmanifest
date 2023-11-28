@@ -2,13 +2,25 @@
 	"name": "Météo \u2013 Léo SEGUIN",
 	"short_name": "Météo",
 	"start_url": "/",
-	"id": "/",
 	"display": "standalone",
 	"background_color": "#1c95ec",
 	"theme_color": "#1c95ec",
 	"orientation": "portrait-primary",
 	"lang": "fr",
 	"scope": "/",
+	"screenshots": [
+		{
+			"src": "/assets/img/desktop.png",
+			"type": "image/png",
+			"sizes": "1280x870",
+			"form_factor": "wide"
+		},
+		{
+			"src": "/assets/img/mobile.png",
+			"type": "image/png",
+			"sizes": "320x693"
+		}
+	],
 	"description": "Météo en temps réel, précise et fiable pour n'importe quelle ville du monde avec prévisions.",
 	"icons": [
 		{

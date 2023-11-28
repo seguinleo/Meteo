@@ -113,6 +113,7 @@ export default function Home (): JSX.Element {
   const [thunderMessage, setThunderMessage] = useState("")
   const [heatMessage, setHeatMessage] = useState("")
   const [floodMessage, setFloodMessage] = useState("")
+  const [iceMessage, setIceMessage] = useState("")
   const [error, setError] = useState("")
 
   useEffect(() => {
@@ -546,6 +547,9 @@ export default function Home (): JSX.Element {
       if (alerts.some((alert: WeatherAlert) => alert.event.includes('flooding'))) {
         setFloodMessage('VIGILANCE INONDATIONS')
       }
+      if (alerts.some((alert: WeatherAlert) => alert.event.includes('snow-ice'))) {
+        setIceMessage('VIGILANCE VERGLAS')
+      }
     }
 
     document.body.style.background = backgroundColor
@@ -752,6 +756,11 @@ export default function Home (): JSX.Element {
             <span>{floodMessage}</span>
           </div>
           )}
+          {iceMessage.length > 0 && (
+          <div className="alerts-ice-part">
+            <span>{iceMessage}</span>
+          </div>
+          )}
           <section>
             <div className="main-info">
               <div className="temp">
@@ -804,7 +813,7 @@ export default function Home (): JSX.Element {
               {dataChart1?.length > 0 && (
               <>
                 <p className="sous-titre">Ajourd&#39;hui</p>
-                <ResponsiveContainer width="100%" height={100}>
+                <ResponsiveContainer width="100%" height={60}>
                   <LineChart
                     margin={{
                       top: 5, left: 5, right: 5, bottom: -24
@@ -854,7 +863,7 @@ export default function Home (): JSX.Element {
             </div>
             <div className="graphique">
               <p className="sous-titre">Demain</p>
-              <ResponsiveContainer width="100%" height={100}>
+              <ResponsiveContainer width="100%" height={60}>
                 <LineChart
                   margin={{
                     top: 5, left: 5, right: 5, bottom: -24

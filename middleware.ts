@@ -25,7 +25,7 @@ export default function middleware (request: NextRequest): NextResponse {
   )
   requestHeaders.set('Access-Control-Allow-Origin', 'https://meteo-leoseguin.vercel.app')
   requestHeaders.set('Cross-Origin-Embedder-Policy', 'require-corp')
-  requestHeaders.set('Cross-Origin-Resource-Policy', 'same-origin')
+  requestHeaders.set('Cross-Origin-Resource-Policy', 'cross-origin')
   requestHeaders.set('Cross-Origin-Opener-Policy', 'same-origin')
   requestHeaders.set('Permissions-Policy', 'camera=(), display-capture=(), fullscreen=(), interest-cohort=(), microphone=(), payment=(), usb=()')
   requestHeaders.set('Referrer-Policy', 'strict-origin-when-cross-origin')
