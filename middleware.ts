@@ -6,16 +6,18 @@ export default function middleware (request: NextRequest): NextResponse {
     base-uri 'none';
     child-src 'none';
     connect-src 'self';
-    frame-ancestors 'none';
-    frame-src 'none';
     font-src 'self';
     form-action 'self';
+    frame-ancestors 'none';
+    frame-src 'none';
     img-src 'self';
     manifest-src 'self';
     media-src 'none';
     object-src 'none';
     script-src-attr 'none';
     style-src 'self';
+    style-src-attr 'none';
+    style-src-elem 'self';
     worker-src 'self';
   `
   const requestHeaders = new Headers(request.headers)
@@ -31,6 +33,7 @@ export default function middleware (request: NextRequest): NextResponse {
   requestHeaders.set('Referrer-Policy', 'strict-origin-when-cross-origin')
   requestHeaders.set('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload')
   requestHeaders.set('X-Content-Type-Options', 'nosniff')
+  requestHeaders.set('X-FRAME-OPTIONS', 'DENY')
 
   return NextResponse.next({
     headers: requestHeaders

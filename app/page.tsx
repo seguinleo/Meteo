@@ -1,9 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import {
-  LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer
-} from 'recharts'
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import { RxMagnifyingGlass } from 'react-icons/rx'
 import { BsFillSunriseFill, BsFillSunsetFill, BsFillDropletFill } from 'react-icons/bs'
 import { RiFahrenheitFill, RiCelsiusFill } from 'react-icons/ri'
@@ -118,9 +116,7 @@ export default function Home (): JSX.Element {
 
   useEffect(() => {
     const metaThemeColor = document.querySelectorAll('.themecolor')
-    if (metaThemeColor != null) {
-      metaThemeColor.forEach((meta) => { meta.setAttribute('content', metaTheme) })
-    }
+    if (metaThemeColor !== null) metaThemeColor.forEach((meta) => { meta.setAttribute('content', metaTheme) })
     if (typeof window !== 'undefined') {
       const savedVille = localStorage.getItem('ville')
       setVille(savedVille ?? '')
@@ -130,7 +126,7 @@ export default function Home (): JSX.Element {
         try {
           await navigator.serviceWorker.register('/sw.js')
         } catch (error) {
-          console.error('Service worker registration failed:', error)
+          throw new Error(`Service worker registration failed, error: ${error}`)
         }
       })()
     }
@@ -140,7 +136,7 @@ export default function Home (): JSX.Element {
     if (timeoutError) clearTimeout(timeoutError)
     const notification = document.querySelector('#error-notification')
     setError(message)
-    if (notification != null) {
+    if (notification !== null) {
       const notificationElement = notification as HTMLElement
       notificationElement.style.display = 'block'
       timeoutError = setTimeout(() => {
@@ -347,40 +343,25 @@ export default function Home (): JSX.Element {
   const fetchDataAirPollution = async (data: number) => {
     const aqi = data
     let aqitxt = ''
-    if (aqi === 1) {
-      aqitxt = `${aqi} \u2013 Excellent`
-    } else if (aqi === 2) {
-      aqitxt = `${aqi} \u2013 Bon`
-    } else if (aqi === 3) {
-      aqitxt = `${aqi} \u2013 Moyen`
-    } else if (aqi === 4) {
-      aqitxt = `${aqi} \u2013 Mauvais`
-    } else {
-      aqitxt = `${aqi} \u2013 Très mauvais`
-    }
+    if (aqi === 1) aqitxt = `${aqi} \u2013 Excellent`
+    else if (aqi === 2) aqitxt = `${aqi} \u2013 Bon`
+    else if (aqi === 3) aqitxt = `${aqi} \u2013 Moyen`
+    else if (aqi === 4) aqitxt = `${aqi} \u2013 Mauvais`
+    else aqitxt = `${aqi} \u2013 Très mauvais`
     setAirPollution(aqitxt)
   }
 
   const fetchDataMoon = async (data: number) => {
     const phase = data
     let phasehtml = null as unknown as JSX.Element
-    if (phase > 0 && phase < 0.25) {
-      phasehtml = <WiMoonAltWaningGibbous3 />
-    } else if (phase === 0.25) {
-      phasehtml = <WiMoonAltThirdQuarter />
-    } else if (phase > 0.25 && phase < 0.5) {
-      phasehtml = <WiMoonAltWaningCrescent3 />
-    } else if (phase === 0.5) {
-      phasehtml = <WiMoonAltNew />
-    } else if (phase > 0.5 && phase < 0.75) {
-      phasehtml = <WiMoonAltWaxingCrescent3 />
-    } else if (phase === 0.75) {
-      phasehtml = <WiMoonAltFirstQuarter />
-    } else if (phase > 0.75 && phase < 1) {
-      phasehtml = <WiMoonAltWaxingGibbous3 />
-    } else {
-      phasehtml = <WiMoonAltFull />
-    }
+    if (phase > 0 && phase < 0.25) phasehtml = <WiMoonAltWaningGibbous3 />
+    else if (phase === 0.25) phasehtml = <WiMoonAltThirdQuarter />
+    else if (phase > 0.25 && phase < 0.5) phasehtml = <WiMoonAltWaningCrescent3 />
+    else if (phase === 0.5) phasehtml = <WiMoonAltNew />
+    else if (phase > 0.5 && phase < 0.75) phasehtml = <WiMoonAltWaxingCrescent3 />
+    else if (phase === 0.75) phasehtml = <WiMoonAltFirstQuarter />
+    else if (phase > 0.75 && phase < 1) phasehtml = <WiMoonAltWaxingGibbous3 />
+    else phasehtml = <WiMoonAltFull />
     setMoonPhase(phasehtml)
   }
 
@@ -538,18 +519,10 @@ export default function Home (): JSX.Element {
     />)
 
     if (alerts) {
-      if (alerts.some((alert: WeatherAlert) => alert.event.includes('thunder'))) {
-        setThunderMessage('VIGILANCE ORAGES')
-      }
-      if (alerts.some((alert: WeatherAlert) => alert.event.includes('high-temperature') || alert.event.includes('heat'))) {
-        setHeatMessage('VIGILANCE FORTES CHALEURS')
-      }      
-      if (alerts.some((alert: WeatherAlert) => alert.event.includes('flooding'))) {
-        setFloodMessage('VIGILANCE INONDATIONS')
-      }
-      if (alerts.some((alert: WeatherAlert) => alert.event.includes('snow-ice'))) {
-        setIceMessage('VIGILANCE VERGLAS')
-      }
+      if (alerts.some((alert: WeatherAlert) => alert.event.includes('thunder'))) setThunderMessage('VIGILANCE ORAGES')
+      if (alerts.some((alert: WeatherAlert) => alert.event.includes('high-temperature') || alert.event.includes('heat'))) setHeatMessage('VIGILANCE FORTES CHALEURS')      
+      if (alerts.some((alert: WeatherAlert) => alert.event.includes('flooding'))) setFloodMessage('VIGILANCE INONDATIONS')
+      if (alerts.some((alert: WeatherAlert) => alert.event.includes('snow-ice'))) setIceMessage('VIGILANCE VERGLAS')
     }
 
     document.body.style.background = backgroundColor
@@ -584,9 +557,7 @@ export default function Home (): JSX.Element {
       const { city, oneCallData, airPollutionData } = data
       await fetchDataCurrent(city, oneCallData, airPollutionData)
       setShowComponents(true)
-    } else {
-      showError('Un problème est survenu, saisissez le nom complet de la ville...')
-    }
+    } else showError('Un problème est survenu, saisissez le nom complet de la ville...')
     infoElement.style.display = 'none'
   }
 
@@ -612,9 +583,7 @@ export default function Home (): JSX.Element {
           const { city, oneCallData, airPollutionData } = data
           await fetchDataCurrent(city, oneCallData, airPollutionData)
           setShowComponents(true)
-        } else {
-          showError('Un problème est survenu lors de la géolocalisation...')
-        }
+        } else showError('Un problème est survenu lors de la géolocalisation...')
         infoElement.style.display = 'none'
       }, () => {
         showError('Veuillez activer la géolocalisation de votre appareil pour ce site...')
@@ -1043,11 +1012,11 @@ export default function Home (): JSX.Element {
       {!showComponents && (
         <footer>
           &copy;
-          <Link href="https://leoseguin.fr/" target="_blank" rel="noreferrer" aria-label="Vers leoseguin.fr">leoseguin.fr</Link>
+          <Link href="https://leoseguin.fr/" target="_blank" rel="noreferrer">leoseguin.fr</Link>
           {' '}
           &#x2013;
           {' '}
-          <Link href="https://leoseguin.fr/mentionslegales" target="_blank" rel="noreferrer" aria-label="Vers mentions légales">Mentions légales</Link>
+          <Link href="https://leoseguin.fr/mentionslegales" target="_blank" rel="noreferrer">Mentions légales</Link>
         </footer>
       )}
     </div>
