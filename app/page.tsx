@@ -30,7 +30,7 @@ interface WeatherData {
   lat: string
   lon: string
   current: {
-    weather: { description: string; id: number }[]
+    weather: Array<{ description: string, id: number }>
     wind_deg: number
     sunrise: number
     sunset: number
@@ -45,16 +45,16 @@ interface WeatherData {
 }
 
 interface WeatherData2 {
-  list: {
+  list: Array<{
     main: {
       aqi: number
     }
-  }[]
+  }>
 }
 
 interface WeatherItem {
   dt: number
-  weather: { description: string; id: number }[]
+  weather: Array<{ description: string, id: number }>
   temp: number
   humidity: number
   pressure: number
@@ -70,7 +70,7 @@ interface WeatherForecast {
     min: number
     max: number
   }
-  weather: { description: string; id: number }[]
+  weather: Array<{ description: string, id: number }>
   pop: number
   dt: number
 }
@@ -84,35 +84,35 @@ export default function Home (): JSX.Element {
   const [showComponents, setShowComponents] = useState(false)
   const [metaTheme, setMetaTheme] = useState('#1c95ec')
   const [mainImg, setMainImg] = useState(null as unknown as JSX.Element)
-  const [ville, setVille] = useState("" as unknown as string)
-  const [temperature, setTemperature] = useState("")
-  const [description, setDescription] = useState("")
-  const [ressenti, setRessenti] = useState("")
-  const [humidite, setHumidite] = useState("")
-  const [vent, setVent] = useState("")
+  const [ville, setVille] = useState('' as unknown as string)
+  const [temperature, setTemperature] = useState('')
+  const [description, setDescription] = useState('')
+  const [ressenti, setRessenti] = useState('')
+  const [humidite, setHumidite] = useState('')
+  const [vent, setVent] = useState('')
   const [ventDirection, setVentDirection] = useState(0)
-  const [pression, setPression] = useState("")
-  const [lever, setLever] = useState("")
-  const [coucher, setCoucher] = useState("")
-  const [airPollution, setAirPollution] = useState("")
+  const [pression, setPression] = useState('')
+  const [lever, setLever] = useState('')
+  const [coucher, setCoucher] = useState('')
+  const [airPollution, setAirPollution] = useState('')
   const [minutelyData, setMinutelyData] = useState([])
   const [uv, setUv] = useState(0)
-  const [latitudeVille, setLatitudeVille] = useState("")
-  const [longitudeVille, setLongitudeVille] = useState("")
+  const [latitudeVille, setLatitudeVille] = useState('')
+  const [longitudeVille, setLongitudeVille] = useState('')
   const [moonPhase, setMoonPhase] = useState(null as unknown as JSX.Element)
   const [dataChart1, setDataChart1] = useState(Array(24).fill(null))
   const [dataChart2, setDataChart2] = useState(Array(24).fill(null))
-  const [heure, setHeure] = useState("")
+  const [heure, setHeure] = useState('')
   const [jours, setJours] = useState(Array(7).fill(null))
   const [tempMinJours, setTempMinJours] = useState(Array(7).fill(null))
   const [tempMaxJours, setTempMaxJours] = useState(Array(7).fill(null))
   const [precipitationJours, setPrecipitationJours] = useState(Array(7).fill(null))
   const [imgJours, setImgJours] = useState(Array(7).fill(null))
-  const [thunderMessage, setThunderMessage] = useState("")
-  const [heatMessage, setHeatMessage] = useState("")
-  const [floodMessage, setFloodMessage] = useState("")
-  const [iceMessage, setIceMessage] = useState("")
-  const [error, setError] = useState("")
+  const [thunderMessage, setThunderMessage] = useState('')
+  const [heatMessage, setHeatMessage] = useState('')
+  const [floodMessage, setFloodMessage] = useState('')
+  const [iceMessage, setIceMessage] = useState('')
+  const [error, setError] = useState('')
 
   useEffect(() => {
     const metaThemeColor = document.querySelectorAll('.themecolor')
@@ -382,7 +382,7 @@ export default function Home (): JSX.Element {
           const forecastTime = forecastDateTime.toLocaleTimeString('fr-FR', {
             hour: '2-digit',
             minute: '2-digit',
-            timeZone: data.timezone,
+            timeZone: data.timezone
           })
           return {
             name: forecastTime,
@@ -397,7 +397,7 @@ export default function Home (): JSX.Element {
             rain: item.pop ? +(item.pop * 100).toFixed(0) : 0,
             uv: +item.uvi.toFixed(0),
             sunDownH: sunDown,
-            sunUpH: sunUp,
+            sunUpH: sunUp
           }
         })
     }
@@ -520,7 +520,7 @@ export default function Home (): JSX.Element {
 
     if (alerts) {
       if (alerts.some((alert: WeatherAlert) => alert.event.includes('thunder'))) setThunderMessage('VIGILANCE ORAGES')
-      if (alerts.some((alert: WeatherAlert) => alert.event.includes('high-temperature') || alert.event.includes('heat'))) setHeatMessage('VIGILANCE FORTES CHALEURS')      
+      if (alerts.some((alert: WeatherAlert) => alert.event.includes('high-temperature') || alert.event.includes('heat'))) setHeatMessage('VIGILANCE FORTES CHALEURS')
       if (alerts.some((alert: WeatherAlert) => alert.event.includes('flooding'))) setFloodMessage('VIGILANCE INONDATIONS')
       if (alerts.some((alert: WeatherAlert) => alert.event.includes('snow-ice'))) setIceMessage('VIGILANCE VERGLAS')
     }

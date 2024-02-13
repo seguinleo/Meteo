@@ -3,14 +3,14 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Météo – Léo SEGUIN',
-  description: 'Météo en temps réel, précise et fiable pour n\'importe quelle ville du monde avec prévisions.',
+  description: 'Météo en temps réel, précise et fiable pour n\'importe quelle ville du monde avec prévisions.'
 }
 
-export default function RootLayout({
-  children,
+export default function RootLayout ({
+  children
 }: {
   children: React.ReactNode
-}) {
+}): React.JSX.Element {
   return (
     <html lang="fr-FR">
       <head>

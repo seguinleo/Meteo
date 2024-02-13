@@ -7,7 +7,7 @@ interface CustomTooltipProps {
   getImage?: (id: any, sunDown: any, sunUp: any, time: any, main: any) => {
     imgSrc: string
     backgroundColor: string
-  };
+  }
 }
 
 export default function CustomTooltip ({

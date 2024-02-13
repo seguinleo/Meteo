@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 
 export default function middleware (request: NextRequest): NextResponse {
   const cspHeader = `
@@ -46,8 +46,8 @@ export const config = {
       source: '/((?!api|_next/static|_next/image|favicon.ico).*)',
       missing: [
         { type: 'header', key: 'next-router-prefetch' },
-        { type: 'header', key: 'purpose', value: 'prefetch' },
-      ],
-    },
-  ],
+        { type: 'header', key: 'purpose', value: 'prefetch' }
+      ]
+    }
+  ]
 }

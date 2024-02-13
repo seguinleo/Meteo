@@ -1,4 +1,4 @@
-const fetchWeatherData = async (ville: string): Promise<any> => {
+const fetchWeatherData = async (ville: any): Promise<any> => {
   'use server'
 
   const key = process.env.API_KEY

@@ -1,36 +1,38 @@
-import React from 'react';
+import React from 'react'
 
 interface RainJaugeProps {
   minutely: Array<{
-    precipitation: number;
-  }>;
+    precipitation: number
+  }>
 }
 
-export default function RainJauge({ minutely }: RainJaugeProps): JSX.Element {
+export default function RainJauge ({ minutely }: RainJaugeProps): JSX.Element {
   const getColorForPrecipitation = (precipitation: number): string => {
     if (precipitation > 1) {
-      return 'high';
+      return 'high'
     } else if (precipitation > 0) {
-      return 'low';
+      return 'low'
     } else {
-      return 'transparent';
+      return 'transparent'
     }
-  };
+  }
 
   const sections = minutely.map((item, index) => ({
     id: index,
     color: getColorForPrecipitation(item.precipitation),
-    precipitation: +item.precipitation.toFixed(2),
-  }));
+    precipitation: +item.precipitation.toFixed(2)
+  }))
 
-  const totalPrecipitation = sections.reduce((acc, item) => acc + item.precipitation, 0);
-  const averagePrecipitation = (totalPrecipitation / sections.length).toFixed(2);
+  const totalPrecipitation = sections.reduce((acc, item) => acc + item.precipitation, 0)
+  const averagePrecipitation = (totalPrecipitation / sections.length).toFixed(2)
 
   return (
     <section>
-      {sections.every((item) => item.color === 'transparent') ? (
+      {sections.every((item) => item.color === 'transparent')
+        ? (
         <p className="sous-titre">Pas de précipitations dans l&#39;heure</p>
-      ) : (
+          )
+        : (
         <>
           <p className="sous-titre">Précipitations dans l&#39;heure (Moy: {averagePrecipitation} mm)</p>
           <div className="rain-jauge">
@@ -44,7 +46,7 @@ export default function RainJauge({ minutely }: RainJaugeProps): JSX.Element {
             <div className="jauge-label">+1h</div>
           </div>
         </>
-      )}
+          )}
     </section>
-  );
+  )
 }
