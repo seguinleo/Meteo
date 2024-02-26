@@ -10,18 +10,18 @@
     "sass": "sass --watch app/assets/sass/style.scss app/assets/css/style.css --style compressed"
   },
   "dependencies": {
-    "dotenv": "^16.4.4",
+    "dotenv": "^16.4.5",
     "next": "14.1.0",
     "react": "^18",
     "react-dom": "^18",
     "react-icons": "^5.0.1",
-    "recharts": "^2.12.0"
+    "recharts": "^2.12.1"
   },
   "devDependencies": {
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "eslint": "^8.56.0",
+    "eslint": "^8.57.0",
     "typescript": "^5.3.3"
   }
 }
