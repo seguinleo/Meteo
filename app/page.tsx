@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import { RxMagnifyingGlass } from 'react-icons/rx'
-import { BsFillSunriseFill, BsFillSunsetFill, BsFillDropletFill } from 'react-icons/bs'
+import { BsFillSunriseFill, BsFillSunsetFill, BsFillCloudRainFill } from 'react-icons/bs'
 import { RiFahrenheitFill, RiCelsiusFill } from 'react-icons/ri'
 import {
   WiMoonAltWaningGibbous3,
@@ -782,7 +782,7 @@ export default function Home (): JSX.Element {
               {dataChart1?.length > 0 && (
               <>
                 <p className="sous-titre">Ajourd&#39;hui</p>
-                <ResponsiveContainer width="100%" height={60}>
+                <ResponsiveContainer width="100%" height={50}>
                   <LineChart
                     margin={{
                       top: 5, left: 5, right: 5, bottom: -24
@@ -832,7 +832,7 @@ export default function Home (): JSX.Element {
             </div>
             <div className="graphique">
               <p className="sous-titre">Demain</p>
-              <ResponsiveContainer width="100%" height={60}>
+              <ResponsiveContainer width="100%" height={50}>
                 <LineChart
                   margin={{
                     top: 5, left: 5, right: 5, bottom: -24
@@ -880,96 +880,23 @@ export default function Home (): JSX.Element {
           </section>
           <section className="forecasts-part">
             <div className="details">
-              <div className="column">
-                <p>{jours[0]}</p>
-                <Image src={imgJours[0]} alt="" width={48} height={45} />
-                <div className="temp-min-max">
-                  <span>
-                    {tempMinJours[0]}
-                    /
-                    {tempMaxJours[0]}
-                  </span>
-                </div>
-                <div>
-                  <BsFillDropletFill />
-                  <span>{precipitationJours[0]}</span>
-                </div>
+              {jours.slice(0, -1).map((jour, index) => (
+              <div key={index} className="column">
+                  <p>{jour}</p>
+                  <Image src={imgJours[index]} alt="" width={48} height={45} />
+                  <div className="temp-min-max">
+                    <span>
+                      {tempMinJours[index]}
+                      /
+                      {tempMaxJours[index]}
+                    </span>
+                  </div>
+                  <div className="humidity">
+                    <BsFillCloudRainFill />
+                    <span>{precipitationJours[index]}</span>
+                  </div>
               </div>
-              <div className="column">
-                <p>{jours[1]}</p>
-                <Image src={imgJours[1]} alt="" width={48} height={45} />
-                <div className="temp-min-max">
-                  <span>
-                    {tempMinJours[1]}
-                    /
-                    {tempMaxJours[1]}
-                  </span>
-                </div>
-                <div>
-                  <BsFillDropletFill />
-                  <span>{precipitationJours[1]}</span>
-                </div>
-              </div>
-              <div className="column">
-                <p>{jours[2]}</p>
-                <Image src={imgJours[2]} alt="" width={48} height={45} />
-                <div className="temp-min-max">
-                  <span>
-                    {tempMinJours[2]}
-                    /
-                    {tempMaxJours[2]}
-                  </span>
-                </div>
-                <div>
-                  <BsFillDropletFill />
-                  <span>{precipitationJours[2]}</span>
-                </div>
-              </div>
-              <div className="column">
-                <p>{jours[3]}</p>
-                <Image src={imgJours[3]} alt="" width={48} height={45} />
-                <div className="temp-min-max">
-                  <span>
-                    {tempMinJours[3]}
-                    /
-                    {tempMaxJours[3]}
-                  </span>
-                </div>
-                <div>
-                  <BsFillDropletFill />
-                  <span>{precipitationJours[3]}</span>
-                </div>
-              </div>
-              <div className="column">
-                <p>{jours[4]}</p>
-                <Image src={imgJours[4]} alt="" width={48} height={45} />
-                <div className="temp-min-max">
-                  <span>
-                    {tempMinJours[4]}
-                    /
-                    {tempMaxJours[4]}
-                  </span>
-                </div>
-                <div>
-                  <BsFillDropletFill />
-                  <span>{precipitationJours[4]}</span>
-                </div>
-              </div>
-              <div className="column">
-                <p>{jours[5]}</p>
-                <Image src={imgJours[5]} alt="" width={48} height={45} />
-                <div className="temp-min-max">
-                  <span>
-                    {tempMinJours[5]}
-                    /
-                    {tempMaxJours[5]}
-                  </span>
-                </div>
-                <div>
-                  <BsFillDropletFill />
-                  <span>{precipitationJours[5]}</span>
-                </div>
-              </div>
+              ))}
             </div>
           </section>
           <section>

@@ -27,7 +27,7 @@ export default function RootLayout ({
         <meta property="og:url" content="https://meteo-leoseguin.vercel.app/" />
         <meta property="og:locale" content="fr-FR" />
         <link rel="canonical" href="https://meteo-leoseguin.vercel.app/" />
-        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+        <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png" />
         <link rel="manifest" href="/app.webmanifest" />
       </head>
