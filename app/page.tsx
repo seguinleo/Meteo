@@ -408,14 +408,14 @@ export default function Home (): JSX.Element {
       return forecastDay === currentDay
     }).slice(1)
 
-    if (window.innerWidth < 768 && chartData1.length > 12) {
+    if (window.innerWidth < 900 && chartData1.length > 12) {
       chartData1 = chartData1.filter((item, index) => index % 2 === 0)
     }
 
     const chartData2 = createChartData(hourly, (item, index) => {
       const forecastDateTime = new Date(item.dt * 1000)
       const forecastDay = forecastDateTime.toLocaleDateString('fr-FR', { timeZone: data.timezone })
-      if (window.innerWidth < 768) {
+      if (window.innerWidth < 900) {
         return forecastDay === nextDayFormatted && index % 2 === 0
       }
       return forecastDay === nextDayFormatted
