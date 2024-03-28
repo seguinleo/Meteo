@@ -33,7 +33,6 @@ export default function middleware (request: NextRequest): NextResponse {
   requestHeaders.set('Referrer-Policy', 'strict-origin-when-cross-origin')
   requestHeaders.set('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload')
   requestHeaders.set('X-Content-Type-Options', 'nosniff')
-  requestHeaders.set('X-FRAME-OPTIONS', 'DENY')
 
   return NextResponse.next({
     headers: requestHeaders

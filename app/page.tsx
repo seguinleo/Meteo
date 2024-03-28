@@ -653,8 +653,7 @@ export default function Home (): JSX.Element {
   return (
     <div className="wrapper">
       <header>
-        {showComponents
-          ? (
+        {showComponents ? (
           <>
             <span id="heure">
               {heure}
@@ -676,10 +675,9 @@ export default function Home (): JSX.Element {
               <RxMagnifyingGlass color="white" size="25px" />
             </button>
           </>
-            )
-          : (
+        ) : (
           <h1>Météo</h1>
-            )}
+        )}
         <div id="error-notification">{error}</div>
       </header>
       <main>
@@ -710,26 +708,28 @@ export default function Home (): JSX.Element {
         )}
         {showComponents && (
         <>
-          {thunderMessage.length > 0 && (
-          <div className="alerts-thunder-part">
-            <span>{thunderMessage}</span>
-          </div>
-          )}
-          {heatMessage.length > 0 && (
-          <div className="alerts-heat-part">
-            <span>{heatMessage}</span>
-          </div>
-          )}
-          {floodMessage.length > 0 && (
-          <div className="alerts-flood-part">
-            <span>{floodMessage}</span>
-          </div>
-          )}
-          {iceMessage.length > 0 && (
-          <div className="alerts-ice-part">
-            <span>{iceMessage}</span>
-          </div>
-          )}
+          <section>
+            {thunderMessage.length > 0 && (
+            <div className="alerts-thunder-part">
+              <span>{thunderMessage}</span>
+            </div>
+            )}
+            {heatMessage.length > 0 && (
+            <div className="alerts-heat-part">
+              <span>{heatMessage}</span>
+            </div>
+            )}
+            {floodMessage.length > 0 && (
+            <div className="alerts-flood-part">
+              <span>{floodMessage}</span>
+            </div>
+            )}
+            {iceMessage.length > 0 && (
+            <div className="alerts-ice-part">
+              <span>{iceMessage}</span>
+            </div>
+            )}
+          </section>
           <section>
             <div className="main-info">
               <div className="temp">
@@ -776,7 +776,9 @@ export default function Home (): JSX.Element {
               </div>
             </div>
           </section>
-          <RainJauge minutely={minutelyData} />
+          <section>
+            <RainJauge minutely={minutelyData} />
+          </section>
           <section>
             <div className="graphique">
               {dataChart1?.length > 0 && (
@@ -878,7 +880,7 @@ export default function Home (): JSX.Element {
               </div>
             </div>
           </section>
-          <section className="forecasts-part">
+          <section>
             <div className="details">
               {jours.slice(0, -1).map((jour, index) => (
               <div key={index} className="column">
@@ -939,11 +941,11 @@ export default function Home (): JSX.Element {
       {!showComponents && (
         <footer>
           &copy;
-          <Link href="https://leoseguin.fr/" target="_blank" rel="noreferrer">leoseguin.fr</Link>
+          <Link href="https://leoseguin.fr/">leoseguin.fr</Link>
           {' '}
           &#x2013;
           {' '}
-          <Link href="https://leoseguin.fr/mentionslegales" target="_blank" rel="noreferrer">Mentions légales</Link>
+          <Link href="https://leoseguin.fr/mentionslegales">Mentions légales</Link>
         </footer>
       )}
     </div>
