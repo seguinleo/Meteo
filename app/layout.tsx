@@ -6,6 +6,8 @@ export const metadata: Metadata = {
   description: 'Météo en temps réel, précise et fiable pour n\'importe quelle ville du monde avec prévisions.'
 }
 
+export const dynamic = "force-dynamic";
+
 export default function RootLayout ({
   children
 }: {
