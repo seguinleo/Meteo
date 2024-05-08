@@ -13,7 +13,7 @@ export function middleware(request: NextRequest) {
       frame-ancestors 'none';
       img-src 'self';
       manifest-src 'self';
-      script-src 'strict-dynamic' 'nonce-${nonce}';
+      script-src 'strict-dynamic' 'nonce-${nonce}' 'unsafe-inline';
       script-src-attr 'none';
       style-src 'self';
       style-src-attr 'none';
