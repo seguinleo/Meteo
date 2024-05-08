@@ -34,7 +34,7 @@ export default function RainJauge ({ minutely }: RainJaugeProps): JSX.Element {
           )
         : (
         <>
-          <p className="sous-titre">Précipitations dans l&#39;heure (Moy: {averagePrecipitation} mm)</p>
+          <p className="details sous-titre">Précipitations dans l&#39;heure (moy: {averagePrecipitation} mm)</p>
           <div className="rain-jauge">
             {sections.map((item) => (
               <div key={item.id} className={`jauge-section ${item.color}`} />
