@@ -31,6 +31,9 @@ export function middleware(request: NextRequest) {
     'Content-Security-Policy',
     contentSecurityPolicyHeaderValue
   )
+  requestHeaders.set('X-Content-Type-Options', 'nosniff')
+  requestHeaders.set('Referrer-Policy', 'strict-origin-when-cross-origin')
+  requestHeaders.set('Permissions-Policy', 'interest-cohort=()')
 
   const response = NextResponse.next({
     request: {
