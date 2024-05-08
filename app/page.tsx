@@ -2,9 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
-import { RxMagnifyingGlass } from 'react-icons/rx'
-import { BsFillSunriseFill, BsFillSunsetFill, BsFillCloudRainFill } from 'react-icons/bs'
-import { RiFahrenheitFill, RiCelsiusFill } from 'react-icons/ri'
+import { BsSearch, BsFillSunriseFill, BsFillSunsetFill, BsCloudRainHeavyFill } from 'react-icons/bs'
 import {
   WiMoonAltWaningGibbous3,
   WiMoonAltThirdQuarter,
@@ -19,7 +17,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import CustomTooltip from './components/CustomTooltip'
 import RainJauge from './components/RainJauge'
-import './assets/css/style.css'
+import './assets/css/style.min.css'
 
 interface WeatherData {
   minutely: any
@@ -343,11 +341,11 @@ export default function Home (): JSX.Element {
   const fetchDataAirPollution = async (data: number) => {
     const aqi = data
     let aqitxt = ''
-    if (aqi === 1) aqitxt = `${aqi} \u2013 Excellent`
-    else if (aqi === 2) aqitxt = `${aqi} \u2013 Bon`
-    else if (aqi === 3) aqitxt = `${aqi} \u2013 Moyen`
-    else if (aqi === 4) aqitxt = `${aqi} \u2013 Mauvais`
-    else aqitxt = `${aqi} \u2013 Très mauvais`
+    if (aqi === 1) aqitxt = `${aqi} (Excellente)`
+    else if (aqi === 2) aqitxt = `${aqi} (Bonne)`
+    else if (aqi === 3) aqitxt = `${aqi} (Moyenne)`
+    else if (aqi === 4) aqitxt = `${aqi} (Mauvaise)`
+    else aqitxt = `${aqi} (Très mauvaise)`
     setAirPollution(aqitxt)
   }
 
@@ -665,14 +663,14 @@ export default function Home (): JSX.Element {
               aria-label="Changer d'unité"
               onClick={handleUnity}
             >
-              {temperature?.endsWith('C') ? <RiFahrenheitFill color="white" size="25px" /> : <RiCelsiusFill color="white" size="25px" />}
+              {temperature?.endsWith('C') ? '°F' : '°C'}
             </button>
             <button
               type="button"
               aria-label="Retour"
               onClick={handleReturn}
             >
-              <RxMagnifyingGlass color="white" size="25px" />
+              <BsSearch color="white" size="25px" />
             </button>
           </>
         ) : (
@@ -886,66 +884,75 @@ export default function Home (): JSX.Element {
               <div key={index} className="column">
                   <p>{jour}</p>
                   <Image src={imgJours[index]} alt="" width={48} height={45} />
-                  <div className="temp-min-max">
-                    <span>
-                      {tempMinJours[index]}
-                      /
-                      {tempMaxJours[index]}
-                    </span>
-                  </div>
-                  <div className="humidity">
-                    <BsFillCloudRainFill />
+                  <div className="separator" />
+                  <p>
+                    {tempMinJours[index]}
+                    /
+                    {tempMaxJours[index]}
+                  </p>
+                  <div className="separator" />
+                  <p>
+                    <BsCloudRainHeavyFill />
                     <span>{precipitationJours[index]}</span>
-                  </div>
+                  </p>
               </div>
               ))}
             </div>
           </section>
-          <section>
-            <details>
-              <summary>Plus d&#39;informations</summary>
-              <div className="plus-info">
-                <p>
-                  Qualité de l&#39;air :
-                  {' '}
-                  {airPollution}
-                </p>
-                <p>
-                  <BsFillSunriseFill />
-                  {lever}
-                  {' '}
-                  <BsFillSunsetFill />
-                  {coucher}
-                </p>
-                <p>
-                  Phase de lune :
-                  {' '}
-                  {moonPhase}
-                </p>
-                <p>
-                  Longitude :
-                  {' '}
-                  {longitudeVille}
-                </p>
-                <p>
-                  Latitude :
-                  {' '}
-                  {latitudeVille}
-                </p>
-              </div>
-            </details>
+          <section className="plus-info">
+            <div>
+              <p>
+                Qualité air :
+                {' '}
+                {airPollution}
+              </p>
+            </div>
+            <div>
+              <p>
+                Phase lune :
+                {' '}
+                {moonPhase}
+              </p>
+            </div>
+            <div>
+              <p>
+                <BsFillSunriseFill />
+                {lever}
+              </p>
+            </div>
+            <div>
+              <p>
+                <BsFillSunsetFill />
+                {coucher}
+              </p>
+            </div>
+            <div>
+              <p>
+                Longitude :
+                {' '}
+                {longitudeVille}
+              </p>
+            </div>
+            <div>
+              <p>
+                Latitude :
+                {' '}
+                {latitudeVille}
+              </p>
+            </div>
           </section>
+          <footer>
+            <Link href="https://openweathermap.org/" rel="noopener noreferrer">Données fournies par OpenWeather</Link>
+          </footer>
         </>
         )}
       </main>
       {!showComponents && (
         <footer>
+          GPL-3.0
           &copy;
+          {' '}
           <Link href="https://leoseguin.fr/">leoseguin.fr</Link>
-          {' '}
-          &#x2013;
-          {' '}
-          <Link href="https://leoseguin.fr/mentionslegales">Mentions légales</Link>
         </footer>
       )}
     </div>

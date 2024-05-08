@@ -27,10 +27,10 @@ export default function RainJauge ({ minutely }: RainJaugeProps): JSX.Element {
   const averagePrecipitation = (totalPrecipitation / sections.length).toFixed(2)
 
   return (
-    <section>
+    <>
       {sections.every((item) => item.color === 'transparent')
         ? (
-        <p className="sous-titre">Pas de précipitations dans l&#39;heure</p>
+        <p className="details sous-titre">Pas de précipitations dans l&#39;heure</p>
           )
         : (
         <>
@@ -47,6 +47,6 @@ export default function RainJauge ({ minutely }: RainJaugeProps): JSX.Element {
           </div>
         </>
           )}
-    </section>
+    </>
   )
 }

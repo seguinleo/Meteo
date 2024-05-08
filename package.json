@@ -7,21 +7,25 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "sass": "sass --watch app/assets/sass/style.scss app/assets/css/style.css --style compressed"
+    "sass": "sass --watch app/assets/sass/style.sass app/assets/css/style.min.css --style compressed"
   },
   "dependencies": {
     "dotenv": "^16.4.5",
-    "next": "14.1.4",
+    "next": "14.2.3",
     "react": "^18",
     "react-dom": "^18",
-    "react-icons": "^5.0.1",
-    "recharts": "^2.12.4"
+    "react-icons": "^5.2.1",
+    "recharts": "^2.12.7"
   },
   "devDependencies": {
+    "@eslint/js": "^9.2.0",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "eslint": "^9.0.0",
-    "typescript": "^5.4.4"
+    "eslint": "^8.57.0",
+    "eslint-plugin-react": "^7.34.1",
+    "globals": "^15.1.0",
+    "typescript": "^5.4.5",
+    "typescript-eslint": "^7.8.0"
   }
 }

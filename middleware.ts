@@ -1,42 +1,48 @@
-import { type NextRequest, NextResponse } from 'next/server'
-
-export default function middleware (request: NextRequest): NextResponse {
-  const cspHeader = `
-    upgrade-insecure-requests;
-    base-uri 'none';
-    child-src 'none';
-    connect-src 'self';
-    font-src 'self';
-    form-action 'self';
-    frame-ancestors 'none';
-    frame-src 'none';
-    img-src 'self';
-    manifest-src 'self';
-    media-src 'none';
-    object-src 'none';
-    script-src-attr 'none';
-    style-src 'self';
-    style-src-attr 'none';
-    style-src-elem 'self';
-    worker-src 'self';
-  `
-  const requestHeaders = new Headers(request.headers)
-  requestHeaders.set(
-    'Content-Security-Policy',
-    cspHeader.replace(/\s{2,}/g, ' ').trim()
-  )
-  requestHeaders.set('Access-Control-Allow-Origin', 'https://meteo-leoseguin.vercel.app')
-  requestHeaders.set('Cross-Origin-Embedder-Policy', 'require-corp')
-  requestHeaders.set('Cross-Origin-Resource-Policy', 'cross-origin')
-  requestHeaders.set('Cross-Origin-Opener-Policy', 'same-origin')
-  requestHeaders.set('Permissions-Policy', 'camera=(), display-capture=(), fullscreen=(), interest-cohort=(), microphone=(), payment=(), usb=()')
-  requestHeaders.set('Referrer-Policy', 'strict-origin-when-cross-origin')
-  requestHeaders.set('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload')
-  requestHeaders.set('X-Content-Type-Options', 'nosniff')
-
-  return NextResponse.next({
-    headers: requestHeaders
-  })
+import { NextRequest, NextResponse } from 'next/server'
+ 
+export function middleware(request: NextRequest) {
+  if (process.env.NODE_ENV === 'production') {
+    const nonce = Buffer.from(crypto.randomUUID()).toString('base64')
+    const cspHeader = `
+      upgrade-insecure-requests;
+      default-src 'none';
+      base-uri 'none';
+      connect-src 'self';
+      font-src 'self';
+      form-action 'self';
+      frame-ancestors 'none';
+      img-src 'self';
+      manifest-src 'self';
+      script-src 'strict-dynamic' 'nonce-${nonce}';
+      script-src-attr 'none';
+      style-src 'self';
+      style-src-attr 'none';
+      worker-src 'self';
+    `
+    const contentSecurityPolicyHeaderValue = cspHeader
+      .replace(/\s{2,}/g, ' ')
+      .trim()
+  
+    const requestHeaders = new Headers(request.headers)
+    requestHeaders.set('x-nonce', nonce)
+  
+    requestHeaders.set(
+      'Content-Security-Policy',
+      contentSecurityPolicyHeaderValue
+    )
+  
+    const response = NextResponse.next({
+      request: {
+        headers: requestHeaders,
+      },
+    })
+    response.headers.set(
+      'Content-Security-Policy',
+      contentSecurityPolicyHeaderValue
+    )
+  
+    return response
+  }
 }
 
 export const config = {
@@ -45,8 +51,8 @@ export const config = {
       source: '/((?!api|_next/static|_next/image|favicon.ico).*)',
       missing: [
         { type: 'header', key: 'next-router-prefetch' },
-        { type: 'header', key: 'purpose', value: 'prefetch' }
-      ]
-    }
-  ]
+        { type: 'header', key: 'purpose', value: 'prefetch' },
+      ],
+    },
+  ],
 }
