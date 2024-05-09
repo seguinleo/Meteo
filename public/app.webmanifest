@@ -8,20 +8,7 @@
 	"orientation": "portrait-primary",
 	"lang": "fr",
 	"scope": "/",
-	"screenshots": [
-		{
-			"src": "/assets/img/desktop.png",
-			"type": "image/png",
-			"sizes": "1280x870",
-			"form_factor": "wide"
-		},
-		{
-			"src": "/assets/img/mobile.png",
-			"type": "image/png",
-			"sizes": "320x693"
-		}
-	],
-	"description": "Météo en temps réel, précise et fiable pour n'importe quelle ville du monde avec prévisions.",
+	"description": "Weather site developed with Next.js and OpenWeatherMapAPI",
 	"icons": [
 		{
 			"src": "/assets/icons/icon48.png",

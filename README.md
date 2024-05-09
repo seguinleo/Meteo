@@ -23,5 +23,3 @@ Create ``.env.local`` at root and add your API_KEY
 ``npm run dev`` to start the server
 
 ``npm run sass`` to compile Saas files
-
-![0](https://github.com/seguinleo/Meteo/blob/main/public/assets/img/desktop.png)
