@@ -4,7 +4,7 @@ interface CustomTooltipProps {
   payload?: any[]
   label?: string
   temperature?: string
-  getImage?: (id: any, sunDown: any, sunUp: any, time: any, main: any) => {
+  getImage?: (id: number, sunDown: string, sunUp: string, time: string, main: boolean) => {
     imgSrc: string
     backgroundColor: string
   }

@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Météo – Léo SEGUIN',
-  description: 'Météo en temps réel, précise et fiable pour n\'importe quelle ville du monde avec prévisions.'
+  description: 'Météo actuelle et prévisions partout dans le monde.'
 }
 
 export const dynamic = "force-dynamic";
@@ -17,6 +17,7 @@ export default function RootLayout ({
     <html lang="fr-FR">
       <head>
         <meta name="theme-color" className="themecolor" content="#1c95ec" />
+        <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" className="themecolor" content="#1c95ec" />
         <meta name="twitter:card" content="summary" />

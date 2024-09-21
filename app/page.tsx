@@ -117,7 +117,7 @@ export default function Home (): JSX.Element {
     if (metaThemeColor !== null) metaThemeColor.forEach((meta) => { meta.setAttribute('content', metaTheme) })
     if (typeof window !== 'undefined') {
       const savedVille = localStorage.getItem('ville')
-      setVille(savedVille ?? '')
+      setVille(savedVille || '')
     }
     if ('serviceWorker' in navigator) {
       void (async () => {
@@ -147,7 +147,7 @@ export default function Home (): JSX.Element {
     let imgSrc = ''
     let backgroundColor = ''
 
-    if ((id >= 200 && id <= 202) ?? (id >= 230 && id <= 232)) {
+    if ((id >= 200 && id <= 202) || (id >= 230 && id <= 232)) {
       imgSrc = '/assets/icons/storm.png'
       if (main) {
         if (time >= sunUp && time < sunDown) {
@@ -194,7 +194,7 @@ export default function Home (): JSX.Element {
           setMetaTheme('#412e57')
         }
       }
-    } else if ((id >= 501 && id <= 504) ?? (id >= 520 && id <= 531)) {
+    } else if ((id >= 501 && id <= 504) || (id >= 520 && id <= 531)) {
       imgSrc = '/assets/icons/shower.png'
       if (main) {
         if (time >= sunUp && time < sunDown) {
@@ -227,7 +227,7 @@ export default function Home (): JSX.Element {
           setMetaTheme('#77668a')
         }
       }
-    } else if ((id === 601 ?? id === 602) ?? (id >= 620 && id <= 622)) {
+    } else if ((id === 601 || id === 602) || (id >= 620 && id <= 622)) {
       imgSrc = '/assets/icons/blizzard.png'
       if (main) {
         if (time >= sunUp && time < sunDown) {
@@ -266,7 +266,7 @@ export default function Home (): JSX.Element {
           setMetaTheme('#895abf')
         }
       }
-    } else if (id === 731 ?? (id >= 751 && id <= 771)) {
+    } else if (id === 731 || (id >= 751 && id <= 771)) {
       imgSrc = '/assets/icons/dust.png'
       if (main) {
         if (time >= sunUp && time < sunDown) {
@@ -309,7 +309,7 @@ export default function Home (): JSX.Element {
           setMetaTheme('#723ead')
         }
       }
-    } else if (id === 801 ?? id === 802) {
+    } else if (id === 801 || id === 802) {
       if (time >= sunUp && time < sunDown) {
         imgSrc = '/assets/icons/fewclouds.png'
         if (main) {
@@ -468,7 +468,7 @@ export default function Home (): JSX.Element {
   const fetchDataCurrent = async (city: string, data: WeatherData, data2: WeatherData2) => {
     const { current, alerts, timezone_offset: timezoneOffset } = data
     const weatherId = current.weather[0].id
-    const ventDeg = current.wind_deg ?? 0
+    const ventDeg = current.wind_deg || 0
     const date = new Date()
     const timezoneOffsetMinutes = timezoneOffset / 60
     const timezoneOffsetHours = timezoneOffset / 3600
@@ -482,8 +482,8 @@ export default function Home (): JSX.Element {
     )
     const localDate = new Date(utcDate.getTime() + (timezoneOffsetHours * 60 * 60 * 1000))
     const heureLocale = localDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
-    const sunriseUTC = new Date(current.sunrise * 1000 ?? 0)
-    const sunsetUTC = new Date(current.sunset * 1000 ?? 0)
+    const sunriseUTC = new Date(current.sunrise * 1000 || 0)
+    const sunsetUTC = new Date(current.sunset * 1000 || 0)
     const offsetMilliseconds = (date.getTimezoneOffset() + timezoneOffsetMinutes) * 60 * 1000
     const sunriseLocal = new Date(sunriseUTC.getTime() + offsetMilliseconds)
     const sunsetLocal = new Date(sunsetUTC.getTime() + offsetMilliseconds)
@@ -536,7 +536,7 @@ export default function Home (): JSX.Element {
     const info = document.querySelector('.info-txt')
     const infoElement = info as HTMLElement
     infoElement.style.display = 'block'
-    if (ville === '' ?? /^[0-9]+$/.test(ville)) {
+    if (ville === '' || /^[0-9]+$/.test(ville)) {
       showError('Veuillez saisir une ville valide...')
       infoElement.style.display = 'none'
       return
@@ -942,7 +942,7 @@ export default function Home (): JSX.Element {
             </div>
           </section>
           <footer>
-            <Link href="https://openweathermap.org/" rel="noopener noreferrer">Données fournies par OpenWeather</Link>
+            <Link href="https://openweathermap.org/" rel="noopener noreferrer">Données OpenWeather</Link>
           </footer>
         </>
         )}
@@ -950,7 +950,6 @@ export default function Home (): JSX.Element {
       {!showComponents && (
         <footer>
           GPL-3.0
-          &copy;
           {' '}
           <Link href="https://leoseguin.fr/">leoseguin.fr</Link>
         </footer>
