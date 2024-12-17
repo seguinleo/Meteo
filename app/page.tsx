@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, JSX } from 'react'
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import { BsSearch, BsFillSunriseFill, BsFillSunsetFill, BsCloudRainHeavyFill } from 'react-icons/bs'
 import {

@@ -4,8 +4,8 @@ export function middleware(request: NextRequest) {
   const nonce = Buffer.from(crypto.randomUUID()).toString('base64')
   const cspHeader = `
     upgrade-insecure-requests;
-    default-src 'none';
     base-uri 'none';
+    child-src 'none';
     connect-src 'self';
     font-src 'self';
     form-action 'self';
@@ -16,7 +16,6 @@ export function middleware(request: NextRequest) {
       process.env.NODE_ENV === 'development' ? "'unsafe-eval'" : ''
     };
     script-src-attr 'none';
-    style-src 'self';
     style-src-attr 'none';
     worker-src 'self';
   `
