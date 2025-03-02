@@ -22,7 +22,7 @@
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "eslint": "^9.20.0",
+    "eslint": "^9.21.0",
     "eslint-plugin-react": "^7.37.4",
     "globals": "^15.14.0",
     "sass": "^1.84.0",
