@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, JSX } from 'react'
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
-import { BsSearch, BsFillSunriseFill, BsFillSunsetFill, BsCloudRainHeavyFill } from 'react-icons/bs'
+import { BsFillSunriseFill, BsFillSunsetFill, BsCloudRainHeavyFill } from 'react-icons/bs'
 import {
   WiMoonAltWaningGibbous3,
   WiMoonAltThirdQuarter,
@@ -591,15 +591,6 @@ export default function Home (): JSX.Element {
     }
   }
 
-  const handleReturn = () => {
-    setShowComponents(false)
-    document.body.style.background = '#1c95ec'
-    setMetaTheme('#1c95ec')
-    const storedVille = localStorage.getItem('ville')
-    const initialVille = storedVille !== null ? storedVille : ''
-    setVille(initialVille)
-  }
-
   const handleUnity = () => {
     if (temperature?.endsWith('C')) {
       const temperatureInCelsius = +(temperature.slice(0, -2))
@@ -664,13 +655,6 @@ export default function Home (): JSX.Element {
               onClick={handleUnity}
             >
               {temperature?.endsWith('C') ? '°F' : '°C'}
-            </button>
-            <button
-              type="button"
-              aria-label="Retour"
-              onClick={handleReturn}
-            >
-              <BsSearch color="white" size="25px" />
             </button>
           </>
         ) : (
