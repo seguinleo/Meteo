@@ -1,7 +1,20 @@
 import React, { JSX } from 'react'
 
+interface PayloadItem {
+  payload: {
+    temp: number
+    humidity: number
+    pressure: number
+    wind: number
+    windDeg: number
+    precipitation: number
+    rain: number
+    uv: number
+  }
+}
+
 interface CustomTooltipProps {
-  payload?: any[]
+  payload?: PayloadItem[]
   label?: string
   temperature?: string
   getImage?: (id: number, sunDown: string, sunUp: string, time: string, main: boolean) => {
@@ -10,12 +23,12 @@ interface CustomTooltipProps {
   }
 }
 
-export default function CustomTooltip ({
+export default function CustomTooltip({
   payload = [],
   label = '',
-  temperature = '0°C'
+  temperature = '0°C',
 }: CustomTooltipProps): JSX.Element | null {
-  if (Array.isArray(payload) && (payload.length > 0)) {
+  if (Array.isArray(payload) && payload.length > 0) {
     const {
       temp,
       humidity,
@@ -24,56 +37,42 @@ export default function CustomTooltip ({
       windDeg,
       precipitation,
       rain,
-      uv
+      uv,
     } = payload[0].payload
+
     return (
       <div className="custom-tooltip">
-        <p className="bold">
-          {label}
-        </p>
+        <p className="bold">{label}</p>
         <p>
-          Température
-          {' '}
-          {temp}
+          Température {temp}
           {temperature.endsWith('C') ? '°C' : '°F'}
         </p>
         <p>
-          Humidité
-          {' '}
-          {humidity}
-          %
+          Humidité {humidity}%
         </p>
         <p>
-          Vent
-          {' '}
+          Vent{' '}
           <svg width="18" height="18" viewBox="0 0 50 50">
-            <path d="M25 5 L40 45 L25 35 L10 45 Z" fill="currentColor" transform={`rotate(${windDeg + 180}, 25, 25)`} />
+            <path
+              d="M25 5 L40 45 L25 35 L10 45 Z"
+              fill="currentColor"
+              transform={`rotate(${windDeg + 180}, 25, 25)`}
+            />
           </svg>
           {wind}
           {temperature.endsWith('C') ? 'km/h' : 'mph'}
         </p>
         <p>
-          Pression
-          {' '}
-          {pressure}
-          hPa
+          Pression {pressure} hPa
         </p>
         <p>
-          Pluie (proba.)
-          {' '}
-          {rain}
-          %
+          Pluie (proba.) {rain}%
         </p>
         <p>
-          Précipitations
-          {' '}
-          {precipitation}
-          mm
+          Précipitations {precipitation} mm
         </p>
         <p>
-          UV
-          {' '}
-          {uv}
+          UV {uv}
         </p>
       </div>
     )

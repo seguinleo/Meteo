@@ -20,9 +20,9 @@ import RainJauge from './components/RainJauge'
 import './assets/css/style.min.css'
 
 interface WeatherData {
-  minutely: any
-  hourly: any
-  daily: any
+  minutely: MinutelyData[]
+  hourly: WeatherItem[]
+  daily: WeatherForecast[]
   timezone: string
   timezone_offset: number
   lat: string
@@ -40,6 +40,11 @@ interface WeatherData {
     uvi: number
   }
   alerts: WeatherAlert[]
+}
+
+interface MinutelyData {
+  dt: number
+  precipitation: number
 }
 
 interface WeatherData2 {
@@ -71,6 +76,7 @@ interface WeatherForecast {
   weather: Array<{ description: string, id: number }>
   pop: number
   dt: number
+  moon_phase: number
 }
 
 interface WeatherAlert {
@@ -93,7 +99,7 @@ export default function Home (): JSX.Element {
   const [lever, setLever] = useState('')
   const [coucher, setCoucher] = useState('')
   const [airPollution, setAirPollution] = useState('')
-  const [minutelyData, setMinutelyData] = useState([])
+  const [minutelyData, setMinutelyData] = useState<MinutelyData[]>([])
   const [uv, setUv] = useState(0)
   const [latitudeVille, setLatitudeVille] = useState('')
   const [longitudeVille, setLongitudeVille] = useState('')
