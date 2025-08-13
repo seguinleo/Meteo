@@ -10,7 +10,7 @@
     "sass": "sass --watch app/assets/sass/style.sass app/assets/css/style.min.css --style compressed"
   },
   "dependencies": {
-    "dotenv": "^17.0.1",
+    "dotenv": "^17.2.1",
     "next": "15.4.5",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
