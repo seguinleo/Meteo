@@ -38,6 +38,8 @@ interface WeatherData {
     pressure: number
     wind_speed: number
     uvi: number
+    dew_point: number
+    clouds: number
   }
   alerts: WeatherAlert[]
 }
@@ -70,6 +72,7 @@ interface WeatherItem {
 
 interface WeatherForecast {
   temp: {
+    day: number
     min: number
     max: number
   }
@@ -79,11 +82,17 @@ interface WeatherForecast {
   moon_phase: number
 }
 
+interface ChartDataItem {
+  temp: number
+  wind: number
+  [key: string]: any
+}
+
 interface WeatherAlert {
   event: string
 }
 
-export default function Home (): JSX.Element {
+export default function Home(): JSX.Element {
   let timeoutError: number | NodeJS.Timeout | null = null
   const [showComponents, setShowComponents] = useState(false)
   const [metaTheme, setMetaTheme] = useState('#1c95ec')
@@ -101,6 +110,8 @@ export default function Home (): JSX.Element {
   const [airPollution, setAirPollution] = useState('')
   const [minutelyData, setMinutelyData] = useState<MinutelyData[]>([])
   const [uv, setUv] = useState(0)
+  const [dewPoint, setDewPoint] = useState('')
+  const [clouds, setClouds] = useState(0)
   const [latitudeVille, setLatitudeVille] = useState('')
   const [longitudeVille, setLongitudeVille] = useState('')
   const [moonPhase, setMoonPhase] = useState(null as unknown as JSX.Element)
@@ -109,8 +120,8 @@ export default function Home (): JSX.Element {
   const [heure, setHeure] = useState('')
   const [jours, setJours] = useState(Array(7).fill(null))
   const [tempMinJours, setTempMinJours] = useState(Array(7).fill(null))
+  const [tempMeanJours, setTempMeanJours] = useState(Array(7).fill(null))
   const [tempMaxJours, setTempMaxJours] = useState(Array(7).fill(null))
-  const [precipitationJours, setPrecipitationJours] = useState(Array(7).fill(null))
   const [imgJours, setImgJours] = useState(Array(7).fill(null))
   const [thunderMessage, setThunderMessage] = useState('')
   const [heatMessage, setHeatMessage] = useState('')
@@ -428,6 +439,7 @@ export default function Home (): JSX.Element {
     const forecastsDaily = daily.slice(2)
     const temperaturesDailyMax = forecastsDaily.map((forecast: WeatherForecast) => Math.floor(forecast.temp.max))
     const temperaturesDailyMin = forecastsDaily.map((forecast: WeatherForecast) => Math.floor(forecast.temp.min))
+    const temperaturesDailyMean = forecastsDaily.map((forecast: WeatherForecast) => Math.floor(forecast.temp.day))
     const precipitationDaily = forecastsDaily.map((forecast: WeatherForecast) => +(forecast.pop * 100).toFixed(0))
     const weatherIdsDaily = forecastsDaily.map((forecast: WeatherForecast) => forecast.weather[0].id)
     const days = ['DIM', 'LUN', 'MAR', 'MER', 'JEU', 'VEN', 'SAM']
@@ -441,16 +453,16 @@ export default function Home (): JSX.Element {
         ...prevJour.slice(i + 1)
       ])
 
-      setPrecipitationJours((prevPrecipitation) => [
-        ...prevPrecipitation.slice(0, i),
-        `${precipitationDaily[i]}%`,
-        ...prevPrecipitation.slice(i + 1)
-      ])
-
       setTempMinJours((prevTempMin) => [
         ...prevTempMin.slice(0, i),
         `${temperaturesDailyMin[i]}°C`,
         ...prevTempMin.slice(i + 1)
+      ])
+
+      setTempMeanJours((prevTempMean) => [
+        ...prevTempMean.slice(0, i),
+        `${temperaturesDailyMean[i]}°C`,
+        ...prevTempMean.slice(i + 1)
       ])
 
       setTempMaxJours((prevTempMax) => [
@@ -512,6 +524,8 @@ export default function Home (): JSX.Element {
     setVentDirection(ventDeg + 180)
     setPression(`${current.pressure}hPa`)
     setUv(+current.uvi.toFixed(0))
+    setDewPoint(`${+(current.dew_point).toFixed(100)}°C`)
+    setClouds(+current.clouds.toFixed(0))
     setLatitudeVille(data.lat)
     setLongitudeVille(data.lon)
     setMainImg(<Image
@@ -598,51 +612,51 @@ export default function Home (): JSX.Element {
   }
 
   const handleUnity = () => {
-    if (temperature?.endsWith('C')) {
-      const temperatureInCelsius = +(temperature.slice(0, -2))
-      const temperatureInFahrenheit = (temperatureInCelsius * 1.8 + 32).toFixed(1)
-      setTemperature(`${temperatureInFahrenheit}°F`)
-      const ressentiInCelsius = +(ressenti.slice(0, -2))
-      const ressentiInFahrenheit = (ressentiInCelsius * 1.8 + 32).toFixed(0)
-      setRessenti(`${ressentiInFahrenheit}°F`)
-      const ventInKilometersPerHour = +(vent.slice(0, -4))
-      const ventInMilesPerHour = (ventInKilometersPerHour / 1.609).toFixed(0)
-      setVent(`${ventInMilesPerHour}mph`)
-      setTempMinJours(tempMinJours.map((temp) => `${((temp.slice(0, -2)) * 1.8 + 32).toFixed(0)}°F`))
-      setTempMaxJours(tempMaxJours.map((temp) => `${((temp.slice(0, -2)) * 1.8 + 32).toFixed(0)}°F`))
-      setDataChart1(dataChart1?.map((item) => ({
-        ...item,
-        temp: +(item.temp * 1.8 + 32).toFixed(1),
-        wind: +(item.wind / 1.609).toFixed(0)
-      })))
-      setDataChart2(dataChart2?.map((item) => ({
-        ...item,
-        temp: +(item.temp * 1.8 + 32).toFixed(1),
-        wind: +(item.wind / 1.609).toFixed(0)
-      })))
-    } else {
-      const temperatureInFahrenheit = +(temperature.slice(0, -2))
-      const temperatureInCelsius = ((temperatureInFahrenheit - 32) / 1.8).toFixed(1)
-      setTemperature(`${temperatureInCelsius}°C`)
-      const ressentiInFahrenheit = +(ressenti.slice(0, -2))
-      const ressentiInCelsius = ((ressentiInFahrenheit - 32) / 1.8).toFixed(0)
-      setRessenti(`${ressentiInCelsius}°C`)
-      const ventInMilesPerHour = +(vent.slice(0, -3))
-      const ventInKilometersPerHour = (ventInMilesPerHour * 1.609).toFixed(0)
-      setVent(`${ventInKilometersPerHour}km/h`)
-      setTempMinJours(tempMinJours.map((temp) => `${(((temp.slice(0, -2)) - 32) / 1.8).toFixed(0)}°C`))
-      setTempMaxJours(tempMaxJours.map((temp) => `${(((temp.slice(0, -2)) - 32) / 1.8).toFixed(0)}°C`))
-      setDataChart1(dataChart1?.map((item) => ({
-        ...item,
-        temp: +((item.temp - 32) / 1.8).toFixed(1),
-        wind: +(item.wind * 1.609).toFixed(0)
-      })))
-      setDataChart2(dataChart2?.map((item) => ({
-        ...item,
-        temp: +((item.temp - 32) / 1.8).toFixed(1),
-        wind: +(item.wind * 1.609).toFixed(0)
-      })))
+    const isCelsius = temperature?.endsWith('C')
+    const convertValue = (
+      value: string | undefined,
+      unitLength: number,
+      isTemp: boolean = true
+    ): string => {
+      if (!value) return ''
+      const parsed = +(value.slice(0, -unitLength))
+      if (isTemp) {
+        return isCelsius
+          ? `${(parsed * 1.8 + 32).toFixed(1)}°F`
+          : `${(((parsed - 32) / 1.8)).toFixed(1)}°C`
+      } else {
+        return isCelsius
+          ? `${(parsed / 1.609).toFixed(0)}mph`
+          : `${(parsed * 1.609).toFixed(0)}km/h`
+      }
     }
+
+    setTemperature(convertValue(temperature, 2, true));
+    setRessenti(convertValue(ressenti, 2, true));
+    setDewPoint(convertValue(dewPoint, 2, true));
+    setVent(convertValue(vent, isCelsius ? 4 : 3, false));
+
+    const convertTempArray = (temps: string[]): string[] =>
+      temps.map((temp) => convertValue(temp, 2, true))
+    setTempMinJours(convertTempArray(tempMinJours))
+    setTempMaxJours(convertTempArray(tempMaxJours))
+
+    const convertChartData = (
+      data: ChartDataItem[]
+    ): ChartDataItem[] => {
+      return data.map((item) => ({
+        ...item,
+        temp: +(isCelsius
+          ? (item.temp * 1.8 + 32).toFixed(1)
+          : ((item.temp - 32) / 1.8).toFixed(1)),
+        wind: +(isCelsius
+          ? (item.wind / 1.609).toFixed(0)
+          : (item.wind * 1.609).toFixed(0)),
+      }))
+    }
+
+    setDataChart1(convertChartData(dataChart1));
+    setDataChart2(convertChartData(dataChart2));
   }
 
   return (
@@ -655,6 +669,13 @@ export default function Home (): JSX.Element {
               {' '}
               {localStorage.getItem('ville')}
             </span>
+            <button
+              type="button"
+              aria-label="Recherche"
+              onClick={() => { setShowComponents(false) }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path fill="#ffffff" d="M480 272C480 317.9 465.1 360.3 440 394.7L566.6 521.4C579.1 533.9 579.1 554.2 566.6 566.7C554.1 579.2 533.8 579.2 521.3 566.7L394.7 440C360.3 465.1 317.9 480 272 480C157.1 480 64 386.9 64 272C64 157.1 157.1 64 272 64C386.9 64 480 157.1 480 272zM272 416C351.5 416 416 351.5 416 272C416 192.5 351.5 128 272 128C192.5 128 128 192.5 128 272C128 351.5 192.5 416 272 416z" /></svg>
+            </button>
             <button
               type="button"
               aria-label="Changer d'unité"
@@ -670,121 +691,171 @@ export default function Home (): JSX.Element {
       </header>
       <main>
         {!showComponents && (
-        <form onSubmit={handleSubmit}>
-          <div className="input-part">
-            <p className="info-txt">Chargement...</p>
-            <input
-              type="text"
-              placeholder="Paris, FR"
-              maxLength={50}
-              aria-label="Rechercher une ville"
-              id="ville"
-              value={ville}
-              onChange={(event) => { setVille(event.target.value) }}
-              aria-required="true"
-              required
-            />
-            <button type="submit">
-              Rechercher
-            </button>
-            <div className="separator" />
-            <button type="button" onClick={geolocation}>
-              Localisation actuelle
-            </button>
-          </div>
-        </form>
+          <form onSubmit={handleSubmit}>
+            <div className="input-part">
+              <p className="info-txt">Chargement...</p>
+              <input
+                type="text"
+                placeholder="Paris, FR"
+                maxLength={50}
+                aria-label="Rechercher une ville"
+                id="ville"
+                value={ville}
+                onChange={(event) => { setVille(event.target.value) }}
+                aria-required="true"
+                required
+              />
+              <button type="submit">
+                Rechercher
+              </button>
+              <div className="separator" />
+              <button type="button" onClick={geolocation}>
+                Localisation actuelle
+              </button>
+            </div>
+          </form>
         )}
         {showComponents && (
-        <>
-          <section>
-            {thunderMessage.length > 0 && (
-            <div className="alerts-thunder-part">
-              <span>{thunderMessage}</span>
-            </div>
-            )}
-            {heatMessage.length > 0 && (
-            <div className="alerts-heat-part">
-              <span>{heatMessage}</span>
-            </div>
-            )}
-            {floodMessage.length > 0 && (
-            <div className="alerts-flood-part">
-              <span>{floodMessage}</span>
-            </div>
-            )}
-            {iceMessage.length > 0 && (
-            <div className="alerts-ice-part">
-              <span>{iceMessage}</span>
-            </div>
-            )}
-          </section>
-          <section>
-            <div className="main-info">
-              <div className="temp">
-                {mainImg}
-              </div>
-              <div className="temp">
-                <span className="main-temp">{temperature}</span>
-                <span className="line">{description}</span>
-                <span className="line">
-                  ressenti
-                  {' '}
-                  {ressenti}
-                </span>
-                <span className="line">
-                  UV
-                  {' '}
-                  {uv}
-                </span>
-              </div>
-            </div>
-            <div className="details">
-              <div className="column">
-                <div className="detail">
-                  <span>{humidite}</span>
-                  <p>Humidité</p>
+          <>
+            <section>
+              {thunderMessage.length > 0 && (
+                <div className="alerts-thunder-part">
+                  <span>{thunderMessage}</span>
                 </div>
-              </div>
-              <div className="column">
-                <div className="detail">
-                  <span>
-                    <svg width="18" height="18" viewBox="0 0 50 50">
-                      <path d="M25 5 L40 45 L25 35 L10 45 Z" fill="currentColor" transform={`rotate(${ventDirection}, 25, 25)`} />
-                    </svg>
-                    {vent}
+              )}
+              {heatMessage.length > 0 && (
+                <div className="alerts-heat-part">
+                  <span>{heatMessage}</span>
+                </div>
+              )}
+              {floodMessage.length > 0 && (
+                <div className="alerts-flood-part">
+                  <span>{floodMessage}</span>
+                </div>
+              )}
+              {iceMessage.length > 0 && (
+                <div className="alerts-ice-part">
+                  <span>{iceMessage}</span>
+                </div>
+              )}
+            </section>
+            <section>
+              <div className="main-info">
+                <div className="temp">
+                  {mainImg}
+                </div>
+                <div className="temp">
+                  <span className="main-temp">{temperature}</span>
+                  <span className="line">{description}</span>
+                  <span className="line">
+                    ressenti
+                    {' '}
+                    {ressenti}
                   </span>
-                  <p>Vent</p>
+                  <span className="line">
+                    UV
+                    {' '}
+                    {uv}
+                  </span>
                 </div>
               </div>
-              <div className="column">
-                <div className="detail">
-                  <span>{pression}</span>
-                  <p>Pression</p>
+              <div className="details">
+                <div className="column">
+                  <div className="detail">
+                    <span>{humidite}</span>
+                    <p>Humidité</p>
+                  </div>
+                </div>
+                <div className="column">
+                  <div className="detail">
+                    <span>
+                      <svg width="18" height="18" viewBox="0 0 50 50">
+                        <path d="M25 5 L40 45 L25 35 L10 45 Z" fill="currentColor" transform={`rotate(${ventDirection}, 25, 25)`} />
+                      </svg>
+                      {vent}
+                    </span>
+                    <p>Vent</p>
+                  </div>
+                </div>
+                <div className="column">
+                  <div className="detail">
+                    <span>{pression}</span>
+                    <p>Pression</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          </section>
-          <section>
-            <RainJauge minutely={minutelyData} />
-          </section>
-          <section>
-            <div className="graphique">
-              {dataChart1?.length > 0 && (
-              <>
-                <p className="sous-titre">Ajourd&#39;hui</p>
+            </section>
+            <section>
+              <RainJauge minutely={minutelyData} />
+            </section>
+            <section>
+              <div className="graphique">
+                {dataChart1?.length > 0 && (
+                  <>
+                    <p className="sous-titre">Ajourd'hui</p>
+                    <ResponsiveContainer width="100%" height={50}>
+                      <LineChart
+                        margin={{
+                          top: 5, left: 5, right: 5, bottom: -24
+                        }}
+                        data={dataChart1}
+                      >
+                        <XAxis axisLine={false} tick={false} dataKey="name" />
+                        <YAxis yAxisId="temperature" domain={['dataMin', 'dataMax']} width={0} />
+                        <YAxis yAxisId="precipitation" width={0} />
+                        <Tooltip
+                          content={(
+                            <CustomTooltip temperature={temperature} />
+                          )}
+                          wrapperStyle={{ zIndex: '999' }}
+                        />
+                        <Line
+                          dataKey="temp"
+                          stroke="rgba(255,255,255,.7)"
+                          strokeWidth="2"
+                          dot={{ r: 4 }}
+                          yAxisId="temperature"
+                        />
+                        <Line
+                          dataKey="precipitation"
+                          stroke="rgba(57,196,243,.7)"
+                          strokeWidth="2"
+                          dot={{ r: 4 }}
+                          yAxisId="precipitation"
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                    <div className="images-chart1">
+                      {dataChart1?.length > 1 && dataChart1?.map((item) => (
+                        <Image
+                          src={
+                            getImage(item.weather, item.sunDownH, item.sunUpH, item.name, false).imgSrc
+                          }
+                          alt={item.description}
+                          width={16}
+                          height={15}
+                          key={item.name}
+                        />
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+              <div className="graphique">
+                <p className="sous-titre">Demain</p>
                 <ResponsiveContainer width="100%" height={50}>
                   <LineChart
                     margin={{
                       top: 5, left: 5, right: 5, bottom: -24
                     }}
-                    data={dataChart1}
+                    data={dataChart2}
                   >
                     <XAxis axisLine={false} tick={false} dataKey="name" />
                     <YAxis yAxisId="temperature" domain={['dataMin', 'dataMax']} width={0} />
                     <YAxis yAxisId="precipitation" width={0} />
                     <Tooltip
                       content={(
-                        <CustomTooltip temperature={temperature} />
+                        <CustomTooltip getImage={getImage} temperature={temperature} />
                       )}
                       wrapperStyle={{ zIndex: '999' }}
                     />
@@ -804,8 +875,8 @@ export default function Home (): JSX.Element {
                     />
                   </LineChart>
                 </ResponsiveContainer>
-                <div className="images-chart1">
-                  {dataChart1?.length > 1 && dataChart1?.map((item) => (
+                <div className="images-chart2">
+                  {dataChart2?.map((item) => (
                     <Image
                       src={
                         getImage(item.weather, item.sunDownH, item.sunUpH, item.name, false).imgSrc
@@ -817,124 +888,98 @@ export default function Home (): JSX.Element {
                     />
                   ))}
                 </div>
-              </>
-              )}
-            </div>
-            <div className="graphique">
-              <p className="sous-titre">Demain</p>
-              <ResponsiveContainer width="100%" height={50}>
-                <LineChart
-                  margin={{
-                    top: 5, left: 5, right: 5, bottom: -24
-                  }}
-                  data={dataChart2}
-                >
-                  <XAxis axisLine={false} tick={false} dataKey="name" />
-                  <YAxis yAxisId="temperature" domain={['dataMin', 'dataMax']} width={0} />
-                  <YAxis yAxisId="precipitation" width={0} />
-                  <Tooltip
-                    content={(
-                      <CustomTooltip getImage={getImage} temperature={temperature} />
-                    )}
-                  />
-                  <Line
-                    dataKey="temp"
-                    stroke="rgba(255,255,255,.7)"
-                    strokeWidth="2"
-                    dot={{ r: 4 }}
-                    yAxisId="temperature"
-                  />
-                  <Line
-                    dataKey="precipitation"
-                    stroke="rgba(57,196,243,.7)"
-                    strokeWidth="2"
-                    dot={{ r: 4 }}
-                    yAxisId="precipitation"
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-              <div className="images-chart2">
-                {dataChart2?.map((item) => (
-                  <Image
-                    src={
-                      getImage(item.weather, item.sunDownH, item.sunUpH, item.name, false).imgSrc
-                    }
-                    alt={item.description}
-                    width={16}
-                    height={15}
-                    key={item.name}
-                  />
+              </div>
+            </section>
+            <section>
+              <div className="daydetails">
+                {jours.slice(0, -1).map((jour, index) => (
+                  <div
+                    key={index}
+                    className="column daycolumn"
+                  >
+                    <p>{jour}</p>
+                    <Image src={imgJours[index]} alt="" width={48} height={45} />
+                    <p>{tempMeanJours[index]}</p>
+                    <p className="small">
+                      min {tempMinJours[index]}
+                    </p>
+                    <p className="small">
+                      max {tempMaxJours[index]}
+                    </p>
+                  </div>
                 ))}
               </div>
-            </div>
-          </section>
-          <section>
-            <div className="details">
-              {jours.slice(0, -1).map((jour, index) => (
-              <div key={index} className="column">
-                  <p>{jour}</p>
-                  <Image src={imgJours[index]} alt="" width={48} height={45} />
-                  <div className="separator" />
-                  <p>
-                    {tempMinJours[index]}
-                    /
-                    {tempMaxJours[index]}
-                  </p>
-                  <div className="separator" />
-                  <p>
-                    <BsCloudRainHeavyFill />
-                    <span>{precipitationJours[index]}</span>
-                  </p>
+            </section>
+            <section className="plus-info">
+              <div>
+                <p>
+                  Qualité air
+                </p>
+                <p>
+                  {airPollution}
+                </p>
               </div>
-              ))}
-            </div>
-          </section>
-          <section className="plus-info">
-            <div>
-              <p>
-                Qualité air :
-                {' '}
-                {airPollution}
-              </p>
-            </div>
-            <div>
-              <p>
-                Phase lune :
-                {' '}
-                {moonPhase}
-              </p>
-            </div>
-            <div>
-              <p>
-                <BsFillSunriseFill />
-                {lever}
-              </p>
-            </div>
-            <div>
-              <p>
-                <BsFillSunsetFill />
-                {coucher}
-              </p>
-            </div>
-            <div>
-              <p>
-                Longitude :
-                {' '}
-                {longitudeVille}
-              </p>
-            </div>
-            <div>
-              <p>
-                Latitude :
-                {' '}
-                {latitudeVille}
-              </p>
-            </div>
-          </section>
-          <footer>
-            <Link href="https://openweathermap.org/" rel="noopener noreferrer">Données OpenWeather</Link>
-          </footer>
-        </>
+              <div>
+                <p>
+                  Phase lune
+                </p>
+                <p>
+                  {moonPhase}
+                </p>
+              </div>
+              <div>
+                <p>
+                  Point de rosée
+                </p>
+                <p>
+                  {dewPoint}
+                </p>
+              </div>
+              <div>
+                <p>
+                  Couv. nuageuse
+                </p>
+                <p>
+                  {clouds}%
+                </p>
+              </div>
+              <div>
+                <p>
+                  <BsFillSunriseFill />
+                </p>
+                <p>
+                  {lever}
+                </p>
+              </div>
+              <div>
+                <p>
+                  <BsFillSunsetFill />
+                </p>
+                <p>
+                  {coucher}
+                </p>
+              </div>
+              <div>
+                <p>
+                  Longitude
+                </p>
+                <p>
+                  {longitudeVille}
+                </p>
+              </div>
+              <div>
+                <p>
+                  Latitude
+                </p>
+                <p>
+                  {latitudeVille}
+                </p>
+              </div>
+            </section>
+            <footer>
+              <Link href="https://openweathermap.org/" rel="noopener noreferrer">Données OpenWeather</Link>
+            </footer>
+          </>
         )}
       </main>
       {!showComponents && (
