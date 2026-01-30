@@ -11,14 +11,14 @@ const opensans = Open_Sans({
 
 export const metadata: Metadata = {
   title: 'Météo – Léo SEGUIN',
-  description: 'Météo actuelle et prévisions partout dans le monde.',
+  description: 'Météo actuelle, données heure par heure et prévisions sur 7 jours partout dans le monde avec graphiques.',
   openGraph: {
     type: 'website',
     locale: 'fr_FR',
     url: 'https://meteo-leoseguin.vercel.app/',
     siteName: 'Météo – Léo SEGUIN',
     title: 'Météo – Léo SEGUIN',
-    description: 'Météo actuelle et prévisions partout dans le monde.',
+    description: 'Météo actuelle, données heure par heure et prévisions sur 7 jours partout dans le monde avec graphiques.',
   }
 }
 
