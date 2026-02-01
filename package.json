@@ -24,7 +24,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9.39.2",
     "eslint-plugin-react": "^7.37.5",
-    "globals": "^17.2.0",
+    "globals": "^17.3.0",
     "typescript": "^5",
     "typescript-eslint": "^8.54.0"
   }
