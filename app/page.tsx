@@ -99,14 +99,34 @@ interface ChartDataItem {
   [key: string]: any
 }
 
+const weatherConfig = [
+  { range: [200, 210], icon: 'thunder', iconNight: 'thunder', day: '#19242b', night: '#281e33' },
+  { range: [211, 232], icon: 'storm', iconNight: 'storm', day: '#202d36', night: '#2f1f3f' },
+  { range: [300, 321], icon: 'drizzle', iconNight: 'drizzle', day: '#425b6b', night: '#543973' },
+  { range: [500, 501], icon: 'rain', iconNight: 'rain', day: '#3d5669', night: '#412e57' },
+  { range: [502, 504], icon: 'shower', iconNight: 'shower', day: '#2c3c47', night: '#312440' },
+  { range: [511, 520], icon: 'rain', iconNight: 'rain', day: '#879eb0', night: '#5a4c6b' },
+  { range: [521, 531], icon: 'shower', iconNight: 'shower', day: '#2c3c47', night: '#312440' },
+  { range: [600, 601], icon: 'snow', iconNight: 'snow', day: '#9cb0c0', night: '#77668a' },
+  { range: [602, 622], icon: 'blizzard', iconNight: 'blizzard', day: '#657682', night: '#857a91' },
+  { range: [701, 771], icon: 'fog', iconNight: 'fogNight', day: '#38aafc', night: '#895abf' },
+  { range: [781], icon: 'tornado', iconNight: 'tornado', day: '#2c3c47', night: '#462c63' },
+  { range: [800], icon: 'sun', iconNight: 'moon', day: '#1c95ec', night: '#723ead' },
+  { range: [801], icon: 'fewclouds', iconNight: 'fewcloudsNight', day: '#5080a3', night: '#5a308a' },
+  { range: [802], icon: 'clouds', iconNight: 'clouds', day: '#496c85', night: '#4a2d6b' },
+  { range: [803, 804], icon: 'manyclouds', iconNight: 'manyclouds', day: '#496c85', night: '#4a2d6b' }
+]
+
 export default function Home(): JSX.Element {
+  const [loading, setLoading] = useState(false)
+  const [showErrorBox, setShowErrorBox] = useState(false)
   const timeoutError = React.useRef<number | NodeJS.Timeout | null>(null)
   const [showComponents, setShowComponents] = useState(false)
   const [showAlertModal, setShowAlertModal] = useState(false)
   const [metaTheme, setMetaTheme] = useState('#1c95ec')
-  const [mainImg, setMainImg] = useState<JSX.Element | null>(null)
   const [city, setCity] = useState('')
   const [weatherState, setWeatherState] = useState({
+    weatherId: 0,
     temperature: '',
     description: '',
     feelsLike: '',
@@ -144,30 +164,11 @@ export default function Home(): JSX.Element {
   const [hour, setHour] = useState('')
   const [error, setError] = useState('')
 
-  const weatherConfig = [
-    { range: [200, 210], icon: 'thunder', iconNight: 'thunder', day: '#19242b', night: '#281e33' },
-    { range: [211, 232], icon: 'storm', iconNight: 'storm', day: '#202d36', night: '#2f1f3f' },
-    { range: [300, 321], icon: 'drizzle', iconNight: 'drizzle', day: '#425b6b', night: '#543973' },
-    { range: [500, 501], icon: 'rain', iconNight: 'rain', day: '#3d5669', night: '#412e57' },
-    { range: [502, 504], icon: 'shower', iconNight: 'shower', day: '#2c3c47', night: '#312440' },
-    { range: [511, 520], icon: 'rain', iconNight: 'rain', day: '#879eb0', night: '#5a4c6b' },
-    { range: [521, 531], icon: 'shower', iconNight: 'shower', day: '#2c3c47', night: '#312440' },
-    { range: [600, 601], icon: 'snow', iconNight: 'snow', day: '#9cb0c0', night: '#77668a' },
-    { range: [602, 622], icon: 'blizzard', iconNight: 'blizzard', day: '#657682', night: '#857a91' },
-    { range: [701, 771], icon: 'fog', iconNight: 'fogNight', day: '#38aafc', night: '#895abf' },
-    { range: [781], icon: 'tornado', iconNight: 'tornado', day: '#2c3c47', night: '#462c63' },
-    { range: [800], icon: 'sun', iconNight: 'moon', day: '#1c95ec', night: '#723ead' },
-    { range: [801], icon: 'fewclouds', iconNight: 'fewcloudsNight', day: '#5080a3', night: '#5a308a' },
-    { range: [802], icon: 'clouds', iconNight: 'clouds', day: '#496c85', night: '#4a2d6b' },
-    { range: [803, 804], icon: 'manyclouds', iconNight: 'manyclouds', day: '#496c85', night: '#4a2d6b' }
-  ]
-
   const getImage = useCallback((
     id: number,
     sunDown: string,
     sunUp: string,
-    time: string,
-    main: boolean
+    time: string
   ) => {
     const isDay = time >= sunUp && time < sunDown
     const config = weatherConfig.find(({ range }) => {
@@ -176,11 +177,9 @@ export default function Home(): JSX.Element {
     })
     if (!config) {
       const fallback = { imgSrc: '/assets/icons/clouds.png', backgroundColor: isDay ? '#496c85' : '#4a2d6b' }
-      if (main) setMetaTheme(fallback.backgroundColor)
       return fallback
     }
     const backgroundColor = isDay ? config.day : config.night
-    if (main) setMetaTheme(backgroundColor)
     return {
       imgSrc: `/assets/icons/${isDay ? config.icon : config.iconNight}.png`,
       backgroundColor,
@@ -208,14 +207,13 @@ export default function Home(): JSX.Element {
 
   const showError = useCallback((message: string) => {
     if (timeoutError.current) clearTimeout(timeoutError.current)
-    const notification = document.querySelector('#error-notification')
+
     setError(message)
-    if (notification) {
-      (notification as HTMLElement).style.display = 'block'
-      timeoutError.current = setTimeout(() => {
-        (notification as HTMLElement).style.display = 'none'
-      }, 5000)
-    }
+    setShowErrorBox(true)
+
+    timeoutError.current = setTimeout(() => {
+      setShowErrorBox(false)
+    }, 5000)
   }, [])
 
   const fetchDataForecasts = useCallback(async (data: WeatherData, sunDown: string, sunUp: string) => {
@@ -262,14 +260,16 @@ export default function Home(): JSX.Element {
       return forecastDay === currentDay
     }).slice(1)
 
-    if (window.innerWidth < 900 && chartData1.length > 12) {
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 900
+
+    if (isMobile && chartData1.length > 12) {
       chartData1 = chartData1.filter((_, index) => index % 2 === 0)
     }
 
     const chartDataAir = createChartData(hourly, (item, index) => {
       const forecastDateTime = new Date(item.dt * 1000)
       const forecastDay = forecastDateTime.toLocaleDateString('fr-FR', { timeZone: data.timezone })
-      if (window.innerWidth < 900) {
+      if (isMobile) {
         return forecastDay === nextDayFormatted && index % 2 === 0
       }
       return forecastDay === nextDayFormatted
@@ -290,7 +290,7 @@ export default function Home(): JSX.Element {
       tempMinDays: temperaturesDailyMin.map((t) => `${t}°C`),
       tempMeanDays: temperaturesDailyMean.map((t) => `${t}°C`),
       tempMaxDays: temperaturesDailyMax.map((t) => `${t}°C`),
-      imgDays: weatherIdsDaily.map((id) => getImage(id, '1', '0', '0', false).imgSrc),
+      imgDays: weatherIdsDaily.map((id) => getImage(id, '1', '0', '0').imgSrc),
     }))
 
     setChartState({ dataChart1: chartData1, dataChart2: chartDataAir })
@@ -323,8 +323,9 @@ export default function Home(): JSX.Element {
     const sunUp = sunriseLocal.toLocaleTimeString('fr-FR', timeOptions)
     const sunDown = sunsetLocal.toLocaleTimeString('fr-FR', timeOptions)
     const name = city
-    const result = getImage(weatherId, sunDown, sunUp, hourLocale, true)
-    const { imgSrc, backgroundColor } = result
+    const result = getImage(weatherId, sunDown, sunUp, hourLocale)
+    const { backgroundColor } = result
+    setMetaTheme(backgroundColor)
 
     const hasTag = (alert: WeatherAlert, tag: string): boolean => {
       return alert.tags?.some((t) => t.toLowerCase().includes(tag)) ?? false
@@ -332,6 +333,7 @@ export default function Home(): JSX.Element {
 
     setWeatherState((prev) => ({
       ...prev,
+      weatherId: current.weather[0].id,
       temperature: `${+current.temp.toFixed(1)}°C`,
       description: current.weather[0].description,
       feelsLike: `${+current.feels_like.toFixed(0)}°C`,
@@ -355,15 +357,6 @@ export default function Home(): JSX.Element {
       iceMessage: alerts?.some((alert) => hasTag(alert, 'ice')) ? 'VIGILANCE VERGLAS' : '',
     }))
 
-    setMainImg(
-      <Image
-        src={imgSrc}
-        className="mainImg"
-        alt={current.weather[0].description}
-        width={96}
-        height={90}
-      />
-    )
     setHour(hourLocale)
     document.body.style.background = backgroundColor
     localStorage.setItem('city', name)
@@ -373,13 +366,7 @@ export default function Home(): JSX.Element {
 
   const handleSubmit = useCallback(async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault()
-    const info = document.querySelector('.info-txt') as HTMLElement
-    info.style.display = 'block'
-    if (city === '' || /^[0-9]+$/.test(city)) {
-      showError('Veuillez saisir une ville valide...')
-      info.style.display = 'none'
-      return
-    }
+    setLoading(true)
     const response = await fetch('/api/search', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -393,7 +380,7 @@ export default function Home(): JSX.Element {
     } else {
       showError('Un problème est survenu, saisissez le nom complet de la ville...')
     }
-    info.style.display = 'none'
+    setLoading(false)
   }, [city, fetchDataCurrent, showError])
 
   const geolocation = useCallback(async () => {
@@ -401,8 +388,7 @@ export default function Home(): JSX.Element {
       showError('Votre navigateur ne supporte pas la géolocalisation...')
       return
     }
-    const info = document.querySelector('.info-txt') as HTMLElement
-    info.style.display = 'block'
+    setLoading(true)
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const { latitude, longitude } = position.coords
@@ -419,58 +405,70 @@ export default function Home(): JSX.Element {
         } else {
           showError('Un problème est survenu lors de la géolocalisation...')
         }
-        info.style.display = 'none'
       },
       () => {
         showError('Veuillez activer la géolocalisation de votre appareil pour ce site...')
-        info.style.display = 'none'
       }
     )
+    setLoading(false)
   }, [fetchDataCurrent, showError])
 
   const handleUnity = useCallback(() => {
-    const isCelsius = weatherState.temperature.endsWith('C')
-    const convertValue = (value: string, unitLength: number, isTemp: boolean = true): string => {
+    const isCelsius = weatherState.temperature.endsWith('°C')
+
+    const extractNumber = (value: string): number =>
+      parseFloat(value.replace(/[^\d.-]/g, ''))
+
+    const convertTemp = (value: string): string => {
       if (!value) return ''
-      const parsed = +(value.slice(0, -unitLength))
-      if (isTemp) {
-        return isCelsius
-          ? `${(parsed * 1.8 + 32).toFixed(1)}°F`
-          : `${(((parsed - 32) / 1.8)).toFixed(1)}°C`
-      } else {
-        return isCelsius
-          ? `${(parsed / 1.609).toFixed(0)}mph`
-          : `${(parsed * 1.609).toFixed(0)}km/h`
-      }
+      const num = extractNumber(value)
+      const converted = isCelsius
+        ? (num * 1.8 + 32)
+        : ((num - 32) / 1.8)
+      return `${converted.toFixed(1)}°${isCelsius ? 'F' : 'C'}`
     }
 
-    setWeatherState((prev) => ({
+    const convertWind = (value: string): string => {
+      if (!value) return ''
+      const num = extractNumber(value)
+      const converted = isCelsius
+        ? (num / 1.609)
+        : (num * 1.609)
+      return `${converted.toFixed(0)}${isCelsius ? 'mph' : 'km/h'}`
+    }
+
+    setWeatherState(prev => ({
       ...prev,
-      temperature: convertValue(prev.temperature, 2, true),
-      feelsLike: convertValue(prev.feelsLike, 2, true),
-      dewPoint: convertValue(prev.dewPoint, 2, true),
-      wind: convertValue(prev.wind, isCelsius ? 4 : 3, false),
+      temperature: convertTemp(prev.temperature),
+      feelsLike: convertTemp(prev.feelsLike),
+      dewPoint: convertTemp(prev.dewPoint),
+      wind: convertWind(prev.wind),
     }))
 
-    setForecastState((prev) => ({
+    setForecastState(prev => ({
       ...prev,
-      tempMinDays: prev.tempMinDays.map((temp) => convertValue(temp, 2, true)),
-      tempMaxDays: prev.tempMaxDays.map((temp) => convertValue(temp, 2, true)),
+      tempMinDays: prev.tempMinDays.map(convertTemp),
+      tempMeanDays: prev.tempMeanDays.map(convertTemp),
+      tempMaxDays: prev.tempMaxDays.map(convertTemp),
     }))
 
-    setChartState((prev) => ({
-      dataChart1: prev.dataChart1.map((item) => ({
+    const convertChartData = (data: ChartDataItem[]) =>
+      data.map(item => ({
         ...item,
-        temp: +(isCelsius ? (item.temp * 1.8 + 32).toFixed(1) : ((item.temp - 32) / 1.8).toFixed(1)),
-        wind: +(isCelsius ? (item.wind / 1.609).toFixed(0) : (item.wind * 1.609).toFixed(0)),
-      })),
-      dataChart2: prev.dataChart2.map((item) => ({
-        ...item,
-        temp: +(isCelsius ? (item.temp * 1.8 + 32).toFixed(1) : ((item.temp - 32) / 1.8).toFixed(1)),
-        wind: +(isCelsius ? (item.wind / 1.609).toFixed(0) : (item.wind * 1.609).toFixed(0)),
-      })),
+        temp: isCelsius
+          ? +(item.temp * 1.8 + 32).toFixed(1)
+          : +((item.temp - 32) / 1.8).toFixed(1),
+        wind: isCelsius
+          ? +(item.wind / 1.609).toFixed(0)
+          : +(item.wind * 1.609).toFixed(0),
+      }))
+
+    setChartState(prev => ({
+      dataChart1: convertChartData(prev.dataChart1),
+      dataChart2: convertChartData(prev.dataChart2),
     }))
-  }, [weatherState.temperature, weatherState.feelsLike, weatherState.dewPoint, weatherState.wind])
+
+  }, [weatherState.temperature])
 
   useEffect(() => {
     const metaThemeColor = document.querySelectorAll('.themecolor')
@@ -538,7 +536,14 @@ export default function Home(): JSX.Element {
         <header className={showComponents ? 'flex' : ''}>
           {showComponents ? (
             <>
-              <div><span id="hour">{hour} {localStorage.getItem('city')}</span></div>
+              <div>
+                <p>
+                  <span id="hour">
+                    {hour}
+                  </span>
+                  {city}
+                </p>
+              </div>
               <div>
                 {weatherState.alerts && weatherState.alerts.length > 0 && (
                   <button
@@ -563,13 +568,19 @@ export default function Home(): JSX.Element {
           ) : (
             <h1>Météo</h1>
           )}
-          <div id="error-notification">{error}</div>
+          {showErrorBox ? (
+            <div
+              id="error-notification"
+            >
+              {error}
+            </div>
+          ) : ''}
         </header>
         <main>
           {!showComponents && (
             <form onSubmit={handleSubmit}>
               <div className="input-part">
-                <p className="info-txt">Chargement...</p>
+                {loading && <p className="info-txt">Chargement...</p>}
                 <input
                   type="text"
                   placeholder="Paris, FR"
@@ -597,7 +608,20 @@ export default function Home(): JSX.Element {
               </section>
               <section>
                 <div className="main-info">
-                  <div className="temp">{mainImg}</div>
+                  <div className="temp">
+                    <Image
+                      src={getImage(
+                        weatherState.weatherId,
+                        weatherState.sunset,
+                        weatherState.sunrise,
+                        hour
+                      ).imgSrc}
+                      className="mainImg"
+                      alt={weatherState.description}
+                      width={96}
+                      height={90}
+                    />
+                  </div>
                   <div className="temp">
                     <span className="main-temp">{weatherState.temperature}</span>
                     <span className="line">{weatherState.description}</span>
@@ -652,7 +676,7 @@ export default function Home(): JSX.Element {
                       <div className="images-chart1">
                         {chartState.dataChart1.length > 1 && chartState.dataChart1.map((item) => (
                           <Image
-                            src={getImage(item.weather, item.sunDownH, item.sunUpH, item.name, false).imgSrc}
+                            src={getImage(item.weather, item.sunDownH, item.sunUpH, item.name).imgSrc}
                             alt={item.description}
                             width={16}
                             height={15}
@@ -678,7 +702,7 @@ export default function Home(): JSX.Element {
                   <div className="images-chart2">
                     {chartState.dataChart2.map((item) => (
                       <Image
-                        src={getImage(item.weather, item.sunDownH, item.sunUpH, item.name, false).imgSrc}
+                        src={getImage(item.weather, item.sunDownH, item.sunUpH, item.name).imgSrc}
                         alt={item.description}
                         width={16}
                         height={15}
