@@ -24,7 +24,7 @@ interface FetchWeatherDataResponse {
 }
 
 interface RequestBody {
-  ville: string
+  city: string
 }
 
 interface Request {
@@ -38,11 +38,11 @@ interface Response {
   send: (data: string) => void
 }
 
-const fetchWeatherData = async (ville: string): Promise<FetchWeatherDataResponse> => {
+const fetchWeatherData = async (city: string): Promise<FetchWeatherDataResponse> => {
   'use server'
   const key = process.env.API_KEY
   const geocodingResponse = await fetch(
-    `https://api.openweathermap.org/geo/1.0/direct?q=${ville}&limit=1&appid=${key}`
+    `https://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=${key}`
   )
 
   if (!geocodingResponse.ok) {
@@ -77,9 +77,9 @@ const fetchWeatherData = async (ville: string): Promise<FetchWeatherDataResponse
 
 export default async function handler(req: Request, res: Response): Promise<void> {
   if (req.method === 'POST') {
-    const { ville } = req.body
+    const { city } = req.body
     try {
-      const weatherData = await fetchWeatherData(ville)
+      const weatherData = await fetchWeatherData(city)
       res.status(200).json(weatherData)
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred'

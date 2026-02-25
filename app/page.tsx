@@ -1,8 +1,8 @@
 'use client'
 
-import React, { useState, useEffect, JSX } from 'react'
+import React, { useState, useEffect, useCallback, JSX } from 'react'
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
-import { BsFillSunriseFill, BsFillSunsetFill, BsCloudRainHeavyFill } from 'react-icons/bs'
+import { BsFillSunriseFill, BsFillSunsetFill } from 'react-icons/bs'
 import {
   WiMoonAltWaningGibbous3,
   WiMoonAltThirdQuarter,
@@ -16,32 +16,12 @@ import {
 import Image from 'next/image'
 import Link from 'next/link'
 import CustomTooltip from './components/CustomTooltip'
-import RainJauge from './components/RainJauge'
+import RainGauge from './components/RainGauge'
 import './assets/css/style.min.css'
 
-interface WeatherData {
-  minutely: MinutelyData[]
-  hourly: WeatherItem[]
-  daily: WeatherForecast[]
-  timezone: string
-  timezone_offset: number
-  lat: string
-  lon: string
-  current: {
-    weather: Array<{ description: string, id: number }>
-    wind_deg: number
-    sunrise: number
-    sunset: number
-    temp: number
-    feels_like: number
-    humidity: number
-    pressure: number
-    wind_speed: number
-    uvi: number
-    dew_point: number
-    clouds: number
-  }
-  alerts: WeatherAlert[]
+interface Weather {
+  description: string
+  id: number
 }
 
 interface MinutelyData {
@@ -49,17 +29,9 @@ interface MinutelyData {
   precipitation: number
 }
 
-interface WeatherData2 {
-  list: Array<{
-    main: {
-      aqi: number
-    }
-  }>
-}
-
 interface WeatherItem {
   dt: number
-  weather: Array<{ description: string, id: number }>
+  weather: Weather[]
   temp: number
   humidity: number
   pressure: number
@@ -76,10 +48,49 @@ interface WeatherForecast {
     min: number
     max: number
   }
-  weather: Array<{ description: string, id: number }>
+  weather: Weather[]
   pop: number
   dt: number
   moon_phase: number
+}
+
+interface WeatherAlert {
+  event: string,
+  description: string,
+  tags: string[]
+}
+
+interface WeatherData {
+  minutely: MinutelyData[]
+  hourly: WeatherItem[]
+  daily: WeatherForecast[]
+  timezone: string
+  timezone_offset: number
+  lat: string
+  lon: string
+  current: {
+    weather: Weather[]
+    wind_deg: number
+    sunrise: number
+    sunset: number
+    temp: number
+    feels_like: number
+    humidity: number
+    pressure: number
+    wind_speed: number
+    uvi: number
+    dew_point: number
+    clouds: number
+  }
+  alerts: WeatherAlert[]
+}
+
+interface WeatherDataAir {
+  list: Array<{
+    main: {
+      aqi: number
+    }
+  }>
 }
 
 interface ChartDataItem {
@@ -88,304 +99,132 @@ interface ChartDataItem {
   [key: string]: any
 }
 
-interface WeatherAlert {
-  event: string
-}
-
 export default function Home(): JSX.Element {
-  let timeoutError: number | NodeJS.Timeout | null = null
+  const timeoutError = React.useRef<number | NodeJS.Timeout | null>(null)
   const [showComponents, setShowComponents] = useState(false)
+  const [showAlertModal, setShowAlertModal] = useState(false)
   const [metaTheme, setMetaTheme] = useState('#1c95ec')
-  const [mainImg, setMainImg] = useState(null as unknown as JSX.Element)
-  const [ville, setVille] = useState('' as unknown as string)
-  const [temperature, setTemperature] = useState('')
-  const [description, setDescription] = useState('')
-  const [ressenti, setRessenti] = useState('')
-  const [humidite, setHumidite] = useState('')
-  const [vent, setVent] = useState('')
-  const [ventDirection, setVentDirection] = useState(0)
-  const [pression, setPression] = useState('')
-  const [lever, setLever] = useState('')
-  const [coucher, setCoucher] = useState('')
-  const [airPollution, setAirPollution] = useState('')
+  const [mainImg, setMainImg] = useState<JSX.Element | null>(null)
+  const [city, setCity] = useState('')
+  const [weatherState, setWeatherState] = useState({
+    temperature: '',
+    description: '',
+    feelsLike: '',
+    humidity: '',
+    wind: '',
+    windAngle: 0,
+    pressure: '',
+    sunrise: '',
+    sunset: '',
+    uv: 0,
+    dewPoint: '',
+    clouds: 0,
+    latitudeCity: '',
+    longitudeCity: '',
+    moonPhase: null as JSX.Element | null,
+    airPollution: '',
+    alerts: null as WeatherAlert[] | null,
+    thunderMessage: '',
+    heatMessage: '',
+    floodMessage: '',
+    iceMessage: '',
+  })
+  const [chartState, setChartState] = useState({
+    dataChart1: Array(24).fill(null) as ChartDataItem[],
+    dataChart2: Array(24).fill(null) as ChartDataItem[],
+  })
+  const [forecastState, setForecastState] = useState({
+    days: Array(8).fill(null) as string[],
+    tempMinDays: Array(8).fill(null) as string[],
+    tempMeanDays: Array(8).fill(null) as string[],
+    tempMaxDays: Array(8).fill(null) as string[],
+    imgDays: Array(8).fill(null) as string[],
+  })
   const [minutelyData, setMinutelyData] = useState<MinutelyData[]>([])
-  const [uv, setUv] = useState(0)
-  const [dewPoint, setDewPoint] = useState('')
-  const [clouds, setClouds] = useState(0)
-  const [latitudeVille, setLatitudeVille] = useState('')
-  const [longitudeVille, setLongitudeVille] = useState('')
-  const [moonPhase, setMoonPhase] = useState(null as unknown as JSX.Element)
-  const [dataChart1, setDataChart1] = useState(Array(24).fill(null))
-  const [dataChart2, setDataChart2] = useState(Array(24).fill(null))
-  const [heure, setHeure] = useState('')
-  const [jours, setJours] = useState(Array(7).fill(null))
-  const [tempMinJours, setTempMinJours] = useState(Array(7).fill(null))
-  const [tempMeanJours, setTempMeanJours] = useState(Array(7).fill(null))
-  const [tempMaxJours, setTempMaxJours] = useState(Array(7).fill(null))
-  const [imgJours, setImgJours] = useState(Array(7).fill(null))
-  const [thunderMessage, setThunderMessage] = useState('')
-  const [heatMessage, setHeatMessage] = useState('')
-  const [floodMessage, setFloodMessage] = useState('')
-  const [iceMessage, setIceMessage] = useState('')
+  const [hour, setHour] = useState('')
   const [error, setError] = useState('')
 
-  useEffect(() => {
-    const metaThemeColor = document.querySelectorAll('.themecolor')
-    if (metaThemeColor !== null) metaThemeColor.forEach((meta) => { meta.setAttribute('content', metaTheme) })
-    if (typeof window !== 'undefined') {
-      const savedVille = localStorage.getItem('ville')
-      setVille(savedVille || '')
-    }
-    if ('serviceWorker' in navigator) {
-      void (async () => {
-        try {
-          await navigator.serviceWorker.register('/sw.js')
-        } catch (error) {
-          throw new Error(`Service worker registration failed, error: ${error}`)
-        }
-      })()
-    }
-  }, [metaTheme])
+  const weatherConfig = [
+    { range: [200, 210], icon: 'thunder', iconNight: 'thunder', day: '#19242b', night: '#281e33' },
+    { range: [211, 232], icon: 'storm', iconNight: 'storm', day: '#202d36', night: '#2f1f3f' },
+    { range: [300, 321], icon: 'drizzle', iconNight: 'drizzle', day: '#425b6b', night: '#543973' },
+    { range: [500, 501], icon: 'rain', iconNight: 'rain', day: '#3d5669', night: '#412e57' },
+    { range: [502, 504], icon: 'shower', iconNight: 'shower', day: '#2c3c47', night: '#312440' },
+    { range: [511, 520], icon: 'rain', iconNight: 'rain', day: '#879eb0', night: '#5a4c6b' },
+    { range: [521, 531], icon: 'shower', iconNight: 'shower', day: '#2c3c47', night: '#312440' },
+    { range: [600, 601], icon: 'snow', iconNight: 'snow', day: '#9cb0c0', night: '#77668a' },
+    { range: [602, 622], icon: 'blizzard', iconNight: 'blizzard', day: '#657682', night: '#857a91' },
+    { range: [701, 771], icon: 'fog', iconNight: 'fogNight', day: '#38aafc', night: '#895abf' },
+    { range: [781], icon: 'tornado', iconNight: 'tornado', day: '#2c3c47', night: '#462c63' },
+    { range: [800], icon: 'sun', iconNight: 'moon', day: '#1c95ec', night: '#723ead' },
+    { range: [801], icon: 'fewclouds', iconNight: 'fewcloudsNight', day: '#5080a3', night: '#5a308a' },
+    { range: [802], icon: 'clouds', iconNight: 'clouds', day: '#496c85', night: '#4a2d6b' },
+    { range: [803, 804], icon: 'manyclouds', iconNight: 'manyclouds', day: '#496c85', night: '#4a2d6b' }
+  ]
 
-  const showError = (message: string) => {
-    if (timeoutError) clearTimeout(timeoutError)
+  const getImage = useCallback((
+    id: number,
+    sunDown: string,
+    sunUp: string,
+    time: string,
+    main: boolean
+  ) => {
+    const isDay = time >= sunUp && time < sunDown
+    const config = weatherConfig.find(({ range }) => {
+      if (range.length === 1) return id === range[0]
+      return id >= range[0] && id <= range[1]
+    })
+    if (!config) {
+      const fallback = { imgSrc: '/assets/icons/clouds.png', backgroundColor: isDay ? '#496c85' : '#4a2d6b' }
+      if (main) setMetaTheme(fallback.backgroundColor)
+      return fallback
+    }
+    const backgroundColor = isDay ? config.day : config.night
+    if (main) setMetaTheme(backgroundColor)
+    return {
+      imgSrc: `/assets/icons/${isDay ? config.icon : config.iconNight}.png`,
+      backgroundColor,
+    }
+  }, [])
+
+  const getMoonPhaseIcon = useCallback((phase: number): JSX.Element | null => {
+    if (phase > 0 && phase < 0.25) return <WiMoonAltWaningGibbous3 />
+    if (phase === 0.25) return <WiMoonAltThirdQuarter />
+    if (phase > 0.25 && phase < 0.5) return <WiMoonAltWaningCrescent3 />
+    if (phase === 0.5) return <WiMoonAltNew />
+    if (phase > 0.5 && phase < 0.75) return <WiMoonAltWaxingCrescent3 />
+    if (phase === 0.75) return <WiMoonAltFirstQuarter />
+    if (phase > 0.75 && phase < 1) return <WiMoonAltWaxingGibbous3 />
+    return <WiMoonAltFull />
+  }, [])
+
+  const getAirQualityText = useCallback((aqi: number): string => {
+    if (aqi === 1) return `${aqi} (Excellente)`
+    if (aqi === 2) return `${aqi} (Bonne)`
+    if (aqi === 3) return `${aqi} (Moyenne)`
+    if (aqi === 4) return `${aqi} (Mauvaise)`
+    return `${aqi} (Très mauvaise)`
+  }, [])
+
+  const showError = useCallback((message: string) => {
+    if (timeoutError.current) clearTimeout(timeoutError.current)
     const notification = document.querySelector('#error-notification')
     setError(message)
-    if (notification !== null) {
-      const notificationElement = notification as HTMLElement
-      notificationElement.style.display = 'block'
-      timeoutError = setTimeout(() => {
-        notificationElement.style.display = 'none'
+    if (notification) {
+      (notification as HTMLElement).style.display = 'block'
+      timeoutError.current = setTimeout(() => {
+        (notification as HTMLElement).style.display = 'none'
       }, 5000)
     }
-  }
+  }, [])
 
-  const getImage = (id: number, sunDown: string, sunUp: string, time: string, main: boolean) => {
-    let imgSrc = ''
-    let backgroundColor = ''
-
-    if ((id >= 200 && id <= 202) || (id >= 230 && id <= 232)) {
-      imgSrc = '/assets/icons/storm.png'
-      if (main) {
-        if (time >= sunUp && time < sunDown) {
-          backgroundColor = '#19242b'
-          setMetaTheme('#19242b')
-        } else {
-          backgroundColor = '#281e33'
-          setMetaTheme('#281e33')
-        }
-      }
-    } else if (id >= 210 && id <= 221) {
-      imgSrc = '/assets/icons/thunder.png'
-      if (main) {
-        if (time >= sunUp && time < sunDown) {
-          backgroundColor = '#202d36'
-          setMetaTheme('#202d36')
-        } else {
-          backgroundColor = '#2f1f3f'
-          setMetaTheme('#2f1f3f')
-        }
-      }
-    } else if (id >= 300 && id <= 321) {
-      if (time >= sunUp && time < sunDown) {
-        imgSrc = '/assets/icons/drizzle.png'
-        if (main) {
-          backgroundColor = '#425b6b'
-          setMetaTheme('#425b6b')
-        }
-      } else {
-        imgSrc = '/assets/icons/drizzleNight.png'
-        if (main) {
-          backgroundColor = '#543973'
-          setMetaTheme('#543973')
-        }
-      }
-    } else if (id === 500) {
-      imgSrc = '/assets/icons/rain.png'
-      if (main) {
-        if (time >= sunUp && time < sunDown) {
-          backgroundColor = '#3d5669'
-          setMetaTheme('#3d5669')
-        } else {
-          backgroundColor = '#412e57'
-          setMetaTheme('#412e57')
-        }
-      }
-    } else if ((id >= 501 && id <= 504) || (id >= 520 && id <= 531)) {
-      imgSrc = '/assets/icons/shower.png'
-      if (main) {
-        if (time >= sunUp && time < sunDown) {
-          backgroundColor = '#2c3c47'
-          setMetaTheme('#2c3c47')
-        } else {
-          backgroundColor = '#312440'
-          setMetaTheme('#312440')
-        }
-      }
-    } else if (id === 511) {
-      imgSrc = '/assets/icons/hail.png'
-      if (main) {
-        if (time >= sunUp && time < sunDown) {
-          backgroundColor = '#879eb0'
-          setMetaTheme('#879eb0')
-        } else {
-          backgroundColor = '#5a4c6b'
-          setMetaTheme('#5a4c6b')
-        }
-      }
-    } else if (id === 600) {
-      imgSrc = '/assets/icons/snow.png'
-      if (main) {
-        if (time >= sunUp && time < sunDown) {
-          backgroundColor = '#879eb0'
-          setMetaTheme('#879eb0')
-        } else {
-          backgroundColor = '#77668a'
-          setMetaTheme('#77668a')
-        }
-      }
-    } else if ((id === 601 || id === 602) || (id >= 620 && id <= 622)) {
-      imgSrc = '/assets/icons/blizzard.png'
-      if (main) {
-        if (time >= sunUp && time < sunDown) {
-          backgroundColor = '#657682'
-          setMetaTheme('#657682')
-        } else {
-          backgroundColor = '#857a91'
-          setMetaTheme('#857a91')
-        }
-      }
-    } else if (id >= 611 && id <= 616) {
-      if (time >= sunUp && time < sunDown) {
-        imgSrc = '/assets/icons/sleet.png'
-        if (main) {
-          backgroundColor = '#2c3c47'
-          setMetaTheme('#2c3c47')
-        }
-      } else {
-        imgSrc = '/assets/icons/sleetNight.png'
-        if (main) {
-          backgroundColor = '#462c63'
-          setMetaTheme('#462c63')
-        }
-      }
-    } else if (id >= 701 && id <= 721) {
-      if (time >= sunUp && time < sunDown) {
-        imgSrc = '/assets/icons/haze.png'
-        if (main) {
-          backgroundColor = '#38aafc'
-          setMetaTheme('#38aafc')
-        }
-      } else {
-        imgSrc = '/assets/icons/hazeNight.png'
-        if (main) {
-          backgroundColor = '#895abf'
-          setMetaTheme('#895abf')
-        }
-      }
-    } else if (id === 731 || (id >= 751 && id <= 771)) {
-      imgSrc = '/assets/icons/dust.png'
-      if (main) {
-        if (time >= sunUp && time < sunDown) {
-          backgroundColor = '#38aafc'
-          setMetaTheme('#38aafc')
-        } else {
-          backgroundColor = '#895abf'
-          setMetaTheme('#895abf')
-        }
-      }
-    } else if (id === 741) {
-      imgSrc = '/assets/icons/fog.png'
-      if (main) {
-        if (time >= sunUp && time < sunDown) {
-          backgroundColor = '#38aafc'
-          setMetaTheme('#38aafc')
-        } else {
-          backgroundColor = '#895abf'
-          setMetaTheme('#895abf')
-        }
-      }
-    } else if (id === 781) {
-      imgSrc = '/assets/icons/tornado.png'
-      if (main) {
-        if (time >= sunUp && time < sunDown) {
-          backgroundColor = '#2c3c47'
-          setMetaTheme('#2c3c47')
-        } else {
-          backgroundColor = '#462c63'
-          setMetaTheme('#462c63')
-        }
-      }
-    } else if (id === 800) {
-      if (time >= sunUp && time < sunDown) {
-        imgSrc = '/assets/icons/sun.png'
-      } else {
-        imgSrc = '/assets/icons/moon.png'
-        if (main) {
-          backgroundColor = '#723ead'
-          setMetaTheme('#723ead')
-        }
-      }
-    } else if (id === 801 || id === 802) {
-      if (time >= sunUp && time < sunDown) {
-        imgSrc = '/assets/icons/fewclouds.png'
-        if (main) {
-          backgroundColor = '#5080a3'
-          setMetaTheme('#5080a3')
-        }
-      } else {
-        imgSrc = '/assets/icons/fewcloudsNight.png'
-        if (main) {
-          backgroundColor = '#5a308a'
-          setMetaTheme('#5a308a')
-        }
-      }
-    } else {
-      imgSrc = '/assets/icons/clouds.png'
-      if (main) {
-        if (time >= sunUp && time < sunDown) {
-          backgroundColor = '#496c85'
-          setMetaTheme('#496c85')
-        } else {
-          backgroundColor = '#4a2d6b'
-          setMetaTheme('#4a2d6b')
-        }
-      }
-    }
-    return { imgSrc, backgroundColor }
-  }
-
-  const fetchDataAirPollution = async (data: number) => {
-    const aqi = data
-    let aqitxt = ''
-    if (aqi === 1) aqitxt = `${aqi} (Excellente)`
-    else if (aqi === 2) aqitxt = `${aqi} (Bonne)`
-    else if (aqi === 3) aqitxt = `${aqi} (Moyenne)`
-    else if (aqi === 4) aqitxt = `${aqi} (Mauvaise)`
-    else aqitxt = `${aqi} (Très mauvaise)`
-    setAirPollution(aqitxt)
-  }
-
-  const fetchDataMoon = async (data: number) => {
-    const phase = data
-    let phasehtml = null as unknown as JSX.Element
-    if (phase > 0 && phase < 0.25) phasehtml = <WiMoonAltWaningGibbous3 />
-    else if (phase === 0.25) phasehtml = <WiMoonAltThirdQuarter />
-    else if (phase > 0.25 && phase < 0.5) phasehtml = <WiMoonAltWaningCrescent3 />
-    else if (phase === 0.5) phasehtml = <WiMoonAltNew />
-    else if (phase > 0.5 && phase < 0.75) phasehtml = <WiMoonAltWaxingCrescent3 />
-    else if (phase === 0.75) phasehtml = <WiMoonAltFirstQuarter />
-    else if (phase > 0.75 && phase < 1) phasehtml = <WiMoonAltWaxingGibbous3 />
-    else phasehtml = <WiMoonAltFull />
-    setMoonPhase(phasehtml)
-  }
-
-  const fetchDataForecasts = async (data: WeatherData, sunDown: string, sunUp: string) => {
+  const fetchDataForecasts = useCallback(async (data: WeatherData, sunDown: string, sunUp: string) => {
     const { minutely, hourly, daily } = data
     const currentDateTime = new Date()
     const currentDay = currentDateTime.toLocaleDateString('fr-FR', { timeZone: data.timezone })
     const nextDay = new Date(currentDateTime.getTime() + 24 * 60 * 60 * 1000)
     const nextDayFormatted = nextDay.toLocaleDateString('fr-FR', { timeZone: data.timezone })
+
     const createChartData = (
       items: WeatherItem[],
       filterFn: (item: WeatherItem, index: number) => boolean
@@ -397,7 +236,7 @@ export default function Home(): JSX.Element {
           const forecastTime = forecastDateTime.toLocaleTimeString('fr-FR', {
             hour: '2-digit',
             minute: '2-digit',
-            timeZone: data.timezone
+            timeZone: data.timezone,
           })
           return {
             name: forecastTime,
@@ -412,7 +251,7 @@ export default function Home(): JSX.Element {
             rain: item.pop ? +(item.pop * 100).toFixed(0) : 0,
             uv: +item.uvi.toFixed(0),
             sunDownH: sunDown,
-            sunUpH: sunUp
+            sunUpH: sunUp,
           }
         })
     }
@@ -424,10 +263,10 @@ export default function Home(): JSX.Element {
     }).slice(1)
 
     if (window.innerWidth < 900 && chartData1.length > 12) {
-      chartData1 = chartData1.filter((item, index) => index % 2 === 0)
+      chartData1 = chartData1.filter((_, index) => index % 2 === 0)
     }
 
-    const chartData2 = createChartData(hourly, (item, index) => {
+    const chartDataAir = createChartData(hourly, (item, index) => {
       const forecastDateTime = new Date(item.dt * 1000)
       const forecastDay = forecastDateTime.toLocaleDateString('fr-FR', { timeZone: data.timezone })
       if (window.innerWidth < 900) {
@@ -437,53 +276,28 @@ export default function Home(): JSX.Element {
     })
 
     const forecastsDaily = daily.slice(2)
-    const temperaturesDailyMax = forecastsDaily.map((forecast: WeatherForecast) => Math.floor(forecast.temp.max))
-    const temperaturesDailyMin = forecastsDaily.map((forecast: WeatherForecast) => Math.floor(forecast.temp.min))
-    const temperaturesDailyMean = forecastsDaily.map((forecast: WeatherForecast) => Math.floor(forecast.temp.day))
-    const precipitationDaily = forecastsDaily.map((forecast: WeatherForecast) => +(forecast.pop * 100).toFixed(0))
-    const weatherIdsDaily = forecastsDaily.map((forecast: WeatherForecast) => forecast.weather[0].id)
+    const temperaturesDailyMax = forecastsDaily.map((forecast) => Math.floor(forecast.temp.max))
+    const temperaturesDailyMin = forecastsDaily.map((forecast) => Math.floor(forecast.temp.min))
+    const temperaturesDailyMean = forecastsDaily.map((forecast) => Math.floor(forecast.temp.day))
+    const weatherIdsDaily = forecastsDaily.map((forecast) => forecast.weather[0].id)
     const days = ['DIM', 'LUN', 'MAR', 'MER', 'JEU', 'VEN', 'SAM']
-    const dates = forecastsDaily.map((forecast: WeatherForecast) => new Date(forecast.dt * 1000))
-    const daysOfWeek = dates.map((date: Date) => days[date.getDay()])
+    const dates = forecastsDaily.map((forecast) => new Date(forecast.dt * 1000))
+    const daysOfWeek = dates.map((date) => days[date.getDay()])
 
-    for (let i = 0; i < 7; i += 1) {
-      setJours((prevJour) => [
-        ...prevJour.slice(0, i),
-        daysOfWeek[i],
-        ...prevJour.slice(i + 1)
-      ])
+    setForecastState((prev) => ({
+      ...prev,
+      days: daysOfWeek,
+      tempMinDays: temperaturesDailyMin.map((t) => `${t}°C`),
+      tempMeanDays: temperaturesDailyMean.map((t) => `${t}°C`),
+      tempMaxDays: temperaturesDailyMax.map((t) => `${t}°C`),
+      imgDays: weatherIdsDaily.map((id) => getImage(id, '1', '0', '0', false).imgSrc),
+    }))
 
-      setTempMinJours((prevTempMin) => [
-        ...prevTempMin.slice(0, i),
-        `${temperaturesDailyMin[i]}°C`,
-        ...prevTempMin.slice(i + 1)
-      ])
-
-      setTempMeanJours((prevTempMean) => [
-        ...prevTempMean.slice(0, i),
-        `${temperaturesDailyMean[i]}°C`,
-        ...prevTempMean.slice(i + 1)
-      ])
-
-      setTempMaxJours((prevTempMax) => [
-        ...prevTempMax.slice(0, i),
-        `${temperaturesDailyMax[i]}°C`,
-        ...prevTempMax.slice(i + 1)
-      ])
-
-      setImgJours((prevImg) => [
-        ...prevImg.slice(0, i),
-        getImage(weatherIdsDaily[i], '1', '0', '0', false).imgSrc,
-        ...prevImg.slice(i + 1)
-      ])
-    }
-
-    setDataChart1(chartData1)
-    setDataChart2(chartData2)
+    setChartState({ dataChart1: chartData1, dataChart2: chartDataAir })
     if (minutely) setMinutelyData(minutely)
-  }
+  }, [getImage])
 
-  const fetchDataCurrent = async (city: string, data: WeatherData, data2: WeatherData2) => {
+  const fetchDataCurrent = useCallback(async (city: string, data: WeatherData, dataAir: WeatherDataAir) => {
     const { current, alerts, timezone_offset: timezoneOffset } = data
     const weatherId = current.weather[0].id
     const ventDeg = current.wind_deg || 0
@@ -499,7 +313,7 @@ export default function Home(): JSX.Element {
       date.getUTCSeconds()
     )
     const localDate = new Date(utcDate.getTime() + (timezoneOffsetHours * 60 * 60 * 1000))
-    const heureLocale = localDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+    const hourLocale = localDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
     const sunriseUTC = new Date(current.sunrise * 1000 || 0)
     const sunsetUTC = new Date(current.sunset * 1000 || 0)
     const offsetMilliseconds = (date.getTimezoneOffset() + timezoneOffsetMinutes) * 60 * 1000
@@ -509,115 +323,114 @@ export default function Home(): JSX.Element {
     const sunUp = sunriseLocal.toLocaleTimeString('fr-FR', timeOptions)
     const sunDown = sunsetLocal.toLocaleTimeString('fr-FR', timeOptions)
     const name = city
-    const result = getImage(weatherId, sunDown, sunUp, heureLocale, true)
+    const result = getImage(weatherId, sunDown, sunUp, hourLocale, true)
     const { imgSrc, backgroundColor } = result
 
-    setLever(sunUp)
-    setCoucher(sunDown)
-    setHeure(heureLocale)
-    setVille(name)
-    setTemperature(`${+current.temp.toFixed(1)}°C`)
-    setDescription(current.weather[0].description)
-    setRessenti(`${+current.feels_like.toFixed(0)}°C`)
-    setHumidite(`${current.humidity}%`)
-    setVent(`${+(3.6 * current.wind_speed).toFixed(0)}km/h`)
-    setVentDirection(ventDeg + 180)
-    setPression(`${current.pressure}hPa`)
-    setUv(+current.uvi.toFixed(0))
-    setDewPoint(`${+(current.dew_point).toFixed(100)}°C`)
-    setClouds(+current.clouds.toFixed(0))
-    setLatitudeVille(data.lat)
-    setLongitudeVille(data.lon)
-    setMainImg(<Image
-      src={imgSrc}
-      className="mainImg"
-      alt={current.weather[0].description}
-      width={96}
-      height={90}
-    />)
-
-    if (alerts) {
-      if (alerts.some((alert: WeatherAlert) => alert.event.includes('thunder'))) setThunderMessage('VIGILANCE ORAGES')
-      if (alerts.some((alert: WeatherAlert) => alert.event.includes('high-temperature') || alert.event.includes('heat'))) setHeatMessage('VIGILANCE FORTES CHALEURS')
-      if (alerts.some((alert: WeatherAlert) => alert.event.includes('flooding'))) setFloodMessage('VIGILANCE INONDATIONS')
-      if (alerts.some((alert: WeatherAlert) => alert.event.includes('snow-ice'))) setIceMessage('VIGILANCE VERGLAS')
+    const hasTag = (alert: WeatherAlert, tag: string): boolean => {
+      return alert.tags?.some((t) => t.toLowerCase().includes(tag)) ?? false
     }
 
+    setWeatherState((prev) => ({
+      ...prev,
+      temperature: `${+current.temp.toFixed(1)}°C`,
+      description: current.weather[0].description,
+      feelsLike: `${+current.feels_like.toFixed(0)}°C`,
+      humidity: `${current.humidity}%`,
+      wind: `${+(3.6 * current.wind_speed).toFixed(0)}km/h`,
+      windAngle: ventDeg + 180,
+      pressure: `${current.pressure}hPa`,
+      sunrise: sunUp,
+      sunset: sunDown,
+      uv: +current.uvi.toFixed(0),
+      dewPoint: `${+(current.dew_point).toFixed(1)}°C`,
+      clouds: +current.clouds.toFixed(0),
+      latitudeCity: data.lat,
+      longitudeCity: data.lon,
+      moonPhase: getMoonPhaseIcon(data.daily[0].moon_phase),
+      airPollution: getAirQualityText(dataAir.list[0].main.aqi),
+      alerts: alerts,
+      thunderMessage: alerts?.some((alert) => hasTag(alert, 'thunder')) ? 'VIGILANCE ORAGES' : '',
+      heatMessage: alerts?.some((alert) => hasTag(alert, 'high_temperature')) ? 'VIGILANCE FORTES CHALEURS' : '',
+      floodMessage: alerts?.some((alert) => hasTag(alert, 'flood')) ? 'VIGILANCE INONDATIONS' : '',
+      iceMessage: alerts?.some((alert) => hasTag(alert, 'ice')) ? 'VIGILANCE VERGLAS' : '',
+    }))
+
+    setMainImg(
+      <Image
+        src={imgSrc}
+        className="mainImg"
+        alt={current.weather[0].description}
+        width={96}
+        height={90}
+      />
+    )
+    setHour(hourLocale)
     document.body.style.background = backgroundColor
-    localStorage.setItem('ville', name)
+    localStorage.setItem('city', name)
 
     await fetchDataForecasts(data, sunDown, sunUp)
-    await fetchDataMoon(data.daily[0].moon_phase)
-    if (data2.list[0].main.aqi) await fetchDataAirPollution(data2.list[0].main.aqi)
-  }
+  }, [getImage, getMoonPhaseIcon, getAirQualityText, fetchDataForecasts])
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = useCallback(async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault()
-    const info = document.querySelector('.info-txt')
-    const infoElement = info as HTMLElement
-    infoElement.style.display = 'block'
-    if (ville === '' || /^[0-9]+$/.test(ville)) {
+    const info = document.querySelector('.info-txt') as HTMLElement
+    info.style.display = 'block'
+    if (city === '' || /^[0-9]+$/.test(city)) {
       showError('Veuillez saisir une ville valide...')
-      infoElement.style.display = 'none'
+      info.style.display = 'none'
       return
     }
     const response = await fetch('/api/search', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        ville
-      })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ city }),
     })
     const data = await response.json()
     if (response.ok) {
-      const { city, oneCallData, airPollutionData } = data
-      await fetchDataCurrent(city, oneCallData, airPollutionData)
+      const { city: cityName, oneCallData, airPollutionData } = data
+      await fetchDataCurrent(cityName, oneCallData, airPollutionData)
       setShowComponents(true)
-    } else showError('Un problème est survenu, saisissez le nom complet de la ville...')
-    infoElement.style.display = 'none'
-  }
+    } else {
+      showError('Un problème est survenu, saisissez le nom complet de la ville...')
+    }
+    info.style.display = 'none'
+  }, [city, fetchDataCurrent, showError])
 
-  const geolocation = async () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(async (position) => {
-        const info = document.querySelector('.info-txt')
-        const infoElement = info as HTMLElement
-        infoElement.style.display = 'block'
-        const { latitude } = position.coords
-        const { longitude } = position.coords
+  const geolocation = useCallback(async () => {
+    if (!navigator.geolocation) {
+      showError('Votre navigateur ne supporte pas la géolocalisation...')
+      return
+    }
+    const info = document.querySelector('.info-txt') as HTMLElement
+    info.style.display = 'block'
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords
         const response = await fetch('/api/geolocation', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            latitude, longitude
-          })
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ latitude, longitude }),
         })
         const data = await response.json()
         if (response.ok) {
-          const { city, oneCallData, airPollutionData } = data
-          await fetchDataCurrent(city, oneCallData, airPollutionData)
+          const { city: cityName, oneCallData, airPollutionData } = data
+          await fetchDataCurrent(cityName, oneCallData, airPollutionData)
           setShowComponents(true)
-        } else showError('Un problème est survenu lors de la géolocalisation...')
-        infoElement.style.display = 'none'
-      }, () => {
+        } else {
+          showError('Un problème est survenu lors de la géolocalisation...')
+        }
+        info.style.display = 'none'
+      },
+      () => {
         showError('Veuillez activer la géolocalisation de votre appareil pour ce site...')
-      })
-    } else {
-      showError('Votre navigateur ne supporte pas la géolocalisation...')
-    }
-  }
+        info.style.display = 'none'
+      }
+    )
+  }, [fetchDataCurrent, showError])
 
-  const handleUnity = () => {
-    const isCelsius = temperature?.endsWith('C')
-    const convertValue = (
-      value: string | undefined,
-      unitLength: number,
-      isTemp: boolean = true
-    ): string => {
+  const handleUnity = useCallback(() => {
+    const isCelsius = weatherState.temperature.endsWith('C')
+    const convertValue = (value: string, unitLength: number, isTemp: boolean = true): string => {
       if (!value) return ''
       const parsed = +(value.slice(0, -unitLength))
       if (isTemp) {
@@ -631,364 +444,285 @@ export default function Home(): JSX.Element {
       }
     }
 
-    setTemperature(convertValue(temperature, 2, true));
-    setRessenti(convertValue(ressenti, 2, true));
-    setDewPoint(convertValue(dewPoint, 2, true));
-    setVent(convertValue(vent, isCelsius ? 4 : 3, false));
+    setWeatherState((prev) => ({
+      ...prev,
+      temperature: convertValue(prev.temperature, 2, true),
+      feelsLike: convertValue(prev.feelsLike, 2, true),
+      dewPoint: convertValue(prev.dewPoint, 2, true),
+      wind: convertValue(prev.wind, isCelsius ? 4 : 3, false),
+    }))
 
-    const convertTempArray = (temps: string[]): string[] =>
-      temps.map((temp) => convertValue(temp, 2, true))
-    setTempMinJours(convertTempArray(tempMinJours))
-    setTempMaxJours(convertTempArray(tempMaxJours))
+    setForecastState((prev) => ({
+      ...prev,
+      tempMinDays: prev.tempMinDays.map((temp) => convertValue(temp, 2, true)),
+      tempMaxDays: prev.tempMaxDays.map((temp) => convertValue(temp, 2, true)),
+    }))
 
-    const convertChartData = (
-      data: ChartDataItem[]
-    ): ChartDataItem[] => {
-      return data.map((item) => ({
+    setChartState((prev) => ({
+      dataChart1: prev.dataChart1.map((item) => ({
         ...item,
-        temp: +(isCelsius
-          ? (item.temp * 1.8 + 32).toFixed(1)
-          : ((item.temp - 32) / 1.8).toFixed(1)),
-        wind: +(isCelsius
-          ? (item.wind / 1.609).toFixed(0)
-          : (item.wind * 1.609).toFixed(0)),
-      }))
-    }
+        temp: +(isCelsius ? (item.temp * 1.8 + 32).toFixed(1) : ((item.temp - 32) / 1.8).toFixed(1)),
+        wind: +(isCelsius ? (item.wind / 1.609).toFixed(0) : (item.wind * 1.609).toFixed(0)),
+      })),
+      dataChart2: prev.dataChart2.map((item) => ({
+        ...item,
+        temp: +(isCelsius ? (item.temp * 1.8 + 32).toFixed(1) : ((item.temp - 32) / 1.8).toFixed(1)),
+        wind: +(isCelsius ? (item.wind / 1.609).toFixed(0) : (item.wind * 1.609).toFixed(0)),
+      })),
+    }))
+  }, [weatherState.temperature, weatherState.feelsLike, weatherState.dewPoint, weatherState.wind])
 
-    setDataChart1(convertChartData(dataChart1));
-    setDataChart2(convertChartData(dataChart2));
-  }
+  useEffect(() => {
+    const metaThemeColor = document.querySelectorAll('.themecolor')
+    metaThemeColor.forEach((meta) => meta.setAttribute('content', metaTheme))
+    if (typeof window !== 'undefined') {
+      const savedCity = localStorage.getItem('city')
+      if (savedCity) setCity(savedCity)
+    }
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch((error) => {
+        console.error(`Service worker registration failed: ${error}`)
+      })
+    }
+    return () => {
+      if (timeoutError.current) clearTimeout(timeoutError.current)
+    }
+  }, [metaTheme])
 
   return (
-    <div className="wrapper">
-      <header>
-        {showComponents ? (
-          <>
-            <span id="heure">
-              {heure}
-              {' '}
-              {localStorage.getItem('ville')}
-            </span>
-            <button
-              type="button"
-              aria-label="Recherche"
-              onClick={() => { setShowComponents(false) }}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path fill="#ffffff" d="M480 272C480 317.9 465.1 360.3 440 394.7L566.6 521.4C579.1 533.9 579.1 554.2 566.6 566.7C554.1 579.2 533.8 579.2 521.3 566.7L394.7 440C360.3 465.1 317.9 480 272 480C157.1 480 64 386.9 64 272C64 157.1 157.1 64 272 64C386.9 64 480 157.1 480 272zM272 416C351.5 416 416 351.5 416 272C416 192.5 351.5 128 272 128C192.5 128 128 192.5 128 272C128 351.5 192.5 416 272 416z" /></svg>
-            </button>
-            <button
-              type="button"
-              aria-label="Changer d'unité"
-              onClick={handleUnity}
-            >
-              {temperature?.endsWith('C') ? '°F' : '°C'}
-            </button>
-          </>
-        ) : (
-          <h1>Météo</h1>
-        )}
-        <div id="error-notification">{error}</div>
-      </header>
-      <main>
-        {!showComponents && (
-          <form onSubmit={handleSubmit}>
-            <div className="input-part">
-              <p className="info-txt">Chargement...</p>
-              <input
-                type="text"
-                placeholder="Paris, FR"
-                maxLength={50}
-                aria-label="Rechercher une ville"
-                id="ville"
-                value={ville}
-                onChange={(event) => { setVille(event.target.value) }}
-                aria-required="true"
-                required
-              />
-              <button type="submit">
-                Rechercher
-              </button>
-              <div className="separator" />
-              <button type="button" onClick={geolocation}>
-                Localisation actuelle
-              </button>
-            </div>
-          </form>
-        )}
-        {showComponents && (
-          <>
-            <section>
-              {thunderMessage.length > 0 && (
-                <div className="alerts-thunder-part">
-                  <span>{thunderMessage}</span>
-                </div>
-              )}
-              {heatMessage.length > 0 && (
-                <div className="alerts-heat-part">
-                  <span>{heatMessage}</span>
-                </div>
-              )}
-              {floodMessage.length > 0 && (
-                <div className="alerts-flood-part">
-                  <span>{floodMessage}</span>
-                </div>
-              )}
-              {iceMessage.length > 0 && (
-                <div className="alerts-ice-part">
-                  <span>{iceMessage}</span>
-                </div>
-              )}
-            </section>
-            <section>
-              <div className="main-info">
-                <div className="temp">
-                  {mainImg}
-                </div>
-                <div className="temp">
-                  <span className="main-temp">{temperature}</span>
-                  <span className="line">{description}</span>
-                  <span className="line">
-                    ressenti
-                    {' '}
-                    {ressenti}
-                  </span>
-                  <span className="line">
-                    UV
-                    {' '}
-                    {uv}
-                  </span>
-                </div>
-              </div>
-              <div className="details">
-                <div className="column">
-                  <div className="detail">
-                    <span>{humidite}</span>
-                    <p>Humidité</p>
-                  </div>
-                </div>
-                <div className="column">
-                  <div className="detail">
-                    <span>
-                      <svg width="18" height="18" viewBox="0 0 50 50">
-                        <path d="M25 5 L40 45 L25 35 L10 45 Z" fill="currentColor" transform={`rotate(${ventDirection}, 25, 25)`} />
-                      </svg>
-                      {vent}
-                    </span>
-                    <p>Vent</p>
-                  </div>
-                </div>
-                <div className="column">
-                  <div className="detail">
-                    <span>{pression}</span>
-                    <p>Pression</p>
-                  </div>
-                </div>
-              </div>
-            </section>
-            <section>
-              <RainJauge minutely={minutelyData} />
-            </section>
-            <section>
-              <div className="graphique">
-                {dataChart1?.length > 0 && (
-                  <>
-                    <p className="sous-titre">Ajourd'hui</p>
-                    <ResponsiveContainer width="100%" height={50}>
-                      <LineChart
-                        margin={{
-                          top: 5, left: 5, right: 5, bottom: -24
-                        }}
-                        data={dataChart1}
-                      >
-                        <XAxis axisLine={false} tick={false} dataKey="name" />
-                        <YAxis yAxisId="temperature" domain={['dataMin', 'dataMax']} width={0} />
-                        <YAxis yAxisId="precipitation" width={0} />
-                        <Tooltip
-                          content={(
-                            <CustomTooltip temperature={temperature} />
-                          )}
-                          wrapperStyle={{ zIndex: '999' }}
-                        />
-                        <Line
-                          dataKey="temp"
-                          stroke="rgba(255,255,255,.7)"
-                          strokeWidth="2"
-                          dot={{ r: 4 }}
-                          yAxisId="temperature"
-                        />
-                        <Line
-                          dataKey="precipitation"
-                          stroke="rgba(57,196,243,.7)"
-                          strokeWidth="2"
-                          dot={{ r: 4 }}
-                          yAxisId="precipitation"
-                        />
-                      </LineChart>
-                    </ResponsiveContainer>
-                    <div className="images-chart1">
-                      {dataChart1?.length > 1 && dataChart1?.map((item) => (
-                        <Image
-                          src={
-                            getImage(item.weather, item.sunDownH, item.sunUpH, item.name, false).imgSrc
-                          }
-                          alt={item.description}
-                          width={16}
-                          height={15}
-                          key={item.name}
-                        />
-                      ))}
-                    </div>
-                  </>
-                )}
-              </div>
-              <div className="graphique">
-                <p className="sous-titre">Demain</p>
-                <ResponsiveContainer width="100%" height={50}>
-                  <LineChart
-                    margin={{
-                      top: 5, left: 5, right: 5, bottom: -24
-                    }}
-                    data={dataChart2}
-                  >
-                    <XAxis axisLine={false} tick={false} dataKey="name" />
-                    <YAxis yAxisId="temperature" domain={['dataMin', 'dataMax']} width={0} />
-                    <YAxis yAxisId="precipitation" width={0} />
-                    <Tooltip
-                      content={(
-                        <CustomTooltip getImage={getImage} temperature={temperature} />
-                      )}
-                      wrapperStyle={{ zIndex: '999' }}
-                    />
-                    <Line
-                      dataKey="temp"
-                      stroke="rgba(255,255,255,.7)"
-                      strokeWidth="2"
-                      dot={{ r: 4 }}
-                      yAxisId="temperature"
-                    />
-                    <Line
-                      dataKey="precipitation"
-                      stroke="rgba(57,196,243,.7)"
-                      strokeWidth="2"
-                      dot={{ r: 4 }}
-                      yAxisId="precipitation"
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-                <div className="images-chart2">
-                  {dataChart2?.map((item) => (
-                    <Image
-                      src={
-                        getImage(item.weather, item.sunDownH, item.sunUpH, item.name, false).imgSrc
-                      }
-                      alt={item.description}
-                      width={16}
-                      height={15}
-                      key={item.name}
-                    />
+    <>
+      <dialog
+        open={showAlertModal}
+        onClick={(e) => {
+          const dialog = e.currentTarget;
+          const rect = dialog.getBoundingClientRect();
+          const clickedInDialog = (
+            rect.top <= e.clientY &&
+            e.clientY <= rect.top + rect.height &&
+            rect.left <= e.clientX &&
+            e.clientX <= rect.left + rect.width
+          );
+          if (!clickedInDialog) {
+            setShowAlertModal(false);
+          }
+        }}
+        className="alert-dialog"
+      >
+        <button
+          className="close-dialog"
+          onClick={() => setShowAlertModal(false)}
+          aria-label="Fermer"
+        >
+          ✕
+        </button>
+        <h2>Alertes météo</h2>
+        {weatherState.alerts && weatherState.alerts.length > 0 ? (
+          weatherState.alerts.map((alert, index) => (
+            <div key={index} className="alert-item">
+              <h3>{alert.event}</h3>
+              <p>{alert.description}</p>
+              {alert.tags && (
+                <div className="alert-tags">
+                  {alert.tags.map((tag, tagIndex) => (
+                    <span key={tagIndex} className="tag">{tag}</span>
                   ))}
                 </div>
-              </div>
-            </section>
-            <section>
-              <div className="daydetails">
-                {jours.slice(0, -1).map((jour, index) => (
-                  <div
-                    key={index}
-                    className="column daycolumn"
-                  >
-                    <p>{jour}</p>
-                    <Image src={imgJours[index]} alt="" width={48} height={45} />
-                    <p>{tempMeanJours[index]}</p>
-                    <p className="small">
-                      min {tempMinJours[index]}
-                    </p>
-                    <p className="small">
-                      max {tempMaxJours[index]}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </section>
-            <section className="plus-info">
-              <div>
-                <p>
-                  Qualité air
-                </p>
-                <p>
-                  {airPollution}
-                </p>
-              </div>
-              <div>
-                <p>
-                  Phase lune
-                </p>
-                <p>
-                  {moonPhase}
-                </p>
-              </div>
-              <div>
-                <p>
-                  Point de rosée
-                </p>
-                <p>
-                  {dewPoint}
-                </p>
-              </div>
-              <div>
-                <p>
-                  Couv. nuageuse
-                </p>
-                <p>
-                  {clouds}%
-                </p>
-              </div>
-              <div>
-                <p>
-                  <BsFillSunriseFill />
-                </p>
-                <p>
-                  {lever}
-                </p>
-              </div>
-              <div>
-                <p>
-                  <BsFillSunsetFill />
-                </p>
-                <p>
-                  {coucher}
-                </p>
-              </div>
-              <div>
-                <p>
-                  Longitude
-                </p>
-                <p>
-                  {longitudeVille}
-                </p>
-              </div>
-              <div>
-                <p>
-                  Latitude
-                </p>
-                <p>
-                  {latitudeVille}
-                </p>
-              </div>
-            </section>
-            <footer>
-              <Link href="https://openweathermap.org/" rel="noopener noreferrer">Données OpenWeather</Link>
-            </footer>
-          </>
+              )}
+            </div>
+          ))
+        ) : (
+          <p>Aucune alerte en cours.</p>
         )}
-      </main>
-      {!showComponents && (
-        <footer>
-          GPL-3.0
-          {' '}
-          <Link href="https://leoseguin.fr/">leoseguin.fr</Link>
-        </footer>
-      )}
-    </div>
+      </dialog>
+      <div className="wrapper">
+        <header className={showComponents ? 'flex' : ''}>
+          {showComponents ? (
+            <>
+              <div><span id="hour">{hour} {localStorage.getItem('city')}</span></div>
+              <div>
+                {weatherState.alerts && weatherState.alerts.length > 0 && (
+                  <button
+                    type="button"
+                    aria-label="Alertes météo"
+                    className="alert-button"
+                    onClick={() => setShowAlertModal(true)}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path fill="#ffffff" d="M320 64C334.7 64 348.2 72.1 355.2 85L571.2 485C577.9 497.4 577.6 512.4 570.4 524.5C563.2 536.6 550.1 544 536 544L104 544C89.9 544 76.8 536.6 69.6 524.5C62.4 512.4 62.1 497.4 68.8 485L284.8 85C291.8 72.1 305.3 64 320 64zM320 416C302.3 416 288 430.3 288 448C288 465.7 302.3 480 320 480C337.7 480 352 465.7 352 448C352 430.3 337.7 416 320 416zM320 224C301.8 224 287.3 239.5 288.6 257.7L296 361.7C296.9 374.2 307.4 384 319.9 384C332.5 384 342.9 374.3 343.8 361.7L351.2 257.7C352.5 239.5 338.1 224 319.8 224z" /></svg>
+                  </button>
+                )}
+                <button type="button" aria-label="Recherche" onClick={() => setShowComponents(false)}>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                    <path fill="#ffffff" d="M480 272C480 317.9 465.1 360.3 440 394.7L566.6 521.4C579.1 533.9 579.1 554.2 566.6 566.7C554.1 579.2 533.8 579.2 521.3 566.7L394.7 440C360.3 465.1 317.9 480 272 480C157.1 480 64 386.9 64 272C64 157.1 157.1 64 272 64C386.9 64 480 157.1 480 272zM272 416C351.5 416 416 351.5 416 272C416 192.5 351.5 128 272 128C192.5 128 128 192.5 128 272C128 351.5 192.5 416 272 416z" />
+                  </svg>
+                </button>
+                <button type="button" aria-label="Changer d'unité" onClick={handleUnity}>
+                  {weatherState.temperature.endsWith('C') ? '°F' : '°C'}
+                </button>
+              </div>
+            </>
+          ) : (
+            <h1>Météo</h1>
+          )}
+          <div id="error-notification">{error}</div>
+        </header>
+        <main>
+          {!showComponents && (
+            <form onSubmit={handleSubmit}>
+              <div className="input-part">
+                <p className="info-txt">Chargement...</p>
+                <input
+                  type="text"
+                  placeholder="Paris, FR"
+                  maxLength={50}
+                  aria-label="Rechercher une ville"
+                  id="city"
+                  value={city}
+                  onChange={(event) => setCity(event.target.value)}
+                  aria-required="true"
+                  required
+                />
+                <button type="submit">Rechercher</button>
+                <div className="separator" />
+                <button type="button" onClick={geolocation}>Localisation actuelle</button>
+              </div>
+            </form>
+          )}
+          {showComponents && (
+            <>
+              <section>
+                {weatherState.thunderMessage && <div className="alerts-thunder-part"><span>{weatherState.thunderMessage}</span></div>}
+                {weatherState.heatMessage && <div className="alerts-heat-part"><span>{weatherState.heatMessage}</span></div>}
+                {weatherState.floodMessage && <div className="alerts-flood-part"><span>{weatherState.floodMessage}</span></div>}
+                {weatherState.iceMessage && <div className="alerts-ice-part"><span>{weatherState.iceMessage}</span></div>}
+              </section>
+              <section>
+                <div className="main-info">
+                  <div className="temp">{mainImg}</div>
+                  <div className="temp">
+                    <span className="main-temp">{weatherState.temperature}</span>
+                    <span className="line">{weatherState.description}</span>
+                    <span className="line">ressenti {weatherState.feelsLike}</span>
+                    <span className="line">UV {weatherState.uv}</span>
+                  </div>
+                </div>
+                <div className="details">
+                  <div className="column">
+                    <div className="detail">
+                      <span>{weatherState.humidity}</span>
+                      <p>Humidité</p>
+                    </div>
+                  </div>
+                  <div className="column">
+                    <div className="detail">
+                      <span>
+                        <svg width="18" height="18" viewBox="0 0 50 50">
+                          <path d="M25 5 L40 45 L25 35 L10 45 Z" fill="currentColor" transform={`rotate(${weatherState.windAngle}, 25, 25)`} />
+                        </svg>
+                        {weatherState.wind}
+                      </span>
+                      <p>Vent</p>
+                    </div>
+                  </div>
+                  <div className="column">
+                    <div className="detail">
+                      <span>{weatherState.pressure}</span>
+                      <p>Pression</p>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <section>
+                <RainGauge minutely={minutelyData} />
+              </section>
+              <section>
+                <div className="graphique">
+                  {chartState.dataChart1.length > 0 && (
+                    <>
+                      <p className="sous-titre">Aujourd'hui</p>
+                      <ResponsiveContainer width="100%" height={50}>
+                        <LineChart margin={{ top: 5, left: 5, right: 5, bottom: -24 }} data={chartState.dataChart1}>
+                          <XAxis axisLine={false} tick={false} dataKey="name" />
+                          <YAxis yAxisId="temperature" domain={['dataMin', 'dataMax']} width={0} />
+                          <YAxis yAxisId="precipitation" width={0} />
+                          <Tooltip content={<CustomTooltip temperature={weatherState.temperature} />} wrapperStyle={{ zIndex: '999' }} />
+                          <Line dataKey="temp" stroke="rgba(255,255,255,.7)" strokeWidth="2" dot={{ r: 4 }} yAxisId="temperature" />
+                          <Line dataKey="precipitation" stroke="rgba(57,196,243,.7)" strokeWidth="2" dot={{ r: 4 }} yAxisId="precipitation" />
+                        </LineChart>
+                      </ResponsiveContainer>
+                      <div className="images-chart1">
+                        {chartState.dataChart1.length > 1 && chartState.dataChart1.map((item) => (
+                          <Image
+                            src={getImage(item.weather, item.sunDownH, item.sunUpH, item.name, false).imgSrc}
+                            alt={item.description}
+                            width={16}
+                            height={15}
+                            key={item.name}
+                          />
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
+                <div className="graphique">
+                  <p className="sous-titre">Demain</p>
+                  <ResponsiveContainer width="100%" height={50}>
+                    <LineChart margin={{ top: 5, left: 5, right: 5, bottom: -24 }} data={chartState.dataChart2}>
+                      <XAxis axisLine={false} tick={false} dataKey="name" />
+                      <YAxis yAxisId="temperature" domain={['dataMin', 'dataMax']} width={0} />
+                      <YAxis yAxisId="precipitation" width={0} />
+                      <Tooltip content={<CustomTooltip getImage={getImage} temperature={weatherState.temperature} />} wrapperStyle={{ zIndex: '999' }} />
+                      <Line dataKey="temp" stroke="rgba(255,255,255,.7)" strokeWidth="2" dot={{ r: 4 }} yAxisId="temperature" />
+                      <Line dataKey="precipitation" stroke="rgba(57,196,243,.7)" strokeWidth="2" dot={{ r: 4 }} yAxisId="precipitation" />
+                    </LineChart>
+                  </ResponsiveContainer>
+                  <div className="images-chart2">
+                    {chartState.dataChart2.map((item) => (
+                      <Image
+                        src={getImage(item.weather, item.sunDownH, item.sunUpH, item.name, false).imgSrc}
+                        alt={item.description}
+                        width={16}
+                        height={15}
+                        key={item.name}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </section>
+              <section>
+                <div className="daydetails">
+                  {forecastState.days.map((day, index) => (
+                    <div key={index} className="column daycolumn">
+                      <p>{day}</p>
+                      <Image src={forecastState.imgDays[index]} alt="" width={48} height={45} />
+                      <p>{forecastState.tempMeanDays[index]}</p>
+                      <p className="small">min {forecastState.tempMinDays[index]}</p>
+                      <p className="small">max {forecastState.tempMaxDays[index]}</p>
+                    </div>
+                  ))}
+                </div>
+              </section>
+              <section className="plus-info">
+                <div><p>Qualité air</p><p>{weatherState.airPollution}</p></div>
+                <div><p>Phase lune</p><p>{weatherState.moonPhase}</p></div>
+                <div><p>Point de rosée</p><p>{weatherState.dewPoint}</p></div>
+                <div><p>Couv. nuageuse</p><p>{weatherState.clouds}%</p></div>
+                <div><p><BsFillSunriseFill /></p><p>{weatherState.sunrise}</p></div>
+                <div><p><BsFillSunsetFill /></p><p>{weatherState.sunset}</p></div>
+                <div><p>Longitude</p><p>{weatherState.longitudeCity}</p></div>
+                <div><p>Latitude</p><p>{weatherState.latitudeCity}</p></div>
+              </section>
+              <footer>
+                <Link href="https://openweathermap.org/" rel="noopener noreferrer">Données OpenWeather</Link>
+              </footer>
+            </>
+          )}
+        </main>
+        {!showComponents && (
+          <footer>
+            GPL-3.0 <Link href="https://leoseguin.fr/">leoseguin.fr</Link>
+          </footer>
+        )}
+      </div>
+    </>
   )
 }

@@ -8,7 +8,7 @@
 	"orientation": "portrait-primary",
 	"lang": "fr",
 	"scope": "/",
-	"description": "Weather site developed with Next.js and OpenWeatherMapAPI",
+	"description": "Météo actuelle, données heure par heure et prévisions sur 7 jours partout dans le monde avec graphiques.",
 	"icons": [
 		{
 			"src": "/assets/icons/icon48.png",

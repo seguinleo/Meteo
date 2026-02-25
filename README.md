@@ -9,7 +9,7 @@ A local storage is used to save the last city.
 The website displays current temperature, wind speed and direction, humidity, pressure, rain, air quality and more.
 
 Charts for forecasts are displayed with [Recharts](https://recharts.org/en-US/).
-Weather icons from [Apple](https://support.apple.com/fr-fr/guide/iphone/iph4305794fb/15.0/ios/15.0).
+[Weather icons](https://icons8.com/icons/set/weather--style-keek).
 The website uses SSR requests with a Node.js server.
 
 ## For developers
