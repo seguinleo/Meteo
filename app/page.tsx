@@ -322,7 +322,6 @@ export default function Home(): JSX.Element {
     const timeOptions: Intl.DateTimeFormatOptions = { hour: '2-digit', minute: '2-digit' }
     const sunUp = sunriseLocal.toLocaleTimeString('fr-FR', timeOptions)
     const sunDown = sunsetLocal.toLocaleTimeString('fr-FR', timeOptions)
-    const name = city
     const result = getImage(weatherId, sunDown, sunUp, hourLocale)
     const { backgroundColor } = result
     setMetaTheme(backgroundColor)
@@ -359,7 +358,7 @@ export default function Home(): JSX.Element {
 
     setHour(hourLocale)
     document.body.style.background = backgroundColor
-    localStorage.setItem('city', name)
+    localStorage.setItem('city', city)
 
     await fetchDataForecasts(data, sunDown, sunUp)
   }, [getImage, getMoonPhaseIcon, getAirQualityText, fetchDataForecasts])
@@ -374,8 +373,9 @@ export default function Home(): JSX.Element {
     })
     const data = await response.json()
     if (response.ok) {
-      const { city: cityName, oneCallData, airPollutionData } = data
-      await fetchDataCurrent(cityName, oneCallData, airPollutionData)
+      const { city, oneCallData, airPollutionData } = data
+      await fetchDataCurrent(city, oneCallData, airPollutionData)
+      setCity(city)
       setShowComponents(true)
     } else {
       showError('Un problème est survenu, saisissez le nom complet de la ville...')
@@ -399,8 +399,9 @@ export default function Home(): JSX.Element {
         })
         const data = await response.json()
         if (response.ok) {
-          const { city: cityName, oneCallData, airPollutionData } = data
-          await fetchDataCurrent(cityName, oneCallData, airPollutionData)
+          const { city, oneCallData, airPollutionData } = data
+          await fetchDataCurrent(city, oneCallData, airPollutionData)
+          setCity(city)
           setShowComponents(true)
         } else {
           showError('Un problème est survenu lors de la géolocalisation...')
@@ -491,19 +492,6 @@ export default function Home(): JSX.Element {
     <>
       <dialog
         open={showAlertModal}
-        onClick={(e) => {
-          const dialog = e.currentTarget;
-          const rect = dialog.getBoundingClientRect();
-          const clickedInDialog = (
-            rect.top <= e.clientY &&
-            e.clientY <= rect.top + rect.height &&
-            rect.left <= e.clientX &&
-            e.clientX <= rect.left + rect.width
-          );
-          if (!clickedInDialog) {
-            setShowAlertModal(false);
-          }
-        }}
         className="alert-dialog"
       >
         <button
