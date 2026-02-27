@@ -120,7 +120,7 @@ const weatherConfig = [
 export default function Home(): JSX.Element {
   const [loading, setLoading] = useState(false)
   const [showErrorBox, setShowErrorBox] = useState(false)
-  const timeoutError = React.useRef<number | NodeJS.Timeout | null>(null)
+  const timeoutError = React.useRef<number | null>(null)
   const [showComponents, setShowComponents] = useState(false)
   const [showAlertModal, setShowAlertModal] = useState(false)
   const [metaTheme, setMetaTheme] = useState('#1c95ec')
@@ -170,7 +170,14 @@ export default function Home(): JSX.Element {
     sunUp: string,
     time: string
   ) => {
-    const isDay = time >= sunUp && time < sunDown
+    const toMinutes = (t: string) => {
+      if (!t.includes(':')) return 0
+      const [h, m] = t.split(':').map(Number)
+      return h * 60 + m
+    }
+    const isDay =
+      toMinutes(time) >= toMinutes(sunUp) &&
+      toMinutes(time) < toMinutes(sunDown)
     const config = weatherConfig.find(({ range }) => {
       if (range.length === 1) return id === range[0]
       return id >= range[0] && id <= range[1]
@@ -206,13 +213,17 @@ export default function Home(): JSX.Element {
   }, [])
 
   const showError = useCallback((message: string) => {
-    if (timeoutError.current) clearTimeout(timeoutError.current)
+    if (timeoutError.current) {
+      clearTimeout(timeoutError.current)
+      timeoutError.current = null
+    }
 
     setError(message)
     setShowErrorBox(true)
 
-    timeoutError.current = setTimeout(() => {
+    timeoutError.current = window.setTimeout(() => {
       setShowErrorBox(false)
+      timeoutError.current = null
     }, 5000)
   }, [])
 
@@ -338,7 +349,7 @@ export default function Home(): JSX.Element {
       feelsLike: `${+current.feels_like.toFixed(0)}°C`,
       humidity: `${current.humidity}%`,
       wind: `${+(3.6 * current.wind_speed).toFixed(0)}km/h`,
-      windAngle: ventDeg + 180,
+      windAngle: (ventDeg + 180) % 360,
       pressure: `${current.pressure}hPa`,
       sunrise: sunUp,
       sunset: sunDown,
@@ -348,7 +359,9 @@ export default function Home(): JSX.Element {
       latitudeCity: data.lat,
       longitudeCity: data.lon,
       moonPhase: getMoonPhaseIcon(data.daily[0].moon_phase),
-      airPollution: getAirQualityText(dataAir.list[0].main.aqi),
+      airPollution: dataAir?.list?.[0]?.main?.aqi
+        ? getAirQualityText(dataAir.list[0].main.aqi)
+        : 'N/A',
       alerts: alerts,
       thunderMessage: alerts?.some((alert) => hasTag(alert, 'thunder')) ? 'VIGILANCE ORAGES' : '',
       heatMessage: alerts?.some((alert) => hasTag(alert, 'high_temperature')) ? 'VIGILANCE FORTES CHALEURS' : '',
@@ -363,24 +376,32 @@ export default function Home(): JSX.Element {
     await fetchDataForecasts(data, sunDown, sunUp)
   }, [getImage, getMoonPhaseIcon, getAirQualityText, fetchDataForecasts])
 
-  const handleSubmit = useCallback(async (event: React.SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = useCallback(async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setLoading(true)
-    const response = await fetch('/api/search', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ city }),
-    })
-    const data = await response.json()
-    if (response.ok) {
-      const { city, oneCallData, airPollutionData } = data
-      await fetchDataCurrent(city, oneCallData, airPollutionData)
-      setCity(city)
-      setShowComponents(true)
-    } else {
-      showError('Un problème est survenu, saisissez le nom complet de la ville...')
+
+    try {
+      const response = await fetch('/api/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ city }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        const { city, oneCallData, airPollutionData } = data
+        await fetchDataCurrent(city, oneCallData, airPollutionData)
+        setCity(city)
+        setShowComponents(true)
+      } else {
+        showError('Un problème est survenu, saisissez le nom complet de la ville...')
+      }
+    } catch (error) {
+      showError('Erreur réseau...')
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }, [city, fetchDataCurrent, showError])
 
   const geolocation = useCallback(async () => {
@@ -391,27 +412,35 @@ export default function Home(): JSX.Element {
     setLoading(true)
     navigator.geolocation.getCurrentPosition(
       async (position) => {
-        const { latitude, longitude } = position.coords
-        const response = await fetch('/api/geolocation', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ latitude, longitude }),
-        })
-        const data = await response.json()
-        if (response.ok) {
-          const { city, oneCallData, airPollutionData } = data
-          await fetchDataCurrent(city, oneCallData, airPollutionData)
-          setCity(city)
-          setShowComponents(true)
-        } else {
-          showError('Un problème est survenu lors de la géolocalisation...')
+        try {
+          const { latitude, longitude } = position.coords
+          const response = await fetch('/api/geolocation', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ latitude, longitude }),
+          })
+
+          const data = await response.json()
+
+          if (response.ok) {
+            const { city, oneCallData, airPollutionData } = data
+            await fetchDataCurrent(city, oneCallData, airPollutionData)
+            setCity(city)
+            setShowComponents(true)
+          } else {
+            showError('Un problème est survenu lors de la géolocalisation...')
+          }
+        } catch (err) {
+          showError('Erreur réseau...')
+        } finally {
+          setLoading(false)
         }
       },
       () => {
-        showError('Veuillez activer la géolocalisation de votre appareil pour ce site...')
+        showError('Veuillez activer la géolocalisation...')
+        setLoading(false)
       }
     )
-    setLoading(false)
   }, [fetchDataCurrent, showError])
 
   const handleUnity = useCallback(() => {
@@ -472,20 +501,23 @@ export default function Home(): JSX.Element {
   }, [weatherState.temperature])
 
   useEffect(() => {
-    const metaThemeColor = document.querySelectorAll('.themecolor')
-    metaThemeColor.forEach((meta) => meta.setAttribute('content', metaTheme))
-    if (typeof window !== 'undefined') {
-      const savedCity = localStorage.getItem('city')
-      if (savedCity) setCity(savedCity)
-    }
+    const savedCity = localStorage.getItem('city')
+    if (savedCity) setCity(savedCity)
+
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').catch((error) => {
-        console.error(`Service worker registration failed: ${error}`)
-      })
+      navigator.serviceWorker.register('/sw.js').catch(console.error)
     }
+
     return () => {
       if (timeoutError.current) clearTimeout(timeoutError.current)
     }
+  }, [])
+
+  useEffect(() => {
+    const metaThemeColor = document.querySelectorAll('.themecolor')
+    metaThemeColor.forEach(meta =>
+      meta.setAttribute('content', metaTheme)
+    )
   }, [metaTheme])
 
   return (
@@ -556,13 +588,11 @@ export default function Home(): JSX.Element {
           ) : (
             <h1>Météo</h1>
           )}
-          {showErrorBox ? (
-            <div
-              id="error-notification"
-            >
+          {showErrorBox && (
+            <div id="error-notification">
               {error}
             </div>
-          ) : ''}
+          )}
         </header>
         <main>
           {!showComponents && (
@@ -705,7 +735,9 @@ export default function Home(): JSX.Element {
                   {forecastState.days.map((day, index) => (
                     <div key={index} className="column daycolumn">
                       <p>{day}</p>
-                      <Image src={forecastState.imgDays[index]} alt="" width={48} height={45} />
+                      {forecastState.imgDays[index] && (
+                        <Image src={forecastState.imgDays[index]} alt="" width={48} height={45} />
+                      )}
                       <p>{forecastState.tempMeanDays[index]}</p>
                       <p className="small">min {forecastState.tempMinDays[index]}</p>
                       <p className="small">max {forecastState.tempMaxDays[index]}</p>
