@@ -301,7 +301,14 @@ export default function Home(): JSX.Element {
       tempMinDays: temperaturesDailyMin.map((t) => `${t}°C`),
       tempMeanDays: temperaturesDailyMean.map((t) => `${t}°C`),
       tempMaxDays: temperaturesDailyMax.map((t) => `${t}°C`),
-      imgDays: weatherIdsDaily.map((id) => getImage(id, '1', '0', '0').imgSrc),
+      imgDays: weatherIdsDaily.map((id) => {
+        const config = weatherConfig.find(({ range }) => {
+          if (range.length === 1) return id === range[0]
+          return id >= range[0] && id <= range[1]
+        })
+        if (!config) return '/assets/icons/clouds.png'
+        return `/assets/icons/${config.icon}.png`
+      })
     }))
 
     setChartState({ dataChart1: chartData1, dataChart2: chartDataAir })
