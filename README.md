@@ -20,4 +20,4 @@ Create ``.env.local`` at root and add your API_KEY
 
 ``npm run dev`` to start the server
 
-``npm run sass`` to compile Saas files
+``npm run scss`` to compile scss to css

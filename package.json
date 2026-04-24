@@ -6,7 +6,7 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "sass": "sass --watch app/assets/sass/style.sass app/assets/css/style.min.css --style compressed --no-source-map"
+    "scss": "sass --watch app/assets/scss/style.scss app/assets/css/style.min.css --style compressed --no-source-map"
   },
   "dependencies": {
     "dotenv": "^17.4.2",
